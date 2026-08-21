@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dbqrec5njkjk7"
-path="res://.godot/imported/reticle_diamond.png-2edffb0c2aa4f3e73b40bc74acc5d5a7.ctex"
+uid="uid://b0qwe381og4lt"
+path="res://.godot/imported/reticle_lock.png-b7dadd045688537943568f78b1c7f7c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/indicators/reticle_diamond.png"
-dest_files=["res://.godot/imported/reticle_diamond.png-2edffb0c2aa4f3e73b40bc74acc5d5a7.ctex"]
+source_file="res://assets/ui/indicators/reticle_lock.png"
+dest_files=["res://.godot/imported/reticle_lock.png-b7dadd045688537943568f78b1c7f7c5.ctex"]
 
 [params]
 

@@ -30,7 +30,7 @@ const RETICLE_COLOR := Color(0.55, 0.97, 0.94)
 
 ## Hand-drawn reticle art, reused for every placement circle's cap — see
 ## game/assets/ui/indicators/. Drawn instead of the old procedural rings.
-const RETICLE_TEX := preload("res://assets/ui/indicators/reticle_diamond.png")
+const RETICLE_TEX := preload("res://assets/ui/indicators/reticle_lock.png")
 ## Shown next to the reticle while the armed skill cannot actually be cast
 ## right now (e.g. the archer has no bow/arrows) — set by the owner each
 ## frame (see player.gd's _handle_skill_input), never decided here.
@@ -38,6 +38,13 @@ const BLOCKED_TEX := preload("res://assets/ui/indicators/blocked_warning.png")
 ## Skillshot wedge fill: origin nub -> dashed shaft -> chevron tip, UV-mapped
 ## onto the tapered wedge polygon so the taper is real art, not a flat color.
 const BEAM_TEX := preload("res://assets/ui/indicators/skillshot_beam.png")
+## Every "here's the area" circle — the range boundary and every placement
+## circle (self/target/ground_aoe) — is this one ring texture at whatever
+## radius applies, tinted translucent. See _draw_aoe_ring().
+const AOE_RING_TEX := preload("res://assets/ui/indicators/aoe_ring.png")
+## Custom OS cursor for a `cursor_only` skill (smite): no telegraph is drawn
+## at all, the cursor itself is the only aim feedback. See arm()/cancel().
+const CURSOR_TEX := preload("res://assets/ui/indicators/smite_cursor.png")
 
 var _skill_id: String = ""
 var _owner: Node2D = null
@@ -68,10 +75,14 @@ func current_skill() -> String:
 func arm(skill_id: String) -> void:
 	_skill_id = skill_id
 	visible = true
+	if bool(SkillDB.get_skill(skill_id).get("cursor_only", false)):
+		Input.set_custom_mouse_cursor(CURSOR_TEX, Input.CURSOR_ARROW, CURSOR_TEX.get_size() * 0.5)
 	queue_redraw()
 
 
 func cancel() -> void:
+	if _skill_id != "" and bool(SkillDB.get_skill(_skill_id).get("cursor_only", false)):
+		Input.set_custom_mouse_cursor(null)
 	_skill_id = ""
 	blocked = false
 	visible = false
@@ -105,9 +116,12 @@ func _draw() -> void:
 	if not is_aiming() or _owner == null:
 		return
 	var s := SkillDB.get_skill(_skill_id)
+	# Pure point-and-click (smite): the custom OS cursor set in arm() IS the
+	# indicator. No telegraph, no reticle, nothing drawn here.
+	if bool(s.get("cursor_only", false)):
+		return
 	var origin := _owner.global_position
 	var colour: Color = s.get("color", Color(1, 1, 1))
-	var faint := Color(colour.r, colour.g, colour.b, 0.16)
 	var max_range := float(s.get("cast_range", 0.0))
 	var radius := float(s.get("radius", 0.0))
 
@@ -118,24 +132,24 @@ func _draw() -> void:
 				# because both are decisions the player is making.
 				_draw_range(origin, max_range, colour)
 				draw_line(origin, _point, Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.5), 2.0)
-				draw_circle(_point, radius, faint)
+				_draw_aoe_ring(_point, radius, colour)
 				_draw_reticle(_point, radius)
 			else:
 				# Centred on you, but still worth seeing before committing.
-				draw_circle(origin, radius, faint)
+				_draw_aoe_ring(origin, radius, colour)
 				_draw_reticle(origin, radius)
 
 		SkillDB.Targeting.TARGET:
 			_draw_range(origin, max_range, colour)
 			# A small ring on the cursor: this is the click that has to land.
 			var slack := maxf(float(s.get("click_slack", 12.0)), 8.0)
-			draw_circle(_point, slack, faint)
+			_draw_aoe_ring(_point, slack, colour)
 			_draw_reticle(_point, slack)
 			draw_line(origin, _point, Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.3), 1.0)
 
 		SkillDB.Targeting.GROUND_AOE:
 			_draw_range(origin, max_range, colour)
-			draw_circle(_point, radius, faint)
+			_draw_aoe_ring(_point, radius, colour)
 			_draw_reticle(_point, radius)
 
 		SkillDB.Targeting.SKILLSHOT:
@@ -149,17 +163,26 @@ func _draw() -> void:
 
 
 ## The reach of the skill, so the player can see whether the target is even in
-## range before committing. A soft fill across the whole disc reads at a
-## glance, and the boundary gets the double-line treatment (one crisp ring
-## plus a fainter inner echo) that is the single most recognisable MOBA tell.
+## range before committing. 0 (smite) means SkillCaster imposes no cap at all,
+## so there is nothing meaningful to draw a boundary at — skipped on purpose.
 func _draw_range(origin: Vector2, max_range: float, colour: Color) -> void:
 	if max_range <= 0.0:
 		return
-	draw_circle(origin, max_range, Color(colour.r, colour.g, colour.b, 0.04))
-	draw_arc(origin, max_range, 0.0, TAU, 96,
-		Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.5), 2.0)
-	draw_arc(origin, max_range - 5.0, 0.0, TAU, 96,
-		Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.2), 1.0)
+	_draw_aoe_ring(origin, max_range, colour, 0.22)
+
+
+## Every "here's the area" circle in this file — the range boundary and every
+## placement circle — is AOE_RING_TEX at whatever radius applies, stretched
+## uniformly (it is a plain ring, so stretching never distorts it the way the
+## skillshot wedge would). Kept well under full opacity: a translucent zone
+## you can still see the ground and enemies through is the whole point of an
+## AoE preview, same reasoning as the skillshot beam's fill.
+func _draw_aoe_ring(center: Vector2, r: float, colour: Color, alpha: float = 0.4) -> void:
+	if r <= 0.0:
+		return
+	var size := Vector2.ONE * (r * 2.0)
+	var tint := Color(colour.r, colour.g, colour.b, 1.0).lerp(RETICLE_COLOR, 0.5)
+	draw_texture_rect(AOE_RING_TEX, Rect2(center - size * 0.5, size), false, Color(tint.r, tint.g, tint.b, alpha))
 
 
 ## The reticle every placement circle gets, capping the point where the skill

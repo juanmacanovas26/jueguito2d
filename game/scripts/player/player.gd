@@ -312,7 +312,21 @@ func _try_cast(skill_id: String, aim_point: Vector2 = Vector2.INF) -> bool:
 	if not skills.is_ready(skill_id):
 		return false
 	var aim := aim_point if aim_point != Vector2.INF else get_global_mouse_position()
-	var ok: bool = skills.cast(skill_id, aim, func(s: Dictionary) -> bool:
+	# A "refund_on_miss" skill (smite) still pays the cost up front like every
+	# other cast — so a whiff still costs nothing extra to try again, just the
+	# short retry cooldown — but SkillCaster hands the cost straight back if
+	# the click lands on nobody, since it never actually "launched".
+	var refund_on_miss := bool(SkillDB.get_skill(skill_id).get("refund_on_miss", false))
+	var refund := Callable()
+	if refund_on_miss:
+		refund = func(s: Dictionary) -> void:
+			var mana_cost := float(s.get("mana_cost", 0.0))
+			if mana_cost > 0.0:
+				mana = minf(MAX_MANA, mana + mana_cost)
+			var stam_cost := float(s.get("stamina_cost", 0.0))
+			if stam_cost > 0.0:
+				stamina = minf(MAX_STAMINA, stamina + stam_cost)
+	var spend := func(s: Dictionary) -> bool:
 		# Same rule as the archer's basic/charged shot: no bow+arrows, no
 		# arrows fired — checked before any cost is spent.
 		if bool(s.get("requires_bow", false)) and not (has_bow() and has_arrows()):
@@ -328,7 +342,8 @@ func _try_cast(skill_id: String, aim_point: Vector2 = Vector2.INF) -> bool:
 			_spend_mana(mana_cost)
 		if stam_cost > 0.0:
 			_spend_stamina(stam_cost)
-		return true)
+		return true
+	var ok: bool = skills.cast(skill_id, aim, spend, refund)
 	if not ok:
 		return false
 	_casting_skill = skill_id

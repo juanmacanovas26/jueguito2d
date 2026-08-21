@@ -35,6 +35,9 @@ var _elapsed: float = 0.0
 var _landed: bool = false
 var _aim_point: Vector2 = Vector2.ZERO
 var _cooldowns: Dictionary = {}
+## Set for the current cast only (see cast()'s `refund` param) — called by
+## _resolve_click() when a TARGET click lands on nobody.
+var _refund: Callable = Callable()
 
 
 func setup(p_caster: Node2D, p_team: StringName) -> void:
@@ -95,8 +98,12 @@ func is_ready(skill_id: String) -> bool:
 ##
 ## `spend` is called with the skill dict so the owner can charge mana/stamina
 ## and refuse; it returns false to abort. Cost is spent HERE, not on hit, so a
-## whiff still costs.
-func cast(skill_id: String, aim_point: Vector2, spend: Callable = Callable()) -> bool:
+## whiff still costs — UNLESS the skill declares `refund_on_miss`, in which
+## case `refund` (same shape as `spend`, but no return value) is called back
+## by _resolve_click() to hand the cost straight back on a TARGET click that
+## lands on nobody. Either way the cooldown always applies: refunding the
+## cost is not the same as the attempt being free.
+func cast(skill_id: String, aim_point: Vector2, spend: Callable = Callable(), refund: Callable = Callable()) -> bool:
 	if not is_ready(skill_id):
 		return false
 	var s := SkillDB.get_skill(skill_id)
@@ -112,6 +119,7 @@ func cast(skill_id: String, aim_point: Vector2, spend: Callable = Callable()) ->
 	if spend.is_valid() and not bool(spend.call(s)):
 		return false
 
+	_refund = refund
 	_skill_id = skill_id
 	_aim_point = aim_point
 	_elapsed = 0.0
@@ -141,12 +149,15 @@ func _resolve(s: Dictionary) -> void:
 
 ## Point-and-click, AO style: whatever the click actually landed on takes the
 ## hit. Nothing was locked on, so a target that moved out from under the cursor
-## simply is not there — the cast is spent and nothing happens. That miss is the
-## counterplay, and `click_slack` is how forgiving it is.
+## simply is not there — the cast is spent and nothing happens (unless the
+## skill declares `refund_on_miss`, see cast()). That miss is the counterplay,
+## and `click_slack` is how forgiving it is.
 func _resolve_click(s: Dictionary) -> void:
 	var slack := float(s.get("click_slack", 12.0))
 	var victim := _nearest_hurtbox(_aim_point, slack)
 	if victim == null:
+		if _refund.is_valid():
+			_refund.call(s)
 		return
 	victim.apply_hit(_hit_data(s, (victim.global_position - caster.global_position).normalized()))
 

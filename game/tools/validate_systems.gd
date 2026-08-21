@@ -520,6 +520,33 @@ func _check_skills() -> void:
 	_expect(is_equal_approx(dummy.health.hp, hp_before),
 		"TARGET: a click that misses does nothing — movement is the counter")
 
+	# smite: cursor_only (no telegraph), unlimited range, and cost only sticks
+	# on an actual hit — but the short retry cooldown applies either way.
+	var smite_data := SkillDB.get_skill("smite")
+	_expect(bool(smite_data.get("cursor_only", false)),
+		"smite is cursor_only — SkillAimer draws nothing for it, just a cursor")
+	p.mana = p.MAX_MANA
+	var smite_mana0: float = p.mana
+	var far_away: Vector2 = dummy.global_position + Vector2(5000, 0)
+	_expect(p._try_cast("smite", far_away),
+		"smite's cast_range is 0 (no cap) — even a very distant click is accepted")
+	_expect(p.mana < smite_mana0, "the cost is charged immediately, like any other cast")
+	await get_tree().create_timer(float(smite_data.get("startup", 0.2)) + 0.08).timeout
+	_expect(is_equal_approx(p.mana, smite_mana0),
+		"  but refunded in full once it resolves as a miss (it never actually 'launched')")
+	_expect(not caster.is_ready("smite"),
+		"  the retry cooldown still applies even though the cost refunded")
+
+	await get_tree().create_timer(float(smite_data.get("cooldown", 1.0)) + 0.1).timeout
+	_expect(caster.is_ready("smite"), "the retry cooldown is exactly the declared 1s, not the old 5s")
+	var hp_before_smite: float = dummy.health.hp
+	var mana_before_hit: float = p.mana
+	_expect(p._try_cast("smite", dummy.global_position), "smite hits: the cast commits")
+	await get_tree().create_timer(float(smite_data.get("startup", 0.2)) + 0.08).timeout
+	_expect(dummy.health.hp < hp_before_smite, "  a real hit actually damages the enemy")
+	_expect(p.mana < mana_before_hit, "  and the cost stays spent (no refund on a real hit)")
+	await get_tree().create_timer(SkillDB.duration_of("smite") + 0.1).timeout
+
 	# SELF: hits what is around the caster.
 	hp_before = dummy.health.hp
 	caster._skill_id = "whirlwind"
@@ -684,9 +711,11 @@ func _check_skill_aiming() -> void:
 	_expect(not caster.is_casting(), "and nothing has been cast yet")
 	_expect(p.is_aiming_skill(), "the player reports it is aiming")
 
-	# The reticle/warning art must be real, not a broken preload.
+	# The reticle/warning/ring/cursor art must be real, not a broken preload.
 	_expect(SkillAimer.RETICLE_TEX.get_size().x > 0, "SkillAimer.RETICLE_TEX resolves a real texture")
 	_expect(SkillAimer.BLOCKED_TEX.get_size().x > 0, "SkillAimer.BLOCKED_TEX resolves a real texture")
+	_expect(SkillAimer.AOE_RING_TEX.get_size().x > 0, "SkillAimer.AOE_RING_TEX resolves a real texture")
+	_expect(SkillAimer.CURSOR_TEX.get_size().x > 0, "SkillAimer.CURSOR_TEX resolves a real texture")
 	_expect(not aimer.blocked, "a ground AoE (no requires_bow) is never blocked")
 
 	# The preview is clamped to the skill's own range, so it cannot promise a

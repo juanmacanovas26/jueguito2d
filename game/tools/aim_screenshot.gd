@@ -56,4 +56,7 @@ func _ready() -> void:
 	print("wrote: " + ProjectSettings.globalize_path(OUT_PATH))
 	for a in aimers:
 		print("  %-12s aiming=%s visible=%s" % [a.current_skill(), a.is_aiming(), a.visible])
+	# smite's arm() swaps in a custom OS cursor (see SkillAimer.CURSOR_TEX) —
+	# clear it before quitting so its texture RID doesn't outlive the process.
+	Input.set_custom_mouse_cursor(null)
 	get_tree().quit(0)

@@ -187,11 +187,26 @@ const SKILLS := {
 		"targeting": "target",
 		"anim": "attack_cast",
 		"startup": 0.20, "active": 0.06, "recovery": 0.28,
-		"cooldown": 5.0,
+		## Not a "did you land it" cooldown — a retry throttle. It applies
+		## whether the click hits or misses, so it never gates a real hit
+		## behind a long wait, but also can't be spammed every frame trying
+		## to land one. See refund_on_miss for the actual cost logic.
+		"cooldown": 1.0,
 		"mana_cost": 18.0,
 		"damage_mul": 1.5,
 		"poise_damage": 8.0,
-		"cast_range": 220.0,
+		## 0 = SkillCaster imposes no range cap at all — "the whole screen",
+		## by construction: nothing further than the camera shows is clickable.
+		"cast_range": 0.0,
+		## Pure point-and-click, no telegraph: SkillAimer draws nothing for a
+		## cursor_only skill and swaps the OS cursor instead (see arm()) — the
+		## cursor itself IS the aim indicator, same idea as an ARPG click-spell.
+		"cursor_only": true,
+		## The cost is charged like any other cast (see SkillCaster.cast()) but
+		## handed straight back if the click lands on nobody — "smite only
+		## actually launches if it hits something", without making a miss free
+		## to spam (the cooldown above still applies either way).
+		"refund_on_miss": true,
 		## How forgiving the click is, in pixels around the enemy's centre. Small
 		## enough that a moving target can slip out of it — this is the knob that
 		## decides how hard point-and-click aiming is.

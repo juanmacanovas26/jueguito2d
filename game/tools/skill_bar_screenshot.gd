@@ -51,4 +51,7 @@ func _ready() -> void:
 	for slot in hud.skill_bar._slots:
 		print("  slot %-12s cooldown_left=%.2f armed=%s" % [
 			slot.skill_id, player.skills.cooldown_left(slot.skill_id), slot._armed])
+	# smite's arm() swaps in a custom OS cursor (see SkillAimer.CURSOR_TEX) —
+	# clear it before quitting so its texture RID doesn't outlive the process.
+	Input.set_custom_mouse_cursor(null)
 	get_tree().quit(0)
