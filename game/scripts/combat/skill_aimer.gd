@@ -17,9 +17,9 @@ extends Node2D
 ## same way a League indicator stays the same "UI teal" whether the spell is
 ## fire or ice — that consistency is what reads as UI chrome instead of a
 ## blob of particles. The skill's own `color` only tints the soft fill, as a
-## faint hint of the element underneath. Kept deliberately restrained: thin
-## lines, no brackets or flares — a busy reticle competes with the gameplay
-## it's supposed to be pointing at.
+## faint hint of the element underneath. Placement circles draw the area
+## itself (a ground summoning-circle ring), not a point reticle capping a
+## separate flat fill — the marker IS the boundary.
 
 ## Drawn in world space regardless of who owns this node.
 const TOP_LEVEL := true
@@ -30,7 +30,9 @@ const DEFAULT_SHOT_RANGE := 320.0
 ## Fixed targeting-UI cyan shared by every indicator's rings/ticks/border.
 const RETICLE_COLOR := Color(0.55, 0.97, 0.94)
 
-## Shown next to the reticle while the armed skill cannot actually be cast
+## The area marker every placement circle gets — see _draw_aoe_marker().
+const AOE_MARKER_TEX := preload("res://assets/ui/indicators/aoe_marker.png")
+## Shown next to the marker while the armed skill cannot actually be cast
 ## right now (e.g. the archer has no bow/arrows) — set by the owner each
 ## frame (see player.gd's _handle_skill_input), never decided here.
 const BLOCKED_TEX := preload("res://assets/ui/indicators/blocked_warning.png")
@@ -117,7 +119,6 @@ func _draw() -> void:
 		return
 	var origin := _owner.global_position
 	var colour: Color = s.get("color", Color(1, 1, 1))
-	var faint := Color(colour.r, colour.g, colour.b, 0.16)
 	var max_range := float(s.get("cast_range", 0.0))
 	var radius := float(s.get("radius", 0.0))
 
@@ -128,25 +129,22 @@ func _draw() -> void:
 				# because both are decisions the player is making.
 				_draw_range(origin, max_range, colour)
 				draw_line(origin, _point, Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.5), 2.0)
-				draw_circle(_point, radius, faint)
-				_draw_reticle(_point, radius)
+				_draw_aoe_marker(_point, radius)
 			else:
 				# Centred on you, but still worth seeing before committing.
-				draw_circle(origin, radius, faint)
-				_draw_reticle(origin, radius)
+				_draw_aoe_marker(origin, radius)
 
 		SkillDB.Targeting.TARGET:
 			_draw_range(origin, max_range, colour)
-			# A small ring on the cursor: this is the click that has to land.
+			# The click has to land within this: same area-marker look, just
+			# sized to the click's forgiveness instead of a hit radius.
 			var slack := maxf(float(s.get("click_slack", 12.0)), 8.0)
-			draw_circle(_point, slack, faint)
-			_draw_reticle(_point, slack)
+			_draw_aoe_marker(_point, slack)
 			draw_line(origin, _point, Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.3), 1.0)
 
 		SkillDB.Targeting.GROUND_AOE:
 			_draw_range(origin, max_range, colour)
-			draw_circle(_point, radius, faint)
-			_draw_reticle(_point, radius)
+			_draw_aoe_marker(_point, radius)
 
 		SkillDB.Targeting.SKILLSHOT:
 			var length := _skillshot_range(s, max_range)
@@ -174,20 +172,19 @@ func _draw_range(origin: Vector2, max_range: float, colour: Color) -> void:
 		Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.2), 1.0)
 
 
-## The reticle every placement circle gets, capping the exact point where the
-## skill actually lands. Deliberately minimal — the same restrained double-
-## line treatment as _draw_range() (one crisp ring, one fainter inner echo)
-## at this smaller scale, plus a small centre dot for the precise point.
-## No brackets, no flares, no crosshair arms: those all read as busy/heavy at
-## this size, and the point only needs to be legible, not decorated.
-func _draw_reticle(center: Vector2, r: float) -> void:
-	var ring := RETICLE_COLOR
-	draw_arc(center, r, 0.0, TAU, 48, Color(ring.r, ring.g, ring.b, 0.8), 1.4)
-	draw_arc(center, maxf(r - 3.0, 1.0), 0.0, TAU, 48, Color(ring.r, ring.g, ring.b, 0.3), 1.0)
-	draw_circle(center, 1.6, Color(ring.r, ring.g, ring.b, 0.9))
+## The area marker every placement circle gets, showing exactly where and how
+## big the effect is — a ground summoning-circle look (ring, compass
+## crosshair, cardinal ornaments), not a point reticle: this IS the area, so
+## it draws the boundary itself rather than capping a separate flat fill.
+## Stretched uniformly to the actual radius/slack, so a small TARGET click
+## and a large GROUND_AOE placement both read as "this is the area".
+func _draw_aoe_marker(center: Vector2, r: float) -> void:
+	var size := Vector2.ONE * (r * 2.0)
+	draw_texture_rect(AOE_MARKER_TEX, Rect2(center - size * 0.5, size), false,
+		Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.9))
 
 
-## The "can't cast" warning, shown beside the reticle while `blocked` is true.
+## The "can't cast" warning, shown beside the area marker while `blocked` is true.
 ## Presentation only — the owner decides why (see player.gd).
 func _draw_blocked(center: Vector2, r: float) -> void:
 	if not blocked:
@@ -216,10 +213,10 @@ func _skillshot_range(s: Dictionary, max_range: float) -> float:
 ## width lane — that reads as a wall, not a shot). The wedge is UV-textured
 ## with BEAM_TEX (hollow anchor ring, hollow shaft, chevron arrowhead) instead
 ## of a flat fill, so the taper is real art, not two thin lines — and the same
-## reticle used everywhere else caps the point where the shot stops. Drawn at
-## well under full opacity: a skillshot preview has to stay translucent enough
-## to still see the ground and enemies through it, same as the range/reticle
-## fills elsewhere in this file. Width is a legibility choice, not the real
+## area marker used everywhere else caps the point where the shot stops. Drawn
+## at well under full opacity: a skillshot preview has to stay translucent
+## enough to still see the ground and enemies through it, same as the range
+## fill elsewhere in this file. Width is a legibility choice, not the real
 ## hit radius.
 func _draw_skillshot_beam(origin: Vector2, tip: Vector2, dir: Vector2, radius: float,
 		colour: Color, s: Dictionary) -> void:
@@ -243,7 +240,7 @@ func _draw_skillshot_beam(origin: Vector2, tip: Vector2, dir: Vector2, radius: f
 	var uvs := PackedVector2Array([Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
 	draw_polygon(pts, PackedColorArray([Color(1, 1, 1, 0.6)]), uvs, BEAM_TEX)
 
-	_draw_reticle(tip, half_w)
+	_draw_aoe_marker(tip, half_w)
 
 	# Spread cone, when the skill fires more than one — kept as faint boundary
 	# lines outside the main beam rather than merged into its fill.
