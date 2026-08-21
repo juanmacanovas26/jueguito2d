@@ -203,16 +203,19 @@ func _skillshot_range(s: Dictionary, max_range: float) -> float:
 ## A skillshot indicator the way a MOBA draws one: a wedge that starts almost
 ## as a point at the caster and widens toward the far end (never a constant-
 ## width lane — that reads as a wall, not a shot). The wedge is UV-textured
-## with BEAM_TEX (nub anchoring the origin, dashed shaft, chevron arrowhead)
-## instead of a flat fill, so the taper is real art, not two thin lines — and
-## the same reticle used everywhere else caps the point where the shot stops.
-## Width is a legibility choice, not the real hit radius.
+## with BEAM_TEX (hollow anchor ring, hollow shaft, chevron arrowhead) instead
+## of a flat fill, so the taper is real art, not two thin lines — and the same
+## reticle used everywhere else caps the point where the shot stops. Drawn at
+## well under full opacity: a skillshot preview has to stay translucent enough
+## to still see the ground and enemies through it, same as the range/reticle
+## fills elsewhere in this file. Width is a legibility choice, not the real
+## hit radius.
 func _draw_skillshot_beam(origin: Vector2, tip: Vector2, dir: Vector2, radius: float,
 		colour: Color, s: Dictionary) -> void:
 	var half_w := maxf(radius * 2.4, 12.0)
 	var near_w := half_w * 0.45
 	var perp := Vector2(-dir.y, dir.x)
-	var glow := Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.18)
+	var glow := Color(RETICLE_COLOR.r, RETICLE_COLOR.g, RETICLE_COLOR.b, 0.14)
 
 	var p_near_l := origin + perp * near_w
 	var p_near_r := origin - perp * near_w
@@ -227,7 +230,7 @@ func _draw_skillshot_beam(origin: Vector2, tip: Vector2, dir: Vector2, radius: f
 	# u: 0 at the near (nub/anchor) end -> 1 at the far (chevron/tip) end.
 	# v: 0/1 across the wedge's width, matching the "l"/"r" edges above.
 	var uvs := PackedVector2Array([Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
-	draw_polygon(pts, PackedColorArray([Color(1, 1, 1, 0.95)]), uvs, BEAM_TEX)
+	draw_polygon(pts, PackedColorArray([Color(1, 1, 1, 0.6)]), uvs, BEAM_TEX)
 
 	_draw_reticle(tip, half_w)
 
