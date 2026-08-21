@@ -712,9 +712,7 @@ func _check_skill_aiming() -> void:
 	_expect(p.is_aiming_skill(), "the player reports it is aiming")
 
 	# The reticle/warning/ring/cursor art must be real, not a broken preload.
-	_expect(SkillAimer.RETICLE_TEX.get_size().x > 0, "SkillAimer.RETICLE_TEX resolves a real texture")
 	_expect(SkillAimer.BLOCKED_TEX.get_size().x > 0, "SkillAimer.BLOCKED_TEX resolves a real texture")
-	_expect(SkillAimer.AOE_RING_TEX.get_size().x > 0, "SkillAimer.AOE_RING_TEX resolves a real texture")
 	_expect(SkillAimer.CURSOR_TEX.get_size().x > 0, "SkillAimer.CURSOR_TEX resolves a real texture")
 	_expect(not aimer.blocked, "a ground AoE (no requires_bow) is never blocked")
 
