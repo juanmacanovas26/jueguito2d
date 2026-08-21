@@ -1,0 +1,134 @@
+{
+ "_comment": [
+  "Which slice of the Universal LPC library ships in the game.",
+  "Entries are sheet_definition NAMES (the 'name' field inside lpc/sheet_definitions/**.json).",
+  "Add names here and re-run import_lpc.py. Files are copied at their ORIGINAL LPC paths,",
+  "so anything you drop in by hand following the LPC layout also just works."
+ ],
+ "body_type": "male",
+ "animations": {
+  "_comment": "game animation -> LPC animation. The attack_* variants are picked per weapon (see ItemDB attack_anim).",
+  "idle": "idle",
+  "walk": "walk",
+  "dash": "run",
+  "death": "hurt",
+  "attack_slash": "slash",
+  "attack_thrust": "thrust",
+  "attack_cast": "spellcast",
+  "attack_shoot": "shoot"
+ },
+ "_attack_source": "which attack_* layer folder to take; others (thrust, reverse) are skipped for now",
+ "_variant_preference": "for assets with material/colour variants, first match wins",
+ "variant_preference": [
+  "iron",
+  "steel",
+  "leather",
+  "brown",
+  "gray"
+ ],
+ "include": {
+  "body": [
+   "Body Color"
+  ],
+  "head": [
+   "Human Male",
+   "Orc male",
+   "Skeleton",
+   "Lizard male",
+   "Minotaur",
+   "Vampire"
+  ],
+  "hair": [
+   "Afro",
+   "Bedhead",
+   "Long",
+   "Messy1",
+   "Page",
+   "Shorthawk",
+   "Spiked",
+   "Swoop",
+   "Curly short",
+   "Bob"
+  ],
+  "torso": [
+   "Leather",
+   "Legion",
+   "Plate",
+   "Chainmail",
+   "Longsleeve"
+  ],
+  "legs": [
+   "Armour",
+   "Pants",
+   "Pantaloons",
+   "Hose",
+   "Shorts"
+  ],
+  "hat": [
+   "Barbuta",
+   "Bascinet",
+   "Greathelm",
+   "Kettle helm",
+   "Spangenhelm"
+  ],
+  "weapon": [
+   "Arming Sword",
+   "Longsword",
+   "Dagger",
+   "Rapier",
+   "Saber",
+   "Glowsword",
+   "Flail",
+   "Scythe",
+   "Mace",
+   "Waraxe",
+   "Spear",
+   "Halberd",
+   "Simple staff",
+   "Slingshot"
+  ],
+  "shield": [
+   "Plus shield",
+   "Two engrailed shield",
+   "Spartan Shield",
+   "Scutum shield",
+   "Crusader shield",
+   "Quiver"
+  ],
+  "feet": [
+   "Basic Shoes",
+   "Folded Rim Boots",
+   "Revised Boots",
+   "Rimmed Boots",
+   "Armour"
+  ],
+  "arms": [
+   "Armour"
+  ],
+  "gloves": [
+   "Gloves"
+  ],
+  "shoulders": [
+   "Epaulets",
+   "Pauldrons",
+   "Mantal",
+   "Legion"
+  ],
+  "wrists": [
+   "Bracers",
+   "Cuffs",
+   "Lace Cuffs"
+  ]
+ },
+ "_fallbacks": "If a LAYER has no sheet for an animation, borrow the one listed here and clamp the frame index. LPC weapons have no 'run' sheet and mostly no 'idle', so without this the sword would vanish mid-dash. Declared, never silent: every use is listed in index.json.",
+ "fallbacks": {
+  "idle": "walk",
+  "dash": "walk"
+ },
+ "_attack_layers": "melee weapons keep their swing in an attack_* folder; magic/ranged use the animation subfolder of their universal layer",
+ "attack_layers": {
+  "attack_slash": "attack_slash",
+  "attack_thrust": "attack_thrust"
+ },
+ "_ranged_note": "LPC bows (Recurve, Great, Normal) ship a 13-frame 128px walk cycle that cannot sync with the body's 9-frame walk, so the bow would desync or vanish while moving. Slingshot is the only ranged weapon with a compatible walk."
+}

@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://dummy001"]
+
+[ext_resource type="Script" path="res://scripts/enemy/dummy.gd" id="1_dummy"]
+[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="3_health"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(28, 28)
+
+[node name="Dummy" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 4
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_dummy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.75, 0.35, 0.4, 1)
+polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_hurtbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_hurt")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3_health")
+max_hp = 500.0
+
+[node name="HpLabel" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -36.0
+offset_right = 50.0
+offset_bottom = -16.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+text = "Dummy"
+
+[node name="FlashTimer" type="Timer" parent="."]
+one_shot = true

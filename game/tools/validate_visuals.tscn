@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://validatevisuals001"]
+
+[ext_resource type="Script" path="res://tools/validate_visuals.gd" id="1_validate"]
+
+[node name="ValidateVisuals" type="Node"]
+script = ExtResource("1_validate")

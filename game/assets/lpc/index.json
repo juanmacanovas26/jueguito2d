@@ -1,0 +1,7295 @@
+{
+ "format": "lpc-upstream-v1",
+ "body_type": "male",
+ "directions": [
+  "north",
+  "west",
+  "south",
+  "east"
+ ],
+ "animations": {
+  "idle": "idle",
+  "walk": "walk",
+  "dash": "run",
+  "death": "hurt",
+  "attack_slash": "slash",
+  "attack_thrust": "thrust",
+  "attack_cast": "spellcast",
+  "attack_shoot": "shoot"
+ },
+ "pieces": {
+  "body/Body Color": {
+   "name": "Body Color",
+   "slot": "body",
+   "type_name": "body",
+   "definition": "body/body.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "body/bodies/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "body/bodies/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "body/bodies/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "body/bodies/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "body/bodies/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "body/bodies/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "body/bodies/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 10,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "body/bodies/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Human Male": {
+   "name": "Human Male",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/human/heads_human_male.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/human/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/human/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/human/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/human/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/human/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/human/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/human/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/human/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Orc male": {
+   "name": "Orc male",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/fantasy/heads_orc_male.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/orc/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/orc/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/orc/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/orc/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/orc/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/orc/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/orc/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/orc/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Skeleton": {
+   "name": "Skeleton",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/undead/heads_skeleton.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/skeleton/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/skeleton/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/skeleton/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/skeleton/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/skeleton/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/skeleton/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/skeleton/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/skeleton/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Lizard male": {
+   "name": "Lizard male",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/reptile/heads_lizard_male.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/lizard/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/lizard/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/lizard/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/lizard/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/lizard/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/lizard/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/lizard/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/lizard/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Minotaur": {
+   "name": "Minotaur",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/beast/heads_minotaur.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/minotaur/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/minotaur/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/minotaur/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/minotaur/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/minotaur/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/minotaur/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/minotaur/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/minotaur/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "head/Vampire": {
+   "name": "Vampire",
+   "slot": "head",
+   "type_name": "head",
+   "definition": "head/heads/undead/heads_vampire.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "head/heads/vampire/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "head/heads/vampire/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "head/heads/vampire/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "head/heads/vampire/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "head/heads/vampire/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "head/heads/vampire/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "head/heads/vampire/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 100,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "head/heads/vampire/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Afro": {
+   "name": "Afro",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/afro/hair_afro.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/afro/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/afro/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/afro/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/afro/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/afro/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/afro/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/afro/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/afro/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Bedhead": {
+   "name": "Bedhead",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/short/hair_bedhead.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/bedhead/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/bedhead/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/bedhead/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/bedhead/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/bedhead/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/bedhead/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/bedhead/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/bedhead/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Long": {
+   "name": "Long",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/long/hair_long.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/long/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/long/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/long/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/long/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/long/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/long/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/long/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/long/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Messy1": {
+   "name": "Messy1",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/short/hair_messy1.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/messy1/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/messy1/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/messy1/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/messy1/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/messy1/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/messy1/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/messy1/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/messy1/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Page": {
+   "name": "Page",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/short/hair_page.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/page/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/page/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/page/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/page/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/page/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/page/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/page/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/page/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Shorthawk": {
+   "name": "Shorthawk",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/bald/hair_shorthawk.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/shorthawk/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/shorthawk/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/shorthawk/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/shorthawk/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/shorthawk/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/shorthawk/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/shorthawk/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/shorthawk/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Spiked": {
+   "name": "Spiked",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/spiky/hair_spiked.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/spiked/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/spiked/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/spiked/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/spiked/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/spiked/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/spiked/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/spiked/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/spiked/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Swoop": {
+   "name": "Swoop",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/short/hair_swoop.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/swoop/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/swoop/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/swoop/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/swoop/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/swoop/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/swoop/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/swoop/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/swoop/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Curly short": {
+   "name": "Curly short",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/curly/hair_curly_short.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/curly_short/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/curly_short/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/curly_short/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/curly_short/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/curly_short/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/curly_short/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/curly_short/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/curly_short/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hair/Bob": {
+   "name": "Bob",
+   "slot": "hair",
+   "type_name": "hair",
+   "definition": "hair/bob/hair_bob.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hair/bob/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hair/bob/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hair/bob/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hair/bob/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hair/bob/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hair/bob/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hair/bob/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 120,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hair/bob/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "torso/Leather": {
+   "name": "Leather",
+   "slot": "torso",
+   "type_name": "armour",
+   "definition": "torso/armour/torso_armour_leather.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "torso/armour/leather/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "torso/armour/leather/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "torso/armour/leather/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "torso/armour/leather/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "torso/armour/leather/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "torso/armour/leather/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "torso/armour/leather/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "torso/armour/leather/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "torso/Legion": {
+   "name": "Legion",
+   "slot": "torso",
+   "type_name": "armour",
+   "definition": "torso/armour/torso_armour_legion.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "torso/armour/legion/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "torso/armour/legion/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "torso/armour/legion/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "torso/armour/legion/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "torso/armour/legion/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "torso/armour/legion/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "torso/armour/legion/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "torso/armour/legion/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "torso/Plate": {
+   "name": "Plate",
+   "slot": "torso",
+   "type_name": "armour",
+   "definition": "torso/armour/torso_armour_plate.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "torso/armour/plate/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "torso/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "torso/armour/plate/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "torso/armour/plate/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "torso/armour/plate/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "torso/armour/plate/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "torso/armour/plate/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "torso/armour/plate/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "torso/Chainmail": {
+   "name": "Chainmail",
+   "slot": "torso",
+   "type_name": "chainmail",
+   "definition": "torso/torso_chainmail.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "torso/chainmail/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "torso/chainmail/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "torso/chainmail/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "torso/chainmail/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "torso/chainmail/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "torso/chainmail/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "torso/chainmail/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 50,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "torso/chainmail/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "torso/Longsleeve": {
+   "name": "Longsleeve",
+   "slot": "torso",
+   "type_name": "clothes",
+   "definition": "torso/shirts/longsleeve/torso_clothes_longsleeve.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 35,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "torso/clothes/longsleeve/longsleeve/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "legs/Armour": {
+   "name": "Armour",
+   "slot": "legs",
+   "type_name": "legs",
+   "definition": "legs/legs_armour.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "legs/armour/plate/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "legs/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "legs/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "legs/armour/plate/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "legs/armour/plate/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "legs/armour/plate/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "legs/armour/plate/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "legs/armour/plate/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "legs/Pants": {
+   "name": "Pants",
+   "slot": "legs",
+   "type_name": "legs",
+   "definition": "legs/pants/legs_pants.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "legs/pants/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "legs/pants/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "legs/pants/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "legs/pants/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "legs/pants/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "legs/pants/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "legs/pants/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "legs/pants/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "legs/Pantaloons": {
+   "name": "Pantaloons",
+   "slot": "legs",
+   "type_name": "legs",
+   "definition": "legs/pants/legs_pantaloons.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "legs/pantaloons/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "legs/pantaloons/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "legs/pantaloons/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "legs/pantaloons/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "legs/pantaloons/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "legs/pantaloons/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "legs/pantaloons/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "legs/pantaloons/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "legs/Hose": {
+   "name": "Hose",
+   "slot": "legs",
+   "type_name": "legs",
+   "definition": "legs/leggings/legs_hose.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "legs/hose/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "legs/hose/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "legs/hose/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "legs/hose/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "legs/hose/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "legs/hose/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "legs/hose/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "legs/hose/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "legs/Shorts": {
+   "name": "Shorts",
+   "slot": "legs",
+   "type_name": "legs",
+   "definition": "legs/shorts/legs_shorts.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "legs/shorts/shorts/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "legs/shorts/shorts/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "legs/shorts/shorts/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "legs/shorts/shorts/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "legs/shorts/shorts/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "legs/shorts/shorts/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "legs/shorts/shorts/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 20,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "legs/shorts/shorts/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hat/Barbuta": {
+   "name": "Barbuta",
+   "slot": "hat",
+   "type_name": "hat",
+   "definition": "headwear/helmets/helmets/hat_helmet_barbuta.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hat/helmet/barbuta/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hat/helmet/barbuta/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hat/helmet/barbuta/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hat/helmet/barbuta/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hat/helmet/barbuta/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hat/helmet/barbuta/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hat/helmet/barbuta/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hat/helmet/barbuta/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hat/Bascinet": {
+   "name": "Bascinet",
+   "slot": "hat",
+   "type_name": "hat",
+   "definition": "headwear/helmets/helmets/hat_helmet_bascinet.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hat/helmet/bascinet/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hat/helmet/bascinet/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hat/helmet/bascinet/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hat/helmet/bascinet/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hat/helmet/bascinet/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hat/helmet/bascinet/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hat/helmet/bascinet/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hat/helmet/bascinet/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hat/Greathelm": {
+   "name": "Greathelm",
+   "slot": "hat",
+   "type_name": "hat",
+   "definition": "headwear/helmets/helmets/hat_helmet_greathelm.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hat/helmet/greathelm/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hat/helmet/greathelm/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hat/helmet/greathelm/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hat/helmet/greathelm/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hat/helmet/greathelm/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hat/helmet/greathelm/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hat/helmet/greathelm/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hat/helmet/greathelm/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hat/Kettle helm": {
+   "name": "Kettle helm",
+   "slot": "hat",
+   "type_name": "hat",
+   "definition": "headwear/helmets/helmets/hat_helmet_kettle.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hat/helmet/kettle/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hat/helmet/kettle/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hat/helmet/kettle/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hat/helmet/kettle/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hat/helmet/kettle/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hat/helmet/kettle/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hat/helmet/kettle/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 135,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hat/helmet/kettle/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "hat/Spangenhelm": {
+   "name": "Spangenhelm",
+   "slot": "hat",
+   "type_name": "hat",
+   "definition": "headwear/helmets/helmets/hat_helmet_spangenhelm.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "hat/helmet/spangenhelm/adult/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "hat/helmet/spangenhelm/adult/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "hat/helmet/spangenhelm/adult/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "hat/helmet/spangenhelm/adult/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "hat/helmet/spangenhelm/adult/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "hat/helmet/spangenhelm/adult/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "hat/helmet/spangenhelm/adult/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 130,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "hat/helmet/spangenhelm/adult/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "weapon/Arming Sword": {
+   "name": "Arming Sword",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_arming.json",
+   "variant": "iron",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/arming/universal/fg/idle/iron.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/arming/universal/fg/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/arming/universal/fg/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/arming/universal/fg/hurt/iron.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/arming/universal/bg/idle/iron.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/arming/universal/bg/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/arming/universal/bg/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/sword/arming/universal/bg/hurt/iron.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/arming/attack_slash/bg/iron.png",
+     "frame": 128,
+     "cols": 6,
+     "rows": 4,
+     "width": 768,
+     "height": 512
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/arming/attack_slash/fg/iron.png",
+     "frame": 128,
+     "cols": 6,
+     "rows": 4,
+     "width": 768,
+     "height": 512
+    }
+   ]
+  },
+  "weapon/Longsword": {
+   "name": "Longsword",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_longsword.json",
+   "variant": "longsword",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/longsword/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/longsword/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/longsword/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/longsword/hurt/longsword.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/longsword/universal_behind/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/longsword/universal_behind/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/longsword/universal_behind/walk/longsword.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/sword/longsword/universal_behind/hurt/longsword.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": -1,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/longsword/attack_slash/behind/longsword.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/longsword/attack_slash/longsword.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": -1,
+     "layer": "layer_7",
+     "animation": "attack_thrust",
+     "sheet": "weapon/sword/longsword/attack_thrust/behind/longsword.png",
+     "frame": 192,
+     "cols": 8,
+     "rows": 4,
+     "width": 1536,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_8",
+     "animation": "attack_thrust",
+     "sheet": "weapon/sword/longsword/attack_thrust/longsword.png",
+     "frame": 192,
+     "cols": 8,
+     "rows": 4,
+     "width": 1536,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Dagger": {
+   "name": "Dagger",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_dagger.json",
+   "variant": "dagger",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/dagger/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/dagger/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/dagger/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/dagger/hurt/dagger.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/dagger/slash/dagger.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "weapon/sword/dagger/thrust/dagger.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/dagger/behind/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/dagger/behind/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/dagger/behind/walk/dagger.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/dagger/behind/slash/dagger.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    }
+   ]
+  },
+  "weapon/Rapier": {
+   "name": "Rapier",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_rapier.json",
+   "variant": "rapier",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/rapier/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/rapier/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/rapier/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/rapier/hurt/rapier.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/rapier/universal_behind/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/rapier/universal_behind/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/rapier/universal_behind/walk/rapier.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/rapier/attack_slash/behind/rapier.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/rapier/attack_slash/rapier.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Saber": {
+   "name": "Saber",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_saber.json",
+   "variant": "saber",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/saber/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/saber/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/saber/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/saber/hurt/saber.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/saber/universal_behind/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/saber/universal_behind/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/saber/universal_behind/walk/saber.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/sword/saber/universal_behind/hurt/saber.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/saber/attack_slash/behind/saber.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/saber/attack_slash/saber.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Glowsword": {
+   "name": "Glowsword",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/sword/weapon_sword_glowsword.json",
+   "variant": "blue",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/sword/glowsword/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/sword/glowsword/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/sword/glowsword/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/sword/glowsword/hurt/blue.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/sword/glowsword/universal_behind/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/sword/glowsword/universal_behind/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/sword/glowsword/universal_behind/walk/blue.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/sword/glowsword/universal_behind/hurt/blue.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/glowsword/attack_slash/behind/blue.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/sword/glowsword/attack_slash/blue.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Flail": {
+   "name": "Flail",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/blunt/weapon_blunt_flail.json",
+   "variant": "flail",
+   "layers": [
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/blunt/flail/behind/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/blunt/flail/behind/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/blunt/flail/behind/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/blunt/flail/behind/hurt/flail.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/blunt/flail/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/blunt/flail/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/blunt/flail/walk/flail.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/blunt/flail/hurt/flail.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/flail/attack_slash/behind/flail.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/flail/attack_slash/flail.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Scythe": {
+   "name": "Scythe",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/polearm/weapon_polearm_scythe.json",
+   "variant": "scythe",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/polearm/scythe/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/polearm/scythe/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/polearm/scythe/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/polearm/scythe/hurt/scythe.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/polearm/scythe/universal_behind/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/polearm/scythe/universal_behind/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/polearm/scythe/universal_behind/walk/scythe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/polearm/scythe/universal_behind/hurt/scythe.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/polearm/scythe/attack_slash/behind/scythe.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/polearm/scythe/attack_slash/scythe.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Mace": {
+   "name": "Mace",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/blunt/weapon_blunt_mace.json",
+   "variant": "mace",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/blunt/mace/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/blunt/mace/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/blunt/mace/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/blunt/mace/hurt/mace.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "weapon/blunt/mace/thrust/mace.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/blunt/mace/universal_behind/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/blunt/mace/universal_behind/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/blunt/mace/universal_behind/walk/mace.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/blunt/mace/universal_behind/hurt/mace.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/mace/attack_slash/behind/mace.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/mace/attack_slash/mace.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Waraxe": {
+   "name": "Waraxe",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/blunt/weapon_blunt_waraxe.json",
+   "variant": "waraxe",
+   "layers": [
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/blunt/waraxe/behind/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/blunt/waraxe/behind/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/blunt/waraxe/behind/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/blunt/waraxe/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/blunt/waraxe/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/blunt/waraxe/walk/waraxe.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/blunt/waraxe/hurt/waraxe.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_3",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/waraxe/attack_slash/behind/waraxe.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_slash",
+     "sheet": "weapon/blunt/waraxe/attack_slash/waraxe.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Spear": {
+   "name": "Spear",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/polearm/weapon_polearm_spear.json",
+   "variant": "iron",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/polearm/spear/foreground/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/polearm/spear/foreground/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/polearm/spear/foreground/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/polearm/spear/foreground/hurt/iron.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "weapon/polearm/spear/foreground/thrust/iron.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/polearm/spear/background/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/polearm/spear/background/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/polearm/spear/background/walk/iron.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/polearm/spear/background/hurt/iron.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "weapon/polearm/spear/background/thrust/iron.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    }
+   ]
+  },
+  "weapon/Halberd": {
+   "name": "Halberd",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/polearm/weapon_polearm_halberd.json",
+   "variant": "halberd",
+   "layers": [
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/polearm/halberd/behind/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/polearm/halberd/behind/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/polearm/halberd/behind/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/polearm/halberd/behind/hurt/halberd.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/polearm/halberd/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/polearm/halberd/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/polearm/halberd/walk/halberd.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/polearm/halberd/hurt/halberd.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_3",
+     "animation": "attack_thrust",
+     "sheet": "weapon/polearm/halberd/attack_thrust/behind/halberd.png",
+     "frame": 192,
+     "cols": 8,
+     "rows": 4,
+     "width": 1536,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_4",
+     "animation": "attack_thrust",
+     "sheet": "weapon/polearm/halberd/attack_thrust/halberd.png",
+     "frame": 192,
+     "cols": 8,
+     "rows": 4,
+     "width": 1536,
+     "height": 768
+    },
+    {
+     "z": 8,
+     "layer": "layer_5",
+     "animation": "attack_slash",
+     "sheet": "weapon/polearm/halberd/attack_slash/behind/halberd.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    },
+    {
+     "z": 150,
+     "layer": "layer_6",
+     "animation": "attack_slash",
+     "sheet": "weapon/polearm/halberd/attack_slash/halberd.png",
+     "frame": 192,
+     "cols": 6,
+     "rows": 4,
+     "width": 1152,
+     "height": 768
+    }
+   ]
+  },
+  "weapon/Simple staff": {
+   "name": "Simple staff",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/magic/weapon_magic_simple.json",
+   "variant": "simple",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/magic/simple/foreground/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/magic/simple/foreground/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/magic/simple/foreground/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/magic/simple/foreground/hurt/simple.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "weapon/magic/simple/foreground/thrust/simple.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "weapon/magic/simple/foreground/spellcast/simple.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/magic/simple/background/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/magic/simple/background/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/magic/simple/background/walk/simple.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/magic/simple/background/hurt/simple.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "weapon/magic/simple/background/thrust/simple.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "weapon/magic/simple/background/spellcast/simple.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    }
+   ]
+  },
+  "weapon/Slingshot": {
+   "name": "Slingshot",
+   "slot": "weapon",
+   "type_name": "weapon",
+   "definition": "weapons/ranged/weapon_ranged_slingshot.json",
+   "variant": "slingshot",
+   "layers": [
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "weapon/ranged/slingshot/foreground/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "weapon/ranged/slingshot/foreground/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "weapon/ranged/slingshot/foreground/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "weapon/ranged/slingshot/foreground/hurt/slingshot.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 140,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "weapon/ranged/slingshot/foreground/shoot/slingshot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "weapon/ranged/slingshot/background/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "weapon/ranged/slingshot/background/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "weapon/ranged/slingshot/background/walk/slingshot.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "weapon/ranged/slingshot/background/hurt/slingshot.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 9,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "weapon/ranged/slingshot/background/shoot/slingshot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Plus shield": {
+   "name": "Plus shield",
+   "slot": "shield",
+   "type_name": "shield",
+   "definition": "weapons/shields/engrailed/shield_plus.json",
+   "variant": "plus",
+   "layers": [
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shield/plus/bg/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shield/plus/bg/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shield/plus/bg/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shield/plus/bg/hurt/plus.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shield/plus/bg/slash/plus.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shield/plus/bg/thrust/plus.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shield/plus/bg/spellcast/plus.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shield/plus/bg/shoot/plus.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "shield/plus/fg/male/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "shield/plus/fg/male/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "shield/plus/fg/male/walk/plus.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "shield/plus/fg/male/hurt/plus.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "shield/plus/fg/male/slash/plus.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "shield/plus/fg/male/thrust/plus.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "shield/plus/fg/male/spellcast/plus.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "shield/plus/fg/male/shoot/plus.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Two engrailed shield": {
+   "name": "Two engrailed shield",
+   "slot": "shield",
+   "type_name": "shield",
+   "definition": "weapons/shields/engrailed/shield_two_engrailed.json",
+   "variant": "two_engrailed",
+   "layers": [
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shield/two_engrailed/paint/bg/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shield/two_engrailed/paint/bg/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shield/two_engrailed/paint/bg/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shield/two_engrailed/paint/bg/hurt/two_engrailed.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shield/two_engrailed/paint/bg/slash/two_engrailed.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shield/two_engrailed/paint/bg/thrust/two_engrailed.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shield/two_engrailed/paint/bg/spellcast/two_engrailed.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shield/two_engrailed/paint/bg/shoot/two_engrailed.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "shield/two_engrailed/paint/fg/male/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "shield/two_engrailed/paint/fg/male/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "shield/two_engrailed/paint/fg/male/walk/two_engrailed.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "shield/two_engrailed/paint/fg/male/hurt/two_engrailed.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "shield/two_engrailed/paint/fg/male/slash/two_engrailed.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "shield/two_engrailed/paint/fg/male/thrust/two_engrailed.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "shield/two_engrailed/paint/fg/male/spellcast/two_engrailed.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "shield/two_engrailed/paint/fg/male/shoot/two_engrailed.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Spartan Shield": {
+   "name": "Spartan Shield",
+   "slot": "shield",
+   "type_name": "shield",
+   "definition": "weapons/shields/shield_spartan.json",
+   "variant": "spartan",
+   "layers": [
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shield/spartan/bg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shield/spartan/bg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shield/spartan/bg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shield/spartan/bg/hurt/spartan.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shield/spartan/bg/slash/spartan.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shield/spartan/bg/thrust/spartan.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shield/spartan/bg/spellcast/spartan.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shield/spartan/bg/shoot/spartan.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "shield/spartan/fg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "shield/spartan/fg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "shield/spartan/fg/walk/spartan.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "shield/spartan/fg/hurt/spartan.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "shield/spartan/fg/slash/spartan.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "shield/spartan/fg/thrust/spartan.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "shield/spartan/fg/spellcast/spartan.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "shield/spartan/fg/shoot/spartan.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Scutum shield": {
+   "name": "Scutum shield",
+   "slot": "shield",
+   "type_name": "shield",
+   "definition": "weapons/shields/scutum/shield_scutum.json",
+   "variant": "scutum",
+   "layers": [
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shield/scutum/paint/bg/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shield/scutum/paint/bg/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shield/scutum/paint/bg/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shield/scutum/paint/bg/hurt/scutum.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shield/scutum/paint/bg/slash/scutum.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shield/scutum/paint/bg/thrust/scutum.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shield/scutum/paint/bg/spellcast/scutum.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "shield/scutum/paint/fg/male/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "shield/scutum/paint/fg/male/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "shield/scutum/paint/fg/male/walk/scutum.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "shield/scutum/paint/fg/male/hurt/scutum.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "shield/scutum/paint/fg/male/slash/scutum.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "shield/scutum/paint/fg/male/thrust/scutum.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "shield/scutum/paint/fg/male/spellcast/scutum.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "shield/scutum/paint/fg/male/shoot/scutum.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Crusader shield": {
+   "name": "Crusader shield",
+   "slot": "shield",
+   "type_name": "shield",
+   "definition": "weapons/shields/engrailed/shield_crusader.json",
+   "variant": "crusader",
+   "layers": [
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shield/crusader/bg/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shield/crusader/bg/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shield/crusader/bg/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shield/crusader/bg/hurt/crusader.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shield/crusader/bg/slash/crusader.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shield/crusader/bg/thrust/crusader.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shield/crusader/bg/spellcast/crusader.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 2,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shield/crusader/bg/shoot/crusader.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "idle",
+     "sheet": "shield/crusader/fg/male/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "walk",
+     "sheet": "shield/crusader/fg/male/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "dash",
+     "sheet": "shield/crusader/fg/male/walk/crusader.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "death",
+     "sheet": "shield/crusader/fg/male/hurt/crusader.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_slash",
+     "sheet": "shield/crusader/fg/male/slash/crusader.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_thrust",
+     "sheet": "shield/crusader/fg/male/thrust/crusader.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_cast",
+     "sheet": "shield/crusader/fg/male/spellcast/crusader.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 110,
+     "layer": "layer_2",
+     "animation": "attack_shoot",
+     "sheet": "shield/crusader/fg/male/shoot/crusader.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shield/Quiver": {
+   "name": "Quiver",
+   "slot": "shield",
+   "type_name": "quiver",
+   "definition": "torso/backpack/quiver.json",
+   "variant": "quiver",
+   "layers": [
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "quiver/walk/quiver.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "quiver/walk/quiver.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "quiver/walk/quiver.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "quiver/hurt/quiver.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "quiver/slash/quiver.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "quiver/thrust/quiver.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "quiver/spellcast/quiver.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 8,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "quiver/shoot/quiver.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "feet/Basic Shoes": {
+   "name": "Basic Shoes",
+   "slot": "feet",
+   "type_name": "shoes",
+   "definition": "feet/shoes/feet_shoes_basic.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "feet/shoes/basic/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "feet/shoes/basic/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "feet/shoes/basic/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "feet/shoes/basic/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "feet/shoes/basic/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "feet/shoes/basic/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "feet/shoes/basic/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "feet/shoes/basic/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "feet/Folded Rim Boots": {
+   "name": "Folded Rim Boots",
+   "slot": "feet",
+   "type_name": "shoes",
+   "definition": "feet/boots/feet_boots_fold.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "feet/boots/fold/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "feet/boots/fold/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "feet/boots/fold/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "feet/boots/fold/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "feet/boots/fold/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "feet/boots/fold/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "feet/boots/fold/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "feet/boots/fold/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "feet/Revised Boots": {
+   "name": "Revised Boots",
+   "slot": "feet",
+   "type_name": "shoes",
+   "definition": "feet/boots/feet_boots_revised.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "feet/boots/revised/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "feet/boots/revised/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "feet/boots/revised/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "feet/boots/revised/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "feet/boots/revised/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "feet/boots/revised/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "feet/boots/revised/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "feet/boots/revised/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "feet/Rimmed Boots": {
+   "name": "Rimmed Boots",
+   "slot": "feet",
+   "type_name": "shoes",
+   "definition": "feet/boots/feet_boots_rim.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "feet/boots/rimmed/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "feet/boots/rimmed/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "feet/boots/rimmed/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "feet/boots/rimmed/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "feet/boots/rimmed/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "feet/boots/rimmed/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "feet/boots/rimmed/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 25,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "feet/boots/rimmed/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "feet/Armour": {
+   "name": "Armour",
+   "slot": "feet",
+   "type_name": "shoes",
+   "definition": "feet/feet_armour.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "feet/armour/plate/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "feet/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "feet/armour/plate/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "feet/armour/plate/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "feet/armour/plate/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "feet/armour/plate/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "feet/armour/plate/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 15,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "feet/armour/plate/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "arms/Armour": {
+   "name": "Armour",
+   "slot": "arms",
+   "type_name": "arms",
+   "definition": "arms/arms_armour.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "arms/armour/plate/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "arms/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "arms/armour/plate/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "arms/armour/plate/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "arms/armour/plate/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "arms/armour/plate/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "arms/armour/plate/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "arms/armour/plate/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "gloves/Gloves": {
+   "name": "Gloves",
+   "slot": "gloves",
+   "type_name": "gloves",
+   "definition": "arms/arms_gloves.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "arms/hands/gloves/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "arms/hands/gloves/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "arms/hands/gloves/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "arms/hands/gloves/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "arms/hands/gloves/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "arms/hands/gloves/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "arms/hands/gloves/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "arms/hands/gloves/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shoulders/Epaulets": {
+   "name": "Epaulets",
+   "slot": "shoulders",
+   "type_name": "shoulders",
+   "definition": "arms/shoulders/shoulders_epaulets.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shoulders/epaulets/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shoulders/epaulets/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shoulders/epaulets/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shoulders/epaulets/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shoulders/epaulets/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shoulders/epaulets/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shoulders/epaulets/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shoulders/epaulets/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shoulders/Pauldrons": {
+   "name": "Pauldrons",
+   "slot": "shoulders",
+   "type_name": "shoulders",
+   "definition": "arms/shoulders/shoulders_pauldrons.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shoulders/pauldrons/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shoulders/pauldrons/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shoulders/pauldrons/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shoulders/pauldrons/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shoulders/pauldrons/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shoulders/pauldrons/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shoulders/pauldrons/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shoulders/pauldrons/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shoulders/Mantal": {
+   "name": "Mantal",
+   "slot": "shoulders",
+   "type_name": "shoulders",
+   "definition": "arms/shoulders/shoulders_mantal.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shoulders/mantal/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shoulders/mantal/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shoulders/mantal/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shoulders/mantal/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shoulders/mantal/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shoulders/mantal/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shoulders/mantal/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 75,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shoulders/mantal/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "shoulders/Legion": {
+   "name": "Legion",
+   "slot": "shoulders",
+   "type_name": "shoulders",
+   "definition": "arms/shoulders/shoulders_legion.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "shoulders/legion/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "shoulders/legion/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "shoulders/legion/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256,
+     "borrowed_from": "walk"
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "shoulders/legion/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "shoulders/legion/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "shoulders/legion/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "shoulders/legion/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 60,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "shoulders/legion/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "wrists/Bracers": {
+   "name": "Bracers",
+   "slot": "wrists",
+   "type_name": "bracers",
+   "definition": "arms/wrists/arms_bracers.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "arms/bracers/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "arms/bracers/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "arms/bracers/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "arms/bracers/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "arms/bracers/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "arms/bracers/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "arms/bracers/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "arms/bracers/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "wrists/Cuffs": {
+   "name": "Cuffs",
+   "slot": "wrists",
+   "type_name": "wrists",
+   "definition": "arms/wrists/wrists_cuffs.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "arms/wrists/cuffs/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "arms/wrists/cuffs/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "arms/wrists/cuffs/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "arms/wrists/cuffs/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "arms/wrists/cuffs/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "arms/wrists/cuffs/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "arms/wrists/cuffs/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "arms/wrists/cuffs/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  },
+  "wrists/Lace Cuffs": {
+   "name": "Lace Cuffs",
+   "slot": "wrists",
+   "type_name": "wrists",
+   "definition": "arms/wrists/wrists_cuffs_lace.json",
+   "variant": null,
+   "layers": [
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "idle",
+     "sheet": "arms/wrists/lace/male/idle.png",
+     "frame": 64,
+     "cols": 2,
+     "rows": 4,
+     "width": 128,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "walk",
+     "sheet": "arms/wrists/lace/male/walk.png",
+     "frame": 64,
+     "cols": 9,
+     "rows": 4,
+     "width": 576,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "dash",
+     "sheet": "arms/wrists/lace/male/run.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "death",
+     "sheet": "arms/wrists/lace/male/hurt.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 1,
+     "width": 384,
+     "height": 64
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_slash",
+     "sheet": "arms/wrists/lace/male/slash.png",
+     "frame": 64,
+     "cols": 6,
+     "rows": 4,
+     "width": 384,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_thrust",
+     "sheet": "arms/wrists/lace/male/thrust.png",
+     "frame": 64,
+     "cols": 8,
+     "rows": 4,
+     "width": 512,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_cast",
+     "sheet": "arms/wrists/lace/male/spellcast.png",
+     "frame": 64,
+     "cols": 7,
+     "rows": 4,
+     "width": 448,
+     "height": 256
+    },
+    {
+     "z": 70,
+     "layer": "layer_1",
+     "animation": "attack_shoot",
+     "sheet": "arms/wrists/lace/male/shoot.png",
+     "frame": 64,
+     "cols": 13,
+     "rows": 4,
+     "width": 832,
+     "height": 256
+    }
+   ]
+  }
+ }
+}

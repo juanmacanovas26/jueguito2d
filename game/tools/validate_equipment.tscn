@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://544t5lu2avgq"]
+
+[ext_resource type="Script" path="res://tools/validate_equipment.gd" id="1_eq"]
+
+[node name="ValidateEquipment" type="Node"]
+script = ExtResource("1_eq")

@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://lootdrop001"]
+
+[ext_resource type="Script" path="res://scripts/world/loot_drop.gd" id="1_loot"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 10.0
+
+[node name="LootDrop" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+script = ExtResource("1_loot")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Body" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(0.4, 0.85, 0.45, 1)
+polygon = PackedVector2Array(0, -6, 5, -2, 5, 4, 0, 7, -5, 4, -5, -2)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -40.0
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = -6.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.95, 0.95, 0.9, 0.9)
+text = "item"
+horizontal_alignment = 1

@@ -1,0 +1,22 @@
+# Godot 4+ editor cache/import output — regenerated locally, never authored by hand.
+.godot/
+game/.godot/
+
+# Godot export artifacts
+export.cfg
+export_credentials.cfg
+*.translation
+
+# Node (in case the lpc/ generator's deps ever get installed locally)
+node_modules/
+
+# Local Claude Code session state
+.claude/
+
+# OS cruft
+Thumbs.db
+.DS_Store
+
+# Editor/session scratch
+*.tmp
+*.log

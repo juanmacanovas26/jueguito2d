@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="CharacterVisualSet" load_steps=11 format=3 uid="uid://cvs0lpcmale"]
+
+[ext_resource type="Script" path="res://scripts/visual/character_visual_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/visual/character_animation.gd" id="2_anim"]
+
+[sub_resource type="Resource" id="Anim_idle"]
+script = ExtResource("2_anim")
+id = &"idle"
+frame_count = 2
+mirror_west = false
+fps = 3.0
+finish = 0
+
+[sub_resource type="Resource" id="Anim_walk"]
+script = ExtResource("2_anim")
+id = &"walk"
+frame_count = 9
+mirror_west = false
+fps = 11.0
+finish = 0
+
+[sub_resource type="Resource" id="Anim_dash"]
+script = ExtResource("2_anim")
+id = &"dash"
+frame_count = 8
+mirror_west = false
+fps = 18.0
+finish = 2
+
+[sub_resource type="Resource" id="Anim_death"]
+script = ExtResource("2_anim")
+id = &"death"
+frame_count = 6
+mirror_west = false
+fps = 8.0
+finish = 1
+
+[sub_resource type="Resource" id="Anim_attack_slash"]
+script = ExtResource("2_anim")
+id = &"attack_slash"
+frame_count = 6
+mirror_west = false
+fps = 16.0
+finish = 2
+
+[sub_resource type="Resource" id="Anim_attack_thrust"]
+script = ExtResource("2_anim")
+id = &"attack_thrust"
+frame_count = 8
+mirror_west = false
+fps = 18.0
+finish = 2
+
+[sub_resource type="Resource" id="Anim_attack_cast"]
+script = ExtResource("2_anim")
+id = &"attack_cast"
+frame_count = 7
+mirror_west = false
+fps = 14.0
+finish = 2
+
+[sub_resource type="Resource" id="Anim_attack_shoot"]
+script = ExtResource("2_anim")
+id = &"attack_shoot"
+frame_count = 13
+mirror_west = false
+fps = 22.0
+finish = 2
+
+[resource]
+script = ExtResource("1_set")
+frame_size = Vector2i(64, 64)
+mirror_east_for_west = false
+animations = {
+&"attack_cast": SubResource("Anim_attack_cast"),
+&"attack_shoot": SubResource("Anim_attack_shoot"),
+&"attack_slash": SubResource("Anim_attack_slash"),
+&"attack_thrust": SubResource("Anim_attack_thrust"),
+&"dash": SubResource("Anim_dash"),
+&"death": SubResource("Anim_death"),
+&"idle": SubResource("Anim_idle"),
+&"walk": SubResource("Anim_walk")
+}
+fallback_animation = &"idle"

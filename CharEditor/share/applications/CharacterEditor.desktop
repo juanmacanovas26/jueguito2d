@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Character Editor
+Exec=CharacterEditor
+Icon=CharacterEditor
+Categories=Graphics;
+Terminal=false
+StartupNotify=true

@@ -1,0 +1,20 @@
+Copyright (c) 2026 Onome Oyibo
+
+Permission is granted to use this software to create assets for personal and commercial projects.
+
+You may not:
+- redistribute this software
+- sell or sublicense this software
+- modify and distribute this software
+
+The above restrictions apply only to the original parts of this software.
+Third-party components are licensed under their respective licenses as
+listed in THIRD_PARTY_LICENSES.txt.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY...
+
+This is an early (alpha) release and may contain bugs or incomplete features.

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cnj8cake8wxo7"]
+
+[ext_resource type="Script" path="res://tools/aim_screenshot.gd" id="1_aim"]
+
+[node name="AimScreenshot" type="Node2D"]
+script = ExtResource("1_aim")
