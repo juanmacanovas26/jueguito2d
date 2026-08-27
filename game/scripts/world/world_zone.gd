@@ -1,8 +1,10 @@
 extends Node2D
-## Simple hand-built zone: floor tilemap, world walls, obstacles, mob spawns, player.
+## Zone: floor tilemap, world walls, and whatever a "Markers" child node
+## contains (mob spawns / gatherables / POIs, authored via MobSpawnMarker /
+## ResourceNodeMarker / POIMarker and turned into live entities by
+## ZoneBuilder — see docs/GDD.md's mapping-tool note under Fase 2). A zone
+## with no Markers node just gets floor + walls + player, no content.
 
-const MobScene := preload("res://scenes/enemy/chase_mob.tscn")
-const ResourceNodeScene := preload("res://scenes/world/resource_node.tscn")
 const TILE_PX := 32
 
 @export var zone_name: String = "Praderas del Alba"
@@ -15,36 +17,22 @@ const TILE_PX := 32
 @export_range(0.0, 1.0, 0.01) var dirt_coverage: float = 0.18
 ## Size of the dirt patches. Lower = fewer, bigger blobs.
 @export_range(0.01, 0.2, 0.005) var dirt_patch_scale: float = 0.05
-@export var rock_positions: Array[Vector2] = [
-	Vector2(-400, -300), Vector2(-380, -260), Vector2(300, 320),
-	Vector2(600, -200), Vector2(-700, 400), Vector2(500, 500),
-	Vector2(-200, 600), Vector2(800, 300), Vector2(-900, -400),
-	Vector2(900, -500), Vector2(-600, -700), Vector2(400, -600),
-]
-@export var tree_positions: Array[Vector2] = [
-	Vector2(-200, -150), Vector2(150, 200), Vector2(-500, 150),
-	Vector2(700, 80), Vector2(-100, 400), Vector2(350, -350),
-	Vector2(-800, -150), Vector2(650, -450), Vector2(-450, 500),
-	Vector2(150, -700), Vector2(1000, 150), Vector2(-1000, 200),
-]
-@export var vein_positions: Array[Vector2] = [
-	Vector2(-60, -40), Vector2(420, 240), Vector2(-620, -240),
-	Vector2(240, -500),
-]
-## { pos, max_hp, speed, damage, xp, gold_max, [ranged, body_color, projectile_damage, projectile_speed, attack_range] }
-@export var mob_spawns: Array[Dictionary] = [
-	{"pos": Vector2(-250, 250), "max_hp": 80.0, "speed": 95.0, "damage": 12.0, "xp": 18, "gold_max": 4},
-	{"pos": Vector2(0, -300), "max_hp": 80.0, "speed": 95.0, "damage": 12.0, "xp": 18, "gold_max": 4},
-	{"pos": Vector2(300, 180), "max_hp": 60.0, "speed": 110.0, "damage": 9.0, "xp": 14, "gold_max": 3},
-	{"pos": Vector2(-500, -400), "max_hp": 90.0, "speed": 90.0, "damage": 14.0, "xp": 22, "gold_max": 5},
-	{"pos": Vector2(550, 350), "max_hp": 60.0, "speed": 115.0, "damage": 9.0, "xp": 14, "gold_max": 3},
-	{"pos": Vector2(-650, 250), "max_hp": 100.0, "speed": 85.0, "damage": 16.0, "xp": 26, "gold_max": 6},
-	{"pos": Vector2(-300, 480), "max_hp": 55.0, "speed": 90.0, "damage": 8.0, "xp": 20, "gold_max": 4, "ranged": true, "body_color": Color(0.8, 0.4, 0.35), "projectile_damage": 12.0, "projectile_speed": 240.0, "attack_range": 200.0, "attack_cooldown": 1.3},
-	{"pos": Vector2(700, -300), "max_hp": 55.0, "speed": 90.0, "damage": 8.0, "xp": 20, "gold_max": 4, "ranged": true, "body_color": Color(0.8, 0.4, 0.35), "projectile_damage": 12.0, "projectile_speed": 240.0, "attack_range": 200.0, "attack_cooldown": 1.3},
-]
 
 var _grid_color := Color(1.0, 1.0, 1.0, 0.06)
 var _player: Node = null
+## POI markers found under "Markers" (vendor/bank/repair/dungeon_entrance/
+## mini_boss). Nothing reads this yet — Fase 3 wires the city hub and the
+## first dungeon up against it.
+var pois: Array[POIMarker] = []
+## marker -> the live entity ZoneBuilder spawned for it, so build mode's
+## right-click removal can free that entity too. Deliberately NOT stored as
+## marker metadata (Node.set_meta()) — metadata gets serialized whenever the
+## marker is packed by save_markers_layout(), which would embed a full copy
+## of the live node (and everything it references) into the saved .tscn.
+var _marker_spawns: Dictionary = {}
+
+
+const BuildGhostScript := preload("res://scripts/world/build_ghost.gd")
 
 
 func _ready() -> void:
@@ -53,6 +41,12 @@ func _ready() -> void:
 	_build_floor()
 	_build_world()
 	_spawn_player()
+	# A separate CanvasItem, not drawn through this node's own _draw() — see
+	# build_ghost.gd for why (this node's z_index = -5 would hide it).
+	var ghost := Node2D.new()
+	ghost.name = "BuildGhost"
+	ghost.set_script(BuildGhostScript)
+	add_child(ghost)
 
 
 func _draw() -> void:
@@ -155,22 +149,33 @@ func _build_world() -> void:
 	_add_wall(walls, Vector2(-hw - thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
 	_add_wall(walls, Vector2(hw + thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
 
-	var obstacles := Node2D.new()
-	obstacles.name = "Obstacles"
-	add_child(obstacles)
+	_load_markers_override()
+	var markers := get_node_or_null("Markers")
+	if markers:
+		pois = ZoneBuilder.build(markers, self, _marker_spawns)
 
-	for p in tree_positions:
-		_add_resource(obstacles, p, "tree", "wood_log", 1, 3, 5, 40.0)
-	for p in rock_positions:
-		_add_resource(obstacles, p, "rock", "stone_chunk", 1, 2, 5, 50.0)
-	for p in vein_positions:
-		_add_vein(obstacles, p)
 
-	var mobs := Node2D.new()
-	mobs.name = "Mobs"
-	add_child(mobs)
-	for cfg in mob_spawns:
-		_add_mob(mobs, cfg)
+## Path a build-mode save writes to (see save_markers_layout()) — next to the
+## zone scene itself, e.g. pradera.tscn -> pradera_markers.tscn.
+func _markers_override_path() -> String:
+	return scene_file_path.get_basename() + "_markers.tscn"
+
+
+## If a previous build-mode session saved a layout for this zone, it replaces
+## whatever "Markers" node is baked into the .tscn — the save file is always
+## the latest authored state once one exists.
+func _load_markers_override() -> void:
+	var path := _markers_override_path()
+	if not ResourceLoader.exists(path):
+		return
+	var existing := get_node_or_null("Markers")
+	if existing:
+		remove_child(existing)
+		existing.queue_free()
+	var packed: PackedScene = load(path)
+	var instanced := packed.instantiate()
+	instanced.name = "Markers"
+	add_child(instanced)
 
 
 func _add_wall(parent: Node, pos: Vector2, size: Vector2) -> void:
@@ -197,59 +202,6 @@ func _add_wall(parent: Node, pos: Vector2, size: Vector2) -> void:
 	body.add_child(vis)
 
 
-func _add_resource(parent: Node, pos: Vector2, type: String, drop_id: String, dmin: int, dmax: int, xp: int, hp: float) -> void:
-	var node = ResourceNodeScene.instantiate()
-	node.position = pos
-	node.visual_type = type
-	node.drop_id = drop_id
-	node.drop_min = dmin
-	node.drop_max = dmax
-	node.xp_reward = xp
-	node.max_hp = hp
-	parent.add_child(node)
-
-
-func _add_vein(parent: Node, pos: Vector2) -> void:
-	var node = ResourceNodeScene.instantiate()
-	node.position = pos
-	node.visual_type = "vein"
-	node.display_name = "Iron Vein"
-	node.drop_id = "iron_ore"
-	node.drop_min = 1
-	node.drop_max = 1
-	node.xp_reward = 0
-	node.max_hp = 999999.0
-	node.immortal = true
-	node.visual_radius = 24.0
-	node.collision_radius = 20.0
-	node.hit_cooldown = 0.7
-	parent.add_child(node)
-
-
-func _add_mob(parent: Node, cfg: Dictionary) -> void:
-	var mob = MobScene.instantiate()
-	mob.position = cfg.get("pos", Vector2.ZERO)
-	parent.add_child(mob)
-	_set_mob_prop(mob, cfg, "max_hp")
-	_set_mob_prop(mob, cfg, "speed", "move_speed")
-	_set_mob_prop(mob, cfg, "damage", "attack_damage")
-	_set_mob_prop(mob, cfg, "xp", "xp_reward")
-	_set_mob_prop(mob, cfg, "gold_max")
-	_set_mob_prop(mob, cfg, "ranged")
-	_set_mob_prop(mob, cfg, "body_color")
-	_set_mob_prop(mob, cfg, "projectile_damage")
-	_set_mob_prop(mob, cfg, "projectile_speed")
-	_set_mob_prop(mob, cfg, "attack_range")
-	_set_mob_prop(mob, cfg, "attack_cooldown")
-
-
-func _set_mob_prop(mob: Node, cfg: Dictionary, cfg_key: String, prop_key: String = "") -> void:
-	if prop_key == "":
-		prop_key = cfg_key
-	if cfg.has(cfg_key):
-		mob.set(prop_key, cfg[cfg_key])
-
-
 func _spawn_player() -> void:
 	_player = Game.get_local_player()
 	if _player == null:
@@ -259,11 +211,174 @@ func _spawn_player() -> void:
 	if _player.has_node("Health"):
 		var h: Health = _player.get_node("Health")
 		h.died.connect(_on_player_died)
+	if SaveSystem.pending_load:
+		SaveSystem.pending_load = false
+		var data := SaveSystem.load_data()
+		if not data.is_empty() and _player.has_method("apply_save_data"):
+			_player.apply_save_data(data)
+
+
+## Death has to cost something even offline (see docs/GDD.md's "muerte:
+## definir drop de gold/items" rule) — this is the single-player-scale version
+## of that: a gold cut instead of the full open-world item drop.
+const DEATH_GOLD_PENALTY_PCT := 0.1
 
 
 func _on_player_died() -> void:
 	if _player == null:
 		return
+	if "inventory" in _player and _player.inventory:
+		var inv: Inventory = _player.inventory
+		var penalty := int(round(inv.gold * DEATH_GOLD_PENALTY_PCT))
+		if penalty > 0:
+			inv.gold -= penalty
+			inv.changed.emit()
+			Game.toast("Moriste — perdiste %d de oro" % penalty)
 	await get_tree().create_timer(2.0).timeout
 	if _player and is_instance_valid(_player):
 		_player.call("respawn", player_spawn)
+
+
+# --------------------------------------------------------------- build mode
+# Runtime map-building overlay: hud.gd's BuildPanel toggles Game.build_mode
+# and picks Game.build_selected_kind; this is where clicks turn into
+# markers. Kept zone-generic (not pradera-specific) so every future zone
+# (Fase 3's 2nd zone, dungeon, city) gets it for free — and, per the design
+# goal behind Fase 2, so an eventual online building mode (player housing)
+# can grow out of the same place->save->reload loop instead of a new system.
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not Game.build_mode or not (event is InputEventMouseButton) or not event.pressed:
+		return
+	var world_pos := get_global_mouse_position()
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		_place_marker(Game.build_selected_kind, world_pos)
+	elif event.button_index == MOUSE_BUTTON_RIGHT:
+		_remove_nearest_marker(world_pos)
+
+
+func _place_marker(kind: String, world_pos: Vector2) -> void:
+	if not is_placement_valid(world_pos):
+		return
+	var marker := _instantiate_marker(kind)
+	if marker == null:
+		return
+	var markers := get_node_or_null("Markers")
+	if markers == null:
+		markers = Node2D.new()
+		markers.name = "Markers"
+		add_child(markers)
+	markers.add_child(marker)
+	marker.owner = markers
+	marker.global_position = world_pos
+	marker.rotation = Game.build_rotation
+	var spawned := ZoneBuilder.build_one(marker, self)
+	if spawned:
+		_marker_spawns[marker] = spawned
+
+
+## False when world_pos is outside the zone's bounds or too close to an
+## existing marker — the same signal a Rust/Valheim-style building ghost
+## turning red gives before you commit to a spot. Public (no leading
+## underscore) so build_ghost.gd can query it every frame for the preview
+## tint, the same way it queries Game.build_selected_kind.
+const MIN_MARKER_SPACING := 20.0
+
+
+func is_placement_valid(world_pos: Vector2) -> bool:
+	var hw := world_size.x * 0.5
+	var hh := world_size.y * 0.5
+	if absf(world_pos.x) > hw or absf(world_pos.y) > hh:
+		return false
+	var markers := get_node_or_null("Markers")
+	if markers:
+		for child in markers.get_children():
+			if child is Node2D and (child as Node2D).global_position.distance_to(world_pos) < MIN_MARKER_SPACING:
+				return false
+	return true
+
+
+func _instantiate_marker(kind: String) -> Node2D:
+	match kind:
+		"mob":
+			return MobSpawnMarker.new()
+		"tree":
+			return ResourceNodeMarker.new()
+		"rock":
+			var m := ResourceNodeMarker.new()
+			m.kind = ResourceNodeMarker.Kind.ROCK
+			m.drop_id = "stone_chunk"
+			m.drop_max = 2
+			m.max_hp = 50.0
+			return m
+		"vein":
+			var m := ResourceNodeMarker.new()
+			m.kind = ResourceNodeMarker.Kind.VEIN
+			m.display_name = "Iron Vein"
+			m.drop_id = "iron_ore"
+			m.drop_max = 1
+			m.skill_gain = 0
+			m.max_hp = 999999.0
+			m.immortal = true
+			return m
+		"vendor", "bank", "repair", "dungeon_entrance", "mini_boss":
+			var p := POIMarker.new()
+			p.kind = POIMarker.Kind[kind.to_upper()] as POIMarker.Kind
+			return p
+		_:
+			return null
+
+
+## Deletes the closest marker within reach (and the live entity it spawned,
+## if any) — the undo button for _place_marker().
+func _remove_nearest_marker(world_pos: Vector2, max_dist: float = 24.0) -> void:
+	var markers := get_node_or_null("Markers")
+	if markers == null:
+		return
+	var closest: Node2D = null
+	var closest_dist := max_dist
+	for child in markers.get_children():
+		if not (child is Node2D):
+			continue
+		var d: float = (child as Node2D).global_position.distance_to(world_pos)
+		if d <= closest_dist:
+			closest = child
+			closest_dist = d
+	if closest == null:
+		return
+	if _marker_spawns.has(closest):
+		var spawned: Node = _marker_spawns[closest]
+		if is_instance_valid(spawned):
+			spawned.queue_free()
+		_marker_spawns.erase(closest)
+	markers.remove_child(closest)
+	closest.queue_free()
+
+
+## Packs the current "Markers" subtree (original content + anything placed
+## this session) into its own .tscn next to the zone scene, so the next time
+## this zone loads, _load_markers_override() picks it up automatically — no
+## editor round-trip needed. In an exported build res:// is read-only, so
+## this only works run from the editor; that is fine for now since this is a
+## dev-authoring tool. The future online building mode would save player
+## layouts to user:// instead — same place->pack->save shape, different
+## destination because that content belongs to a player, not the project.
+func save_markers_layout() -> bool:
+	var markers := get_node_or_null("Markers")
+	if markers == null:
+		return false
+	_reown_recursive(markers, markers)
+	var packed := PackedScene.new()
+	if packed.pack(markers) != OK:
+		return false
+	return ResourceSaver.save(packed, _markers_override_path()) == OK
+
+
+## pack() only includes descendants whose `owner` is the node being packed.
+## Markers loaded from the .tscn are owned by the zone root, and markers
+## placed at runtime have no owner at all — both need re-owning before a save.
+func _reown_recursive(node: Node, new_owner: Node) -> void:
+	for child in node.get_children():
+		child.owner = new_owner
+		_reown_recursive(child, new_owner)

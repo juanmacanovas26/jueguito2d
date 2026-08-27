@@ -1,9 +1,10 @@
 extends Control
 class_name SkillBar
-## Renders whatever SkillDB.loadout_for(kit) currently returns — never a fixed
-## count, since builds are meant to grow the loadout over time (see the plan
-## for the future "mutation" system). Self-sufficient like InvPanel/CraftPanel:
-## hud.gd does not need to know this exists.
+## Renders whatever the player's known_abilities currently holds — never a
+## fixed count, since the open skill network (docs/GDD.md) means a character
+## can learn abilities beyond their starting kit's defaults over time.
+## Self-sufficient like InvPanel/CraftPanel: hud.gd does not need to know
+## this exists.
 
 const SLOT_SCENE := preload("res://scenes/ui/skill_slot.tscn")
 const KEY_FALLBACK := {0: "Z", 1: "X", 2: "C", 3: "V"}
@@ -20,7 +21,7 @@ func _process(_delta: float) -> void:
 	visible = p != null
 	if p == null:
 		return
-	var loadout: Array = SkillDB.loadout_for(str(p._kit_name()).to_lower())
+	var loadout: Array = p.known_abilities
 	if loadout != _current_loadout:
 		_rebuild(loadout)
 	for slot in _slots:

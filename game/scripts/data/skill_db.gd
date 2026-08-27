@@ -41,7 +41,11 @@ const TARGETING_NAMES := {
 	"skillshot": Targeting.SKILLSHOT,
 }
 
-## kit -> the skills it can cast, in slot order (skill_1 .. skill_4).
+## kit -> the abilities a FRESH character of that kit starts knowing, in slot
+## order (skill_1 .. skill_4). Not an enforced ceiling: player.gd's
+## known_abilities is the actual per-character source of truth once the game
+## is running (the open skill network, docs/GDD.md) — this table only seeds
+## it on spawn/kit switch (Player._ready()/_switch_kit_live()).
 const LOADOUTS := {
 	"warrior": ["shoulder_bash", "whirlwind"],
 	"mage": ["frost_nova", "arcane_bolt", "smite"],
@@ -240,3 +244,14 @@ static func duration_of(id: String) -> float:
 
 static func loadout_for(kit_name: String) -> Array:
 	return LOADOUTS.get(kit_name, [])
+
+
+## Which kit's default loadout an ability originally belongs to, "" if none
+## (used to weight discovery rolls toward the player's current build — see
+## Player._discovery_candidates()). An ability could in principle be a
+## default for more than one kit; this returns the first match.
+static func kit_of(skill_id: String) -> String:
+	for kit_name in LOADOUTS:
+		if LOADOUTS[kit_name].has(skill_id):
+			return str(kit_name)
+	return ""

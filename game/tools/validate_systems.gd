@@ -1,7 +1,8 @@
 extends Node
 ## Headless coverage of the gameplay systems that have to keep working while
 ## the art gets replaced: static data integrity, the damage pipeline, the
-## inventory, crafting and progression.
+## inventory and crafting. Progression-by-use (Skills) has its own suite,
+## tools/validate_skills.gd.
 ##
 ##   Godot_v4.7.1-stable_win64_console.exe --headless --path game \
 ##       res://tools/validate_systems.tscn
@@ -27,11 +28,12 @@ func _run() -> void:
 	await _check_damage_pipeline()
 	await _check_inventory()
 	await _check_crafting()
-	await _check_progression()
 	await _check_basic_attacks_never_interrupt()
 	await _check_archer_needs_bow()
 	await _check_skills()
 	await _check_skill_aiming()
+	await _check_open_skill_network()
+	await _check_discovery()
 	await _check_architecture_contract()
 
 	_check_ran_enough()
@@ -245,53 +247,6 @@ func _check_crafting() -> void:
 				"'%s' was NOT consumed by the failed craft" % str(item_id))
 
 	_expect(not p.try_craft("does_not_exist"), "an unknown recipe fails safely")
-	p.free()
-
-
-func _check_progression() -> void:
-	print("\n[5] Progression")
-	var p = await _spawn()
-	var pr = p.progress
-	pr.level = 1
-	pr.xp = 0
-
-	var need: int = pr.xp_to_next_level()
-	_expect(need > 0, "level 1 needs %d xp" % need)
-
-	pr.add_xp(need - 1)
-	_expect(pr.level == 1, "one xp short does not level up")
-
-	var levels := [0]
-	pr.leveled_up.connect(func(_lv): levels[0] += 1)
-	pr.add_xp(1)
-	_expect(pr.level == 2 and levels[0] == 1, "reaching the threshold levels up once")
-
-	# A huge lump must grant every level it is worth, not just one.
-	levels[0] = 0
-	var before: int = pr.level
-	pr.add_xp(100000)
-	_expect(pr.level > before + 1, "a big xp lump grants multiple levels (%d -> %d)" % [before, pr.level])
-	_expect(levels[0] == pr.level - before, "and emits one signal per level gained")
-	_expect(pr.xp >= 0 and pr.xp < pr.xp_to_next_level(), "leftover xp stays below the next threshold")
-
-	_expect(pr.xp_to_next_level(10) > pr.xp_to_next_level(1), "the curve grows with level")
-
-	pr.add_xp(0)
-	pr.add_xp(-50)
-	_expect(pr.xp >= 0, "zero and negative xp are ignored")
-
-	# Levelling raises max HP (player._apply_level_stats), and re-applying the
-	# stats for the SAME level must be idempotent — it runs on every level-up.
-	var hp_same: float = p.health.max_hp
-	p._apply_level_stats()
-	_expect(is_equal_approx(p.health.max_hp, hp_same),
-		"re-applying stats at the same level changes nothing (%.0f)" % p.health.max_hp)
-
-	pr.level += 1
-	p._apply_level_stats()
-	_expect(p.health.max_hp > hp_same,
-		"gaining a level raises max HP (%.0f -> %.0f)" % [hp_same, p.health.max_hp])
-	_expect(p.health.hp <= p.health.max_hp, "current hp never exceeds max")
 	p.free()
 
 
@@ -756,6 +711,11 @@ func _check_skill_aiming() -> void:
 	aimer.cancel()
 	p.kit = p.Kit.MAGE
 	p._apply_kit_defaults()
+	# known_abilities is the actual input->skill source now (see
+	# player.gd's _handle_skill_input); it doesn't follow `kit` on its own
+	# outside of _switch_kit_live(), which this direct poke bypasses on
+	# purpose (same as everywhere else in this test).
+	p.known_abilities.assign(SkillDB.loadout_for("mage"))
 	# frost_nova was cast further up; without this it is still on cooldown and
 	# the key press would be refused for a reason that has nothing to do with
 	# what this section is testing.
@@ -811,6 +771,7 @@ func _check_skill_aiming() -> void:
 	# Both are decisions, so both get a preview.
 	p.kit = p.Kit.WARRIOR
 	p._apply_kit_defaults()
+	p.known_abilities.assign(SkillDB.loadout_for("warrior"))
 	p.state = p.State.FREE
 	p.stamina = p.MAX_STAMINA
 	caster._cooldowns.clear()
@@ -863,6 +824,143 @@ func _check_skill_aiming() -> void:
 	_expect(ended.distance_to(bash_target) < start.distance_to(bash_target),
 		"  and moved you toward where the preview pointed")
 	p.free()
+
+
+## Open skill network (docs/GDD.md): abilities are learned per-character
+## (Player.known_abilities/learn_ability()), not fixed by kit. Q/E/F is a
+## live testing toggle for the current prototype stage (not the final game's
+## one-time archetype pick), so switching kit resets known_abilities and
+## progression back to that kit's defaults — see _switch_kit_live().
+func _check_open_skill_network() -> void:
+	_section("Open skill network: learn_ability() and kit-switch reset")
+	var p = await _spawn()
+
+	_expect(p.known_abilities == SkillDB.loadout_for("warrior"),
+		"a fresh WARRIOR spawn knows exactly the warrior default loadout")
+
+	_expect(not p.learn_ability("not_a_real_skill_id"), "learning an unknown id fails")
+	_expect(not p.known_abilities.has("not_a_real_skill_id"), "  and nothing was added")
+
+	_expect(p.learn_ability("frost_nova"), "learning a valid off-kit ability succeeds")
+	_expect(p.known_abilities.has("frost_nova"), "  and it's now known")
+	_expect(not p.learn_ability("frost_nova"), "learning it again fails (already known)")
+
+	p.progression.gain("heavy_swords", 25.0)
+	_expect(p.progression.total_points() > 0.0, "some progression was earned before switching")
+
+	p._switch_kit_live(p.Kit.MAGE)
+	_expect(p.kit == p.Kit.MAGE, "switching kit live actually changes it")
+	_expect(is_equal_approx(p.progression.total_points(), 0.0),
+		"...and resets progression to a clean slate")
+	_expect(p.known_abilities == SkillDB.loadout_for("mage"),
+		"...and resets known_abilities to the new kit's defaults (frost_nova learn didn't survive)")
+
+	# Switching to the SAME kit again must be a no-op — nothing to reset.
+	p.progression.gain("spellcraft", 10.0)
+	var pts_before: float = p.progression.total_points()
+	p._switch_kit_live(p.Kit.MAGE)
+	_expect(is_equal_approx(p.progression.total_points(), pts_before),
+		"switching to the kit you're already on does not reset anything")
+
+	# apply_save_data() also calls _set_kit() (to restore a loaded kit) and
+	# must NOT trigger this reset — that would erase the save it just loaded.
+	p.progression.gain("mining", 15.0)
+	p.learn_ability("shoulder_bash")
+	var data: Dictionary = p.get_save_data()
+	var q = await _spawn()
+	q.apply_save_data(data)
+	_expect(is_equal_approx(q.progression.total_points(), p.progression.total_points()),
+		"apply_save_data()'s internal _set_kit() call does not wipe the progression it just restored")
+	_expect(q.known_abilities.has("shoulder_bash"),
+		"  or the known_abilities it just restored")
+
+	p.free()
+	q.free()
+
+
+## Discovery ("1 de 3", docs/GDD.md): SkillDB.kit_of(), the weighted
+## candidate roll (Player._discovery_candidates()), and the threshold
+## trigger emitting Game.discovery_offered (Player._check_discovery_threshold()).
+func _check_discovery() -> void:
+	_section("Discovery: kit_of(), weighted candidates, threshold trigger")
+
+	_expect(SkillDB.kit_of("shoulder_bash") == "warrior", "kit_of() finds a warrior default")
+	_expect(SkillDB.kit_of("frost_nova") == "mage", "kit_of() finds a mage default")
+	_expect(SkillDB.kit_of("caltrops") == "archer", "kit_of() finds an archer default")
+	_expect(SkillDB.kit_of("not_a_real_skill") == "", "kit_of() returns \"\" for an unknown id")
+
+	var p = await _spawn()
+	_expect(p.known_abilities.size() == 2, "fresh WARRIOR knows exactly its 2 defaults")
+
+	var all_ids: Array = []
+	for id in SkillDB.SKILLS:
+		all_ids.append(str(id))
+	var unknown_count: int = all_ids.size() - int(p.known_abilities.size())
+
+	var picks: Array = p._discovery_candidates(3)
+	_expect(picks.size() == mini(3, unknown_count),
+		"_discovery_candidates(3) returns min(3, pool size) ids (%d)" % picks.size())
+	var picks_unique := {}
+	for id in picks:
+		picks_unique[id] = true
+		_expect(not p.known_abilities.has(id), "  '%s' is not already known" % id)
+		_expect(SkillDB.has_skill(id), "  '%s' is a real skill id" % id)
+	_expect(picks_unique.size() == picks.size(), "  no duplicates in one roll")
+
+	# Learn everything: the pool is empty, so there is nothing left to offer.
+	for id in all_ids:
+		p.learn_ability(id)
+	_expect(p.known_abilities.size() == all_ids.size(), "learning every ability actually knows all of them")
+	_expect(p._discovery_candidates(3).is_empty(), "an empty pool offers nothing")
+	p.free()
+
+	# Weighted preference: same-kit candidates should come up more often than
+	# other-kit ones (DISCOVERY_SAME_KIT_WEIGHT vs DISCOVERY_OTHER_KIT_WEIGHT).
+	# A fresh WARRIOR already knows its own 2 abilities from spawn — with only
+	# 7 abilities total and none spare per kit, "same-kit but not yet known"
+	# cannot happen through normal play today. Clearing known_abilities
+	# directly (poking internals, like _check_open_skill_network() already
+	# does) is the only way to isolate the weighting math itself; this is a
+	# unit test of _discovery_candidates(), not a claim about reachable state.
+	var w = await _spawn()
+	w.known_abilities.clear()
+	for id in all_ids:
+		if id != "whirlwind" and id != "frost_nova":
+			w.known_abilities.append(id)
+	var same_kit_hits := 0
+	const TRIALS := 600
+	for i in TRIALS:
+		var pick: Array = w._discovery_candidates(1)
+		if pick.size() == 1 and pick[0] == "whirlwind":
+			same_kit_hits += 1
+	var ratio := float(same_kit_hits) / float(TRIALS)
+	# Expected ~0.75 (weight 3 vs 1); wide bounds to keep this non-flaky while
+	# still catching the weighting being broken/reversed/absent (~0.5 or ~0.25).
+	_expect(ratio > 0.60 and ratio < 0.90,
+		"same-kit candidate picked more often than other-kit (%.2f, expected ~0.75)" % ratio)
+	w.free()
+
+	# Threshold trigger: crossing DISCOVERY_THRESHOLDS[0] in a combat skill
+	# fires Game.discovery_offered; staying under it, or gaining a
+	# non-combat skill by the same amount, must not.
+	var t = await _spawn()
+	var offered: Array = []
+	var conn := func(ids): offered.append(ids)
+	Game.discovery_offered.connect(conn)
+
+	var threshold: float = t.DISCOVERY_THRESHOLDS[0]
+	t.progression.gain("heavy_swords", threshold - 5.0)
+	_expect(offered.is_empty(), "staying under the first threshold does not offer anything")
+
+	t.progression.gain("mining", threshold)
+	_expect(offered.is_empty(), "crossing the SAME point value in a non-combat skill does not offer anything")
+
+	t.progression.gain("heavy_swords", 10.0)  # now past `threshold`
+	_expect(offered.size() == 1, "crossing the threshold in a combat skill offers exactly once (%d)" % offered.size())
+	_expect(offered.is_empty() or (offered[0] as Array).size() > 0, "  and the offer is non-empty")
+
+	Game.discovery_offered.disconnect(conn)
+	t.free()
 
 
 func _check_architecture_contract() -> void:

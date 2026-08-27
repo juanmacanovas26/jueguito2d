@@ -11,7 +11,7 @@ extends StaticBody2D
 @export var drop_id: String = "wood_log"
 @export var drop_min: int = 1
 @export var drop_max: int = 3
-@export var xp_reward: int = 5
+@export var skill_gain: int = 5
 @export var respawn_time: float = 6.0
 @export var visual_radius: float = 26.0
 @export var collision_radius: float = 18.0
@@ -21,6 +21,11 @@ extends StaticBody2D
 ## Manual bonus: chance (0..1) of an extra resource on a manual hit
 @export var manual_bonus_chance: float = 0.2
 
+## Skill points granted per resource unit yielded by gather() (immortal
+## nodes' per-hit path — see _gather_skill_id()). Separate from skill_gain,
+## which only fires on _on_died() and is deliberately 0 for immortal nodes.
+const IMMORTAL_GATHER_SKILL_GAIN := 1.0
+
 @onready var hurtbox: Hurtbox = $Hurtbox
 @onready var health: Health = $Health
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -28,6 +33,13 @@ extends StaticBody2D
 @onready var visual_root: Node2D = $Visual
 
 const LootDropScene := preload("res://scenes/world/loot_drop.tscn")
+## Real PixelLab art per visual_type. Missing/renamed files fall back to the
+## procedural polygon draw below, same pattern as mob_sprites.gd for mobs.
+const ART_PATHS := {
+	"tree": "res://assets/world/tree.png",
+	"rock": "res://assets/world/rock.png",
+	"vein": "res://assets/world/vein.png",
+}
 
 var _dead: bool = false
 var _last_attacker: Node = null
@@ -66,6 +78,20 @@ func _setup_shapes() -> void:
 func _build_visual() -> void:
 	for ch in visual_root.get_children():
 		ch.queue_free()
+	var art_path: String = str(ART_PATHS.get(visual_type, ""))
+	if art_path != "" and ResourceLoader.exists(art_path):
+		var sprite := Sprite2D.new()
+		var tex: Texture2D = load(art_path)
+		sprite.texture = tex
+		sprite.centered = true
+		# Scale to this node's visual_radius (veins/rocks/trees can each
+		# override it) so the art stays proportionate to the collision/hitbox
+		# instead of baking in one fixed size.
+		var native_w := tex.get_width()
+		if native_w > 0:
+			sprite.scale = Vector2.ONE * (visual_radius * 2.0 / float(native_w))
+		visual_root.add_child(sprite)
+		return
 	if visual_type == "tree":
 		var trunk := Polygon2D.new()
 		trunk.color = Color(0.35, 0.24, 0.16)
@@ -127,11 +153,9 @@ func _on_died() -> void:
 	_dead = true
 
 	if _last_attacker:
-		var prog: Progress = _last_attacker.get_node_or_null("Progress") as Progress
-		if prog:
-			prog.add_xp(xp_reward)
-			if Game.has_method("toast"):
-				Game.toast("+%d XP (%s)" % [xp_reward, display_name])
+		var sk: Skills = _last_attacker.get_node_or_null("Skills") as Skills
+		if sk:
+			sk.gain(_gather_skill_id(), skill_gain)
 
 	var parent := Game.get_world()
 	if parent:
@@ -165,8 +189,18 @@ func gather(manual: bool, source: Node = null) -> void:
 	if inv:
 		inv.add_item(drop_id, amount)
 
+	if source:
+		var sk: Skills = source.get_node_or_null("Skills") as Skills
+		if sk:
+			sk.gain(_gather_skill_id(), float(amount) * IMMORTAL_GATHER_SKILL_GAIN)
+
 	var item_color: Color = ItemDB.get_item(drop_id).get("color", Color.WHITE)
 	FloatingText.spawn("+%d %s" % [amount, ItemDB.display_name(drop_id)], item_color, global_position + Vector2(0, -visual_radius - 6), 13)
+
+
+## Which progression skill this node's gathering trains — see Skills.gain().
+func _gather_skill_id() -> String:
+	return "woodcutting" if visual_type == "tree" else "mining"
 
 
 func _respawn() -> void:

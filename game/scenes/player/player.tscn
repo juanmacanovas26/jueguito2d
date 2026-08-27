@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="3_hurtbox"]
 [ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
 [ext_resource type="Script" path="res://scripts/player/inventory.gd" id="5_inv"]
-[ext_resource type="Script" path="res://scripts/player/progress.gd" id="6_prog"]
+[ext_resource type="Script" path="res://scripts/player/skills.gd" id="6_prog"]
 [ext_resource type="Script" path="res://scripts/combat/skill_caster.gd" id="10_skills"]
 [ext_resource type="Script" path="res://scripts/combat/skill_aimer.gd" id="11_aimer"]
 [ext_resource type="Script" path="res://scripts/visual/character_visual.gd" id="7_visual"]
@@ -88,7 +88,7 @@ script = ExtResource("4_health")
 [node name="Inventory" type="Node" parent="."]
 script = ExtResource("5_inv")
 
-[node name="Progress" type="Node" parent="."]
+[node name="Skills" type="Node" parent="."]
 script = ExtResource("6_prog")
 
 [node name="AnimTimer" type="Timer" parent="."]

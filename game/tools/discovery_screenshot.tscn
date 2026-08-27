@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d5m9w3k7t2q6x"]
+
+[ext_resource type="Script" path="res://tools/discovery_screenshot.gd" id="1_discovery"]
+
+[node name="DiscoveryScreenshot" type="Node"]
+script = ExtResource("1_discovery")

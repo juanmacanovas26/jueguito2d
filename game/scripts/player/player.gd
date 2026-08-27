@@ -16,6 +16,36 @@ const FRICTION := 1600.0
 
 const MAX_STAMINA := 100.0
 const MAX_MANA := 100.0
+
+## Derived-stat formulas (Skills replaces character level, see docs/GDD.md).
+## Numbers are a first pass matching the feel of the old level curve at
+## roughly skill 25-30 out of the 100 cap; calibrate later like the rest of
+## combat's tuning (docs/COMBATE.md).
+const BASE_HP := 100.0
+const HP_PER_VITALITY := 1.5
+const BASE_MELEE_DAMAGE := 10.0
+const MELEE_DAMAGE_PER_POINT := 0.4
+const BASE_SPELL_DAMAGE := 9.0
+const SPELL_DAMAGE_PER_POINT := 0.35
+const BASE_RANGED_DAMAGE := 8.0
+const RANGED_DAMAGE_PER_POINT := 0.4
+## Flat skill points a successful craft grants (CraftDB recipes don't carry
+## their own reward the way mobs/resource nodes do — one skill covers every
+## recipe for now, see docs/COMBATE.md-style "map to existing actions first").
+const CRAFT_SKILL_GAIN := 3.0
+
+## Discovery ("1 de 3", docs/GDD.md): crossing one of these thresholds in a
+## combat skill offers a weighted "1 of 3" pick of unlearned abilities. Only
+## combat skills trigger it — gathering/craft skills have no ability pool to
+## discover from. Numbers are a first pass, not calibrated against a real
+## progression curve yet.
+const DISCOVERY_SKILLS := ["heavy_swords", "spellcraft", "archery"]
+const DISCOVERY_THRESHOLDS := [25.0, 50.0, 75.0]
+const DISCOVERY_CHOICES := 3
+## Sampling weight for a candidate belonging to the kit you're CURRENTLY
+## playing, vs. any other kit's ability — "ponderado por el build actual".
+const DISCOVERY_SAME_KIT_WEIGHT := 3.0
+const DISCOVERY_OTHER_KIT_WEIGHT := 1.0
 const STAMINA_REGEN := 28.0
 const MANA_REGEN := 16.0
 const STAMINA_REGEN_DELAY := 0.55
@@ -105,7 +135,7 @@ const ProjectileScene := preload("res://scenes/combat/projectile.tscn")
 @onready var hurtbox: Hurtbox = $Hurtbox
 @onready var health: Health = $Health
 @onready var inventory: Inventory = $Inventory
-@onready var progress: Progress = $Progress
+@onready var progression: Skills = $Skills
 @onready var anim_timer: Timer = $AnimTimer
 @onready var gcd_timer: Timer = $GcdTimer
 @onready var camera: Camera2D = $Camera2D
@@ -117,6 +147,12 @@ const ProjectileScene := preload("res://scenes/combat/projectile.tscn")
 
 var state: State = State.FREE
 var kit: Kit = Kit.WARRIOR
+## Abilities this character can actually cast — the open skill network
+## (docs/GDD.md: "cualquier personaje puede aprender cualquier skill"),
+## replacing a hardcoded per-kit SkillDB.LOADOUTS lookup. See learn_ability()
+## and _switch_kit_live(). Populated in _ready()/apply_save_data(); never
+## empty in practice.
+var known_abilities: Array[String] = []
 var defend_style: DefendStyle = DefendStyle.SHIELD
 var stamina: float = MAX_STAMINA
 var mana: float = MAX_MANA
@@ -196,9 +232,11 @@ func _ready() -> void:
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
 	health.health_changed.connect(_on_health_changed)
-	if progress:
-		progress.xp_changed.connect(_on_xp_changed)
-		progress.leveled_up.connect(_on_leveled_up)
+	if progression:
+		progression.skill_changed.connect(_on_skill_changed)
+	# Fresh-spawn default; apply_save_data() overwrites this if a save is
+	# being loaded right after.
+	known_abilities.assign(SkillDB.loadout_for(_kit_name().to_lower()))
 	if inventory:
 		inventory.changed.connect(_on_inventory_changed)
 		inventory.item_added.connect(_on_item_added)
@@ -222,6 +260,11 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Build mode (see world_zone.gd) repurposes clicks for placing/removing
+	# markers instead of attacking, so the player is simply frozen in place
+	# rather than trying to make every input path build-mode-aware.
+	if Game.build_mode:
+		return
 	_skill_click_consumed = false
 	_update_aim()
 	_regen_resources(delta)
@@ -259,8 +302,9 @@ func _physics_process(delta: float) -> void:
 ## is most of the decision with a ground AoE, so firing on keypress would take
 ## that away.
 ##
-## The loadout comes from the kit, so the same keys mean different things per
-## class — see SkillDB.LOADOUTS.
+## The loadout comes from known_abilities, not the kit — the same keys can
+## mean different things once a character has learned abilities outside
+## their starting kit's default set. See learn_ability().
 func _handle_skill_input() -> void:
 	if state == State.DEAD or skills.is_casting():
 		if aimer.is_aiming():
@@ -284,7 +328,7 @@ func _handle_skill_input() -> void:
 			_skill_click_consumed = true
 			return
 
-	var loadout := SkillDB.loadout_for(_kit_name().to_lower())
+	var loadout := known_abilities
 	for i in loadout.size():
 		if not Input.is_action_just_pressed("skill_%d" % (i + 1)):
 			continue
@@ -393,11 +437,11 @@ func _on_telegraph_placed(_skill_id: String, pos: Vector2, radius: float, delay:
 
 func _handle_hotkeys() -> void:
 	if Input.is_action_just_pressed("kit_warrior"):
-		_set_kit(Kit.WARRIOR)
+		_switch_kit_live(Kit.WARRIOR)
 	elif Input.is_action_just_pressed("kit_mage"):
-		_set_kit(Kit.MAGE)
+		_switch_kit_live(Kit.MAGE)
 	elif Input.is_action_just_pressed("kit_archer"):
-		_set_kit(Kit.ARCHER)
+		_switch_kit_live(Kit.ARCHER)
 	if Input.is_action_just_pressed("auto_gather"):
 		auto_gather = not auto_gather
 		_last_defense_msg = "Auto-gather ON" if auto_gather else "Auto-gather OFF"
@@ -412,6 +456,26 @@ func _handle_hotkeys() -> void:
 	elif Input.is_action_just_pressed("defend_style_3"):
 		defend_style = DefendStyle.ENERGY
 		_last_defense_msg = "Defense: ENERGY"
+
+
+## Q/E/F, live in-session kit switching. This is a testing convenience for
+## the current prototype stage, not the final game's one-time archetype pick
+## (that arrives with a real character creator later — see docs/GDD.md).
+## Until then, switching kit resets progression and known abilities so each
+## kit gets tested from a clean slate instead of them piling up across kits.
+## _set_kit() itself stays free of this — it's also what apply_save_data()
+## calls to restore a loaded kit, which must NOT wipe the save it just loaded.
+func _switch_kit_live(k: Kit) -> void:
+	if k == kit:
+		return
+	_set_kit(k)
+	if kit != k:
+		return  # blocked by _set_kit()'s own state guard; nothing to reset
+	if progression:
+		progression.points.clear()
+	known_abilities.assign(SkillDB.loadout_for(_kit_name().to_lower()))
+	_apply_derived_stats()
+	_emit_stats()
 
 
 func _set_kit(k: Kit) -> void:
@@ -1278,23 +1342,24 @@ func _on_health_changed(_current: float, _maximum: float) -> void:
 	_emit_stats()
 
 
-func _on_xp_changed(_level: int, _xp: int, _xp_to_next: int) -> void:
+func _on_skill_changed(skill_id: String, points: float, delta: float) -> void:
+	_apply_derived_stats()
 	_emit_stats()
+	# Vitality's own toast is skipped: it fires as an automatic side effect of
+	# every OTHER gain (see Skills.VITALITY_SHARE), synchronously right after
+	# the skill the player actually trained — with a single toast label and
+	# no queue (hud.gd's _on_toast), it would silently clobber the message
+	# that actually tells the player what they just did.
+	if delta > 0.0 and skill_id != Skills.VITALITY_ID and Game.has_method("toast"):
+		Game.toast("+%.1f %s (%.0f/%.0f)" % [delta, Skills.label_for(skill_id), points, Skills.SKILL_CAP])
+	if delta > 0.0 and DISCOVERY_SKILLS.has(skill_id):
+		_check_discovery_threshold(points - delta, points)
 
 
-func _on_leveled_up(level: int) -> void:
-	_last_defense_msg = "LEVEL UP! %d" % level
-	if Game.has_method("toast"):
-		Game.toast("LEVEL UP! %d" % level)
-	_apply_level_stats()
-	if health:
-		health.heal(health.max_hp * 0.25)
-	_emit_stats()
-
-
-func _apply_level_stats() -> void:
-	var lv := get_level()
-	var new_max := 100.0 + (lv - 1) * 12.0
+## Max HP derives from Vitality instead of a character level — there is no
+## character level, power is entirely the sum of Skills (docs/GDD.md).
+func _apply_derived_stats() -> void:
+	var new_max := BASE_HP + _skill_points(Skills.VITALITY_ID) * HP_PER_VITALITY
 	var old_max := health.max_hp
 	health.max_hp = new_max
 	if new_max > old_max:
@@ -1302,20 +1367,99 @@ func _apply_level_stats() -> void:
 	health.hp = minf(health.max_hp, health.hp)
 
 
-func get_level() -> int:
-	return progress.level if progress else 1
+func _skill_points(skill_id: String) -> float:
+	return progression.get_points(skill_id) if progression else 0.0
+
+
+## Which progression skill a kit's damage-dealing actions train and scale
+## from — see Skills.gain() call sites in resource_node.gd/chase_mob.gd.
+func combat_skill_id() -> String:
+	match kit:
+		Kit.WARRIOR:
+			return "heavy_swords"
+		Kit.MAGE:
+			return "spellcraft"
+		Kit.ARCHER:
+			return "archery"
+	return "heavy_swords"
+
+
+## Unlocks a castable ability regardless of kit — the open skill network
+## (docs/GDD.md: "cualquier personaje puede aprender cualquier skill... más
+## caro/lento si no es de su arquetipo"). No in-game trigger calls this yet
+## (no tomes/masters/discovery UI exist) — it's the API a future discovery
+## system hooks into. Returns false for an unknown id or one already known.
+func learn_ability(skill_id: String) -> bool:
+	if not SkillDB.has_skill(skill_id) or known_abilities.has(skill_id):
+		return false
+	known_abilities.append(skill_id)
+	return true
+
+
+## Fires an offer once `points` has just crossed a DISCOVERY_THRESHOLDS entry
+## that `before` (the same skill's points prior to this gain) hadn't reached
+## yet — so a single big lump of points that jumps clean over a threshold
+## still triggers it, same reasoning as the old level-up loop. Only the
+## LOWEST newly-crossed threshold fires per call: a discovery is a moment,
+## not a batch, and the caller (_on_skill_changed) already runs once per
+## gain, so the next threshold gets its own moment on the next gain.
+func _check_discovery_threshold(before: float, points: float) -> void:
+	for t in DISCOVERY_THRESHOLDS:
+		if before < t and points >= t:
+			_offer_discovery()
+			return
+
+
+func _offer_discovery() -> void:
+	var candidates := _discovery_candidates(DISCOVERY_CHOICES)
+	if candidates.is_empty():
+		return
+	Game.discovery_offered.emit(candidates)
+
+
+## Weighted sample without replacement of up to `count` abilities the player
+## doesn't know yet — the pool this build hasn't picked. See
+## DISCOVERY_SAME_KIT_WEIGHT for the "ponderado por el build actual" rule.
+func _discovery_candidates(count: int) -> Array[String]:
+	var pool: Array[String] = []
+	var weights: Array[float] = []
+	var current_kit := _kit_name().to_lower()
+	for id in SkillDB.SKILLS:
+		var sid := str(id)
+		if known_abilities.has(sid):
+			continue
+		pool.append(sid)
+		weights.append(DISCOVERY_SAME_KIT_WEIGHT if SkillDB.kit_of(sid) == current_kit else DISCOVERY_OTHER_KIT_WEIGHT)
+
+	var chosen: Array[String] = []
+	while chosen.size() < count and not pool.is_empty():
+		var total := 0.0
+		for w in weights:
+			total += w
+		var roll := Game.randf() * total
+		var idx := weights.size() - 1
+		var acc := 0.0
+		for i in weights.size():
+			acc += weights[i]
+			if roll < acc:
+				idx = i
+				break
+		chosen.append(pool[idx])
+		pool.remove_at(idx)
+		weights.remove_at(idx)
+	return chosen
 
 
 func _melee_base_damage() -> float:
-	return 10.0 + (get_level() - 1) * 1.5
+	return BASE_MELEE_DAMAGE + _skill_points("heavy_swords") * MELEE_DAMAGE_PER_POINT
 
 
 func _spell_base_damage() -> float:
-	return 9.0 + (get_level() - 1) * 1.2
+	return BASE_SPELL_DAMAGE + _skill_points("spellcraft") * SPELL_DAMAGE_PER_POINT
 
 
 func _ranged_base_damage() -> float:
-	return 8.0 + (get_level() - 1) * 1.3
+	return BASE_RANGED_DAMAGE + _skill_points("archery") * RANGED_DAMAGE_PER_POINT
 
 
 func _weapon_dmg_bonus() -> float:
@@ -1419,6 +1563,22 @@ const _SLOT_FIELDS := {
 	"wrists": ["_wrists_item", "_wrists_def"],
 	"helmet": ["_helmet_item", "_helmet_def"],
 	"secondary": ["_secondary_item", "_secondary_def"],
+}
+
+## Slot -> the equip_*() method that puts an item there. Used by
+## apply_save_data() to restore gear through the normal equip path instead of
+## poking the private _*_item fields directly.
+const _SLOT_EQUIP_METHODS := {
+	"weapon": "equip_weapon",
+	"armor": "equip_armor",
+	"legs": "equip_legs",
+	"feet": "equip_feet",
+	"arms": "equip_arms",
+	"gloves": "equip_gloves",
+	"shoulders": "equip_shoulders",
+	"wrists": "equip_wrists",
+	"helmet": "equip_helmet",
+	"secondary": "equip_secondary",
 }
 
 
@@ -1539,6 +1699,8 @@ func try_craft(recipe_id: String) -> bool:
 	var out_id := str(recipe.get("output_id", ""))
 	var out_amt := int(recipe.get("output_amount", 1))
 	inventory.add_item(out_id, out_amt)
+	if progression:
+		progression.gain("blacksmithing", CRAFT_SKILL_GAIN)
 	_last_defense_msg = "Crafted %s" % ItemDB.display_name(out_id)
 	if Game.has_method("toast"):
 		Game.toast("Crafted %s" % ItemDB.display_name(out_id))
@@ -1557,16 +1719,10 @@ func _on_item_added(_item_id: String, _amount: int) -> void:
 
 
 func _emit_stats() -> void:
-	var lv := 1
-	var xp_v := 0
-	var xp_next := 50
 	var gold_v := 0
-	if progress:
-		lv = progress.level
-		xp_v = progress.xp
-		xp_next = progress.xp_to_next_level()
 	if inventory:
 		gold_v = inventory.gold
+	var primary_id := combat_skill_id()
 	Game.player_stats_changed.emit(
 		health.hp,
 		health.max_hp,
@@ -1576,9 +1732,9 @@ func _emit_stats() -> void:
 		MAX_MANA,
 		"%s / %s / %s" % [_kit_name(), _style_name(), get_weapon_name()],
 		_last_defense_msg,
-		lv,
-		xp_v,
-		xp_next,
+		Skills.label_for(primary_id),
+		_skill_points(primary_id),
+		progression.total_points() if progression else 0.0,
 		gold_v
 	)
 
@@ -1752,3 +1908,70 @@ func respawn(pos: Vector2) -> void:
 	_hide_guard_fx()
 	_hide_charge_fx()
 	health.health_changed.emit(health.hp, health.max_hp)
+
+
+## Snapshot of everything SaveSystem needs to restore this player later.
+## Position is included so the caller doesn't have to ask twice; SaveSystem
+## adds the current zone path on top of this before writing it out.
+func get_save_data() -> Dictionary:
+	var equipped := {}
+	for slot in _SLOT_FIELDS.keys():
+		equipped[slot] = get_equipped(slot)
+	return {
+		"position": {"x": global_position.x, "y": global_position.y},
+		"kit": int(kit),
+		"known_abilities": known_abilities.duplicate(),
+		"skills": progression.get_snapshot() if progression else {},
+		"hp": health.hp,
+		"mana": mana,
+		"stamina": stamina,
+		"gold": inventory.gold if inventory else 0,
+		"inventory": inventory.get_filled_slots() if inventory else [],
+		"equipped": equipped,
+	}
+
+
+## Restores a snapshot produced by get_save_data(). Gear is put back through
+## the normal equip_*() calls (after returning it to the bag first) so the
+## swap-back-into-inventory bookkeeping those methods already do doesn't need
+## a second implementation here.
+func apply_save_data(data: Dictionary) -> void:
+	if inventory:
+		inventory.clear()
+		for s in data.get("inventory", []):
+			if typeof(s) == TYPE_DICTIONARY:
+				inventory.add_item(str(s.get("id", "")), int(s.get("amount", 0)))
+		inventory.gold = int(data.get("gold", 0))
+	if progression:
+		progression.load_snapshot(data.get("skills", {}))
+	_apply_derived_stats()
+	health.hp = clampf(float(data.get("hp", health.max_hp)), 1.0, health.max_hp)
+	mana = clampf(float(data.get("mana", MAX_MANA)), 0.0, MAX_MANA)
+	stamina = clampf(float(data.get("stamina", MAX_STAMINA)), 0.0, MAX_STAMINA)
+	_set_kit(int(data.get("kit", Kit.WARRIOR)) as Kit)
+
+	# Old saves (pre progression-by-use / open skill network) have no
+	# "known_abilities" key — fall back to the restored kit's defaults so an
+	# old save doesn't come back with an empty skill bar.
+	var loaded_abilities: Array = data.get("known_abilities", [])
+	known_abilities.clear()
+	for id in loaded_abilities:
+		if SkillDB.has_skill(str(id)):
+			known_abilities.append(str(id))
+	if known_abilities.is_empty():
+		known_abilities.assign(SkillDB.loadout_for(_kit_name().to_lower()))
+
+	var equipped: Dictionary = data.get("equipped", {})
+	for slot in equipped.keys():
+		var item_id := str(equipped[slot])
+		if item_id == "" or not _SLOT_EQUIP_METHODS.has(slot) or inventory == null:
+			continue
+		inventory.add_item(item_id, 1)
+		call(_SLOT_EQUIP_METHODS[slot], item_id)
+
+	var pos: Dictionary = data.get("position", {})
+	if pos.has("x") and pos.has("y"):
+		global_position = Vector2(float(pos.x), float(pos.y))
+
+	health.health_changed.emit(health.hp, health.max_hp)
+	_emit_stats()

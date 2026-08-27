@@ -16,13 +16,14 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Jueguito2D"
 config/description="MMORPG 2D action × Imperium-style grind"
-run/main_scene="res://scenes/world/pradera.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Game="*res://autoload/game.gd"
+SaveSystem="*res://scripts/core/save_system.gd"
 
 [display]
 

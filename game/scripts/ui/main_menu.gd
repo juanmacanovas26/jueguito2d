@@ -1,0 +1,31 @@
+extends Control
+## Entry point (project.godot run/main_scene). Only one overworld zone exists
+## today, so both New Game and Continue point at it directly; once Fase 3
+## adds more zones, Continue should read the saved "zone" path instead.
+
+const ZONE_SCENE := "res://scenes/world/pradera.tscn"
+
+@onready var new_game_button: Button = $Center/VBox/NewGameButton
+@onready var continue_button: Button = $Center/VBox/ContinueButton
+@onready var quit_button: Button = $Center/VBox/QuitButton
+
+
+func _ready() -> void:
+	continue_button.disabled = not SaveSystem.has_save()
+	new_game_button.pressed.connect(_on_new_game_pressed)
+	continue_button.pressed.connect(_on_continue_pressed)
+	quit_button.pressed.connect(_on_quit_pressed)
+
+
+func _on_new_game_pressed() -> void:
+	SaveSystem.pending_load = false
+	get_tree().change_scene_to_file(ZONE_SCENE)
+
+
+func _on_continue_pressed() -> void:
+	SaveSystem.pending_load = true
+	get_tree().change_scene_to_file(ZONE_SCENE)
+
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

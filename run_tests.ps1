@@ -28,9 +28,13 @@ $tmp = Join-Path $env:TEMP "jueguito_tests"
 New-Item -ItemType Directory -Force -Path $tmp | Out-Null
 
 $suites = @(
-    @{ Name = "systems";   Scene = "res://tools/validate_systems.tscn";   Frames = 1800 },
-    @{ Name = "equipment"; Scene = "res://tools/validate_equipment.tscn"; Frames = 1800 },
-    @{ Name = "visuals";   Scene = "res://tools/validate_visuals.tscn";   Frames = 2400 }
+    @{ Name = "systems";   Scene = "res://tools/validate_systems.tscn";      Frames = 1800 },
+    @{ Name = "equipment"; Scene = "res://tools/validate_equipment.tscn";    Frames = 1800 },
+    @{ Name = "visuals";   Scene = "res://tools/validate_visuals.tscn";      Frames = 2400 },
+    @{ Name = "save";      Scene = "res://tools/validate_save.tscn";        Frames = 600 },
+    @{ Name = "skills";    Scene = "res://tools/validate_skills.tscn";      Frames = 600 },
+    @{ Name = "zonebuild"; Scene = "res://tools/validate_zone_builder.tscn"; Frames = 600 },
+    @{ Name = "buildmode"; Scene = "res://tools/validate_build_mode.tscn";   Frames = 600 }
 )
 
 Write-Host ""

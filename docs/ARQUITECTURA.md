@@ -13,7 +13,7 @@ Estas reglas son la "costura" donde después se enchufa el netcode.
 
 ## 1. La simulación es dueña del estado; la presentación solo lo lee
 
-- **Estado** (dueño): `Health`, `Inventory`, `Progress`, posición, `Kit`/`DefendStyle`.
+- **Estado** (dueño): `Health`, `Inventory`, `Skills`, posición, `Kit`/`DefendStyle`.
 - **Presentación** (solo lee): `Polygon2D` (colores), `FloatingText`, `Hitbox` debug, HUD.
 - Prohibido: que un nodo visual decida daño/loot/vida. El daño se calcula en scripts de lógica
   (`Health.take_damage`, `Hitbox`, `Projectile`) y la UI escucha señales.
@@ -56,7 +56,7 @@ será empaquetar esos comandos y reejecutarlos en el server.
 
 ## Plan de migración al netcode (cuando toque)
 
-1. **Snapshots de estado**: serializar `Health`/`Inventory`/`Progress`/posición → un `StateSync` por entidad.
+1. **Snapshots de estado**: serializar `Health`/`Inventory`/`Skills`/posición → un `StateSync` por entidad.
 2. **Comandos de input**: empaquetar move/attack/dodge y enviarlos al server a tick fijo.
 3. **Server headless**: correr el mismo `world_zone` sin render; el cliente solo interpola.
 4. **Spawn/despawn**: `Game.spawn()` emite RPC; los entities se registran por id.
@@ -92,7 +92,7 @@ será empaquetar esos comandos y reejecutarlos en el server.
 game/           # cliente + simulación
   autoload/game.gd   # seam central (world/entidades/spawn/rng)
   scripts/combat/    # lógica pura (Health, Hitbox, Hurtbox, Projectile)
-  scripts/player/    # estado del jugador (Inventory, Progress)
+  scripts/player/    # estado del jugador (Inventory, Skills)
   scripts/world/     # zone, resource nodes, loot
   scripts/ui/        # solo lectura + inputs
 docs/

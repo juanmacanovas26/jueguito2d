@@ -18,7 +18,7 @@ El techo de DPS lo pone el **arma y la animación**, no cuántas veces cliqueás
 | **RMB** | Guard (block / parry / energy según estilo) |
 | Space | Dodge roll |
 | Shift | Sprint (stamina) |
-| **Q / E** | Kit Warrior / Mage (prototipo) |
+| **Q / E / F** | Kit Warrior / Mage / Archer — toggle libre de testing, ver "Red abierta de skills" |
 | 1 / 2 / 3 | Estilo defensa: Shield / Parry / Energy |
 
 ### Ataque por kit
@@ -244,9 +244,38 @@ abajo).
 
 ### Agregar una skill
 
-Una fila en `SkillDB.SKILLS` y, si querés que sea casteable, el id en
-`LOADOUTS` del kit. Nada más. El validador exige que tenga targeting válido,
-duración, cooldown, algún costo, y que su animación exista.
+Una fila en `SkillDB.SKILLS` y, si querés que un kit la conozca de arranque,
+el id en `LOADOUTS` de ese kit. Nada más. El validador exige que tenga
+targeting válido, duración, cooldown, algún costo, y que su animación exista.
+
+### Red abierta de skills
+
+`LOADOUTS` ya no es un techo: es sólo el set con el que arranca un personaje
+fresco de cada kit. Lo que un personaje puede castear en el momento vive en
+`Player.known_abilities` (`game/scripts/player/player.gd`), no en el kit —
+`SkillDB.loadout_for(kit)` sólo se lee para *sembrar* ese array al spawnear o
+al cambiar de kit. `learn_ability(id)` agrega una skill ajena a tu kit sin
+sacarte las que ya tenías.
+
+**Descubrimiento "1 de 3":** cruzar 25/50/75 puntos en una skill de combate
+(`Player.DISCOVERY_THRESHOLDS`, ver `_check_discovery_threshold()`) dispara
+`Game.discovery_offered` con 3 abilities aún no conocidas — `hud.gd`'s
+`DiscoveryPanel` las muestra, elegir una llama `learn_ability()`. La oferta
+está ponderada por afinidad con el kit actual (`_discovery_candidates()`,
+`SkillDB.kit_of()`), aunque con sólo 7 abilities repartidas 2+3+2 entre los 3
+kits y sin solapamiento, esa ponderación no cambia nada en la práctica hoy
+(cada kit ya conoce las suyas desde el spawn) — queda lista para cuando haya
+más abilities por kit. Sin tomos/maestros/wildcards/reroll todavía; es la
+única fuente de descubrimiento por ahora.
+
+**Q/E/F sigue siendo un toggle libre** (comodidad de testing en este estado
+de prototipo, no la elección de personaje final — esa va a llegar con un
+creador de personaje de verdad). Como todavía no existe esa elección única,
+cambiar de kit en vivo (`_switch_kit_live()`) resetea `known_abilities` y la
+progresión (`Skills`, ver docs/GDD.md) a los defaults del kit nuevo, para que
+cada kit se pruebe desde cero y no se acumule cross-kit sin querer. Cargar
+una partida guardada (`apply_save_data()`) usa el mismo `_set_kit()` interno
+pero **no** dispara este reset — restaura el kit guardado tal cual.
 
 ### Skillshot perforante + detonación (arcane_bolt)
 

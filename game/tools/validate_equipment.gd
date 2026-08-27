@@ -205,6 +205,10 @@ func _check_skill_bar_ui() -> void:
 	var hud = load("res://scenes/ui/hud.tscn").instantiate()
 	add_child(hud)
 	p._set_kit(p.Kit.WARRIOR)
+	# known_abilities is what the bar actually renders now (the open skill
+	# network, see player.gd) — _set_kit() alone no longer touches it
+	# (only _switch_kit_live() does), so this direct poke sets it explicitly.
+	p.known_abilities.assign(SkillDB.loadout_for("warrior"))
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var warrior_loadout := SkillDB.loadout_for("warrior")
@@ -212,6 +216,7 @@ func _check_skill_bar_ui() -> void:
 		"warrior loadout renders %d slot(s) (%d)" % [warrior_loadout.size(), hud.skill_bar._slots.size()])
 
 	p._set_kit(p.Kit.MAGE)
+	p.known_abilities.assign(SkillDB.loadout_for("mage"))
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var mage_loadout := SkillDB.loadout_for("mage")

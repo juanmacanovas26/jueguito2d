@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/skill_bar.tscn" id="2_skillbar"]
 
 [node name="HUD" type="CanvasLayer"]
+process_mode = 3
 script = ExtResource("1_hud")
 
 [node name="SkillBar" parent="." instance=ExtResource("2_skillbar")]
@@ -110,7 +111,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.95, 0.7, 1)
 theme_override_font_sizes/font_size = 16
-text = "+XP"
+text = ""
 horizontal_alignment = 1
 
 [node name="InvPanel" type="PanelContainer" parent="."]
@@ -265,3 +266,135 @@ text = "Crafting (click to craft)"
 custom_minimum_size = Vector2(240, 220)
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="PausePanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -110.0
+offset_right = 110.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="PausePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="PausePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PauseTitle" type="Label" parent="PausePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Pausa"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PausePanel/Margin/VBox"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+text = "Reanudar"
+
+[node name="SaveButton" type="Button" parent="PausePanel/Margin/VBox"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+text = "Guardar"
+
+[node name="SaveQuitButton" type="Button" parent="PausePanel/Margin/VBox"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+text = "Guardar y salir al menú"
+
+[node name="QuitButton" type="Button" parent="PausePanel/Margin/VBox"]
+custom_minimum_size = Vector2(180, 34)
+layout_mode = 2
+text = "Salir del juego"
+
+[node name="DiscoveryPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -110.0
+offset_right = 140.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="DiscoveryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="DiscoveryPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DiscoveryTitle" type="Label" parent="DiscoveryPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+text = "Descubrimiento — elegí 1"
+horizontal_alignment = 1
+
+[node name="Choices" type="VBoxContainer" parent="DiscoveryPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DismissButton" type="Button" parent="DiscoveryPanel/Margin/VBox"]
+custom_minimum_size = Vector2(220, 30)
+layout_mode = 2
+text = "Descartar"
+
+[node name="BuildPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 170.0
+offset_right = 268.0
+offset_bottom = 470.0
+
+[node name="Margin" type="MarginContainer" parent="BuildPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="BuildPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuildTitle" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 2
+text = "Build mode — click: colocar, click derecho: borrar, Q/E: rotar, 1-9: elegir"
+
+[node name="Categories" type="VBoxContainer" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SelectedLabel" type="Label" parent="BuildPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
+theme_override_font_sizes/font_size = 12
+text = "Selección: Mob"
+
+[node name="SaveButton" type="Button" parent="BuildPanel/Margin/VBox"]
+custom_minimum_size = Vector2(220, 32)
+layout_mode = 2
+text = "Guardar zona"

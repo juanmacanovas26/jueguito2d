@@ -13,7 +13,7 @@ enum AIState { IDLE, CHASE, ATTACK, HURT, DEAD, RETURN }
 @export var attack_cooldown: float = 0.85
 @export var respawn_time: float = 4.0
 @export var leash_range: float = 420.0
-@export var xp_reward: int = 18
+@export var skill_gain: int = 18
 @export var gold_min: int = 1
 @export var gold_max: int = 4
 @export var ranged: bool = false
@@ -330,11 +330,12 @@ func _grant_rewards() -> void:
 		target = _get_player()
 	if target == null:
 		return
-	var prog: Progress = target.get_node_or_null("Progress") as Progress
-	if prog:
-		prog.add_xp(xp_reward)
-		if Game.has_method("toast"):
-			Game.toast("+%d XP" % xp_reward)
+	var sk: Skills = target.get_node_or_null("Skills") as Skills
+	if sk:
+		var skill_id := "heavy_swords"
+		if target.has_method("combat_skill_id"):
+			skill_id = target.combat_skill_id()
+		sk.gain(skill_id, skill_gain)
 
 
 func _spawn_loot() -> void:

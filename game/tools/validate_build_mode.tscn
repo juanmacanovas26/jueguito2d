@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bqx2h7m4t8w1a"]
+
+[ext_resource type="Script" path="res://tools/validate_build_mode.gd" id="1_bm"]
+
+[node name="ValidateBuildMode" type="Node"]
+script = ExtResource("1_bm")

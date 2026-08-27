@@ -11,15 +11,33 @@ signal player_stats_changed(
 	max_mana: float,
 	defend_style: String,
 	defense_msg: String,
-	level: int,
-	xp: int,
-	xp_to_next: int,
+	primary_skill_name: String,
+	primary_skill_points: float,
+	total_skill_points: float,
 	gold: int
 )
 signal inventory_changed(inv: Inventory)
 signal toast_msg(text: String)
+## Fired when a player's progression crosses a discovery threshold (see
+## Player._offer_discovery(), docs/GDD.md "descubrimiento 1 de 3"). Carries
+## 2-3 SkillDB ability ids the player can choose from; hud.gd shows the
+## DiscoveryPanel and calls Player.learn_ability() on the pick.
+signal discovery_offered(ability_ids: Array)
 
 var debug_hitboxes: bool = true
+
+## True while the in-game map-building overlay is active (see world_zone.gd
+## and hud.gd's BuildPanel). Freezes the player instead of teaching every
+## input path to be build-mode-aware — see player.gd's _physics_process.
+var build_mode: bool = false
+## Which marker kind a left-click places while build_mode is on. One of:
+## "mob", "tree", "rock", "vein", "vendor", "bank", "repair",
+## "dungeon_entrance", "mini_boss".
+var build_selected_kind: String = "mob"
+## Radians; Q/E step this in build mode (see hud.gd) before a click applies
+## it to the placed marker. Cosmetic for today's round content, but real
+## structures (the future player-facing construction mode) need it.
+var build_rotation: float = 0.0
 
 ## Authoritative world root (the current zone). Set by the zone's _ready().
 var world: Node = null
