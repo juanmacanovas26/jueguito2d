@@ -10,8 +10,15 @@ export_credentials.cfg
 # Node (in case the lpc/ generator's deps ever get installed locally)
 node_modules/
 
-# Local Claude Code session state
-.claude/
+# Local Claude Code session state — pero las skills del proyecto SÍ se versionan,
+# son parte de la herramienta de trabajo (sprite-pipeline y sus scripts).
+.claude/*
+!.claude/skills/
+
+# Arte crudo / packs comprados. NO va al repo: es público y redistribuir un pack
+# comprado no corresponde. Se sincroniza aparte (ver README). Nada del proyecto
+# lo referencia: es staging para generar los assets de game/assets/world/.
+game/assets/_incoming/
 
 # OS cruft
 Thumbs.db
@@ -20,3 +27,5 @@ Thumbs.db
 # Editor/session scratch
 *.tmp
 *.log
+*.stale_backup_*
+__pycache__/

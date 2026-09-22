@@ -29,11 +29,13 @@ func _run() -> void:
 	await _check_inventory()
 	await _check_crafting()
 	await _check_basic_attacks_never_interrupt()
+	await _check_mob_sleep()
 	await _check_archer_needs_bow()
 	await _check_skills()
 	await _check_skill_aiming()
 	await _check_open_skill_network()
 	await _check_discovery()
+	await _check_gm_mode_and_build_zoom()
 	await _check_architecture_contract()
 
 	_check_ran_enough()
@@ -311,6 +313,73 @@ func _check_basic_attacks_never_interrupt() -> void:
 		var src := FileAccess.get_file_as_string(path)
 		_expect(not src.contains("is_staggered"),
 			"%s does not turn broken poise into a state change" % path.get_file())
+	p.free()
+
+
+## Mobs sleep when the player is far away (chase_mob.gd's sleep_range), which
+## is what lets a zone hold hundreds of them. The danger of an optimization
+## like this is that it changes behaviour: a sleeping mob that ignores a
+## ranged hit, or one that dozes off mid-chase and freezes in a field, is a
+## worse bug than the cost it saves. These checks pin exactly that.
+func _check_mob_sleep() -> void:
+	_section("Mobs sleep far from the player and wake correctly")
+	var p = await _spawn()
+	p.global_position = Vector2.ZERO
+
+	var mob = load("res://scenes/enemy/chase_mob.tscn").instantiate()
+	add_child(mob)
+	mob.global_position = Vector2(5000, 0) # far outside any sleep_range
+	mob._home = mob.global_position
+	await get_tree().physics_frame
+
+	_expect(mob.sleep_range > mob.deaggro_range and mob.sleep_range > mob.leash_range,
+		"sleep_range is clamped outside deaggro/leash (%.0f vs %.0f/%.0f)"
+		% [mob.sleep_range, mob.deaggro_range, mob.leash_range])
+
+	# A few frames of standing at home with nobody near is enough to doze off.
+	for i in 12:
+		await get_tree().physics_frame
+	_expect(mob._asleep, "an idle mob far from the player falls asleep")
+	_expect(not mob.is_processing(), "  and stops its per-frame _process() work")
+
+	# Asleep is not the same as gone: it must still be solid and hittable.
+	_expect(mob.get_collision_layer_value(3), "  but stays solid (collision untouched)")
+	_expect(mob.hurtbox.collision_layer != 0, "  and stays hittable")
+
+	# A ranged hit from outside sleep_range has to wake it AND aggro it,
+	# otherwise a sleeping mob just absorbs arrows without reacting.
+	var hp_before: float = mob.health.hp
+	mob.hurtbox.apply_hit({"damage": 5.0, "team": &"player"})
+	_expect(not mob._asleep, "a hit from beyond sleep_range wakes it")
+	_expect(mob.health.hp < hp_before, "  the damage lands (%.0f -> %.0f)" % [hp_before, mob.health.hp])
+	# HURT, not CHASE: a hit flinches first and CHASE comes after the flinch
+	# window. What matters here is that it left IDLE and is running its state
+	# machine again instead of absorbing arrows asleep.
+	_expect(mob.ai == mob.AIState.HURT, "  and it reacts (HURT) instead of standing there (got %s)" % mob.ai)
+
+	# Walking up to it wakes it within the staggered check window.
+	mob.ai = mob.AIState.IDLE
+	mob.global_position = mob._home
+	mob.velocity = Vector2.ZERO
+	for i in 12:
+		await get_tree().physics_frame
+	_expect(mob._asleep, "it goes back to sleep once idle at home again")
+	p.global_position = mob._home + Vector2(mob.aggro_range * 0.5, 0)
+	for i in mob.WAKE_CHECK_FRAMES + 3:
+		await get_tree().physics_frame
+	_expect(not mob._asleep, "the player walking into range wakes it")
+	_expect(mob.ai == mob.AIState.CHASE, "  and it aggros normally")
+
+	# The rule that keeps it safe: never doze off while away from home.
+	mob.ai = mob.AIState.CHASE
+	mob.global_position = mob._home + Vector2(300, 0)
+	p.global_position = Vector2(-9000, 0) # yank the player far away mid-chase
+	for i in 12:
+		await get_tree().physics_frame
+	_expect(not mob._asleep,
+		"a mob that lost its target far from home does NOT freeze there — it walks back first")
+
+	mob.free()
 	p.free()
 
 
@@ -961,6 +1030,43 @@ func _check_discovery() -> void:
 
 	Game.discovery_offered.disconnect(conn)
 	t.free()
+
+
+## Game.gm_mode (F2, hud.gd): a fly/no-clip dev tool for exploring a large
+## map — damage is cancelled outright (same shape as the i-frame check in
+## [2]) and collision_mask flips 0/1 on the on/off edge (see player.gd's
+## _physics_process). Also covers world_zone.gd's build-mode camera zoom
+## (mouse wheel), which is unrelated to gm_mode but small enough not to need
+## its own suite.
+func _check_gm_mode_and_build_zoom() -> void:
+	print("\n[8] GM mode and build-mode camera zoom")
+	var p = await _spawn()
+
+	var hp0: float = p.health.hp
+	Game.gm_mode = true
+	p.hurtbox.apply_hit({"damage": 999.0, "team": &"enemy"})
+	_expect(is_equal_approx(p.health.hp, hp0), "gm_mode cancels incoming damage completely")
+
+	p._physics_process(0.016)
+	_expect(p.collision_mask == 0, "gm_mode drops collision_mask to 0 (no-clip)")
+
+	Game.gm_mode = false
+	p._physics_process(0.016)
+	_expect(p.collision_mask == 1, "leaving gm_mode restores collision_mask to 1 (world)")
+
+	var zone := Node2D.new()
+	zone.set_script(load("res://scripts/world/world_zone.gd"))
+	p.camera.zoom = Vector2(1.0, 1.0)
+	zone._zoom_build_camera(-1.0) # would go below MIN_BUILD_ZOOM unclamped
+	_expect(is_equal_approx(p.camera.zoom.x, zone.MIN_BUILD_ZOOM),
+		"zooming in past the minimum clamps to MIN_BUILD_ZOOM (%.2f)" % p.camera.zoom.x)
+	zone._zoom_build_camera(10.0) # would go above MAX_BUILD_ZOOM unclamped
+	_expect(is_equal_approx(p.camera.zoom.x, zone.MAX_BUILD_ZOOM),
+		"zooming out past the maximum clamps to MAX_BUILD_ZOOM (%.2f)" % p.camera.zoom.x)
+
+	zone.free()
+	p.free()
+	Game.gm_mode = false
 
 
 func _check_architecture_contract() -> void:

@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/eave_repro_screenshot.gd" id="1_eaverepro"]
+
+[node name="EaveReproScreenshot" type="Node"]
+script = ExtResource("1_eaverepro")

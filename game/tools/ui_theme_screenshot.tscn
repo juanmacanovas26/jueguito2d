@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bjjudqlq3ot83"]
+
+[ext_resource type="Script" uid="uid://bkrxgp2k65u41" path="res://tools/ui_theme_screenshot.gd" id="1_uitheme"]
+
+[node name="UiThemeScreenshot" type="Node" unique_id=1716783729]
+script = ExtResource("1_uitheme")

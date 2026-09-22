@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b7rdautot1le0"]
+
+[ext_resource type="Script" path="res://tools/validate_road_autotile.gd" id="1_ra"]
+
+[node name="ValidateRoadAutotile" type="Node"]
+script = ExtResource("1_ra")

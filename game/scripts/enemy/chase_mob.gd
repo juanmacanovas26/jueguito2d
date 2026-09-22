@@ -19,6 +19,17 @@ enum AIState { IDLE, CHASE, ATTACK, HURT, DEAD, RETURN }
 @export var ranged: bool = false
 @export var projectile_damage: float = 10.0
 @export var projectile_speed: float = 300.0
+## Past this distance from the player an IDLE mob sleeps: it stops running
+## the state machine, move_and_slide() and its animation until the player
+## comes back. Without it every mob in a zone costs a physics query every
+## frame forever, which is what actually caps how big a zone can be — the
+## tile count never does (see docs/GDD.md).
+##
+## Only ever applied while IDLE and standing on its home spot, so a mob can
+## never freeze mid-chase far from where it belongs. Clamped at runtime to
+## stay well outside deaggro_range, otherwise a mob could fall asleep at a
+## distance where it is still supposed to notice the player.
+@export var sleep_range: float = 900.0
 @export var body_color: Color = Color(1, 1, 1) # multiply tint on the sprite; white = show art as-is
 ## Drop table: Array of { id, chance 0..1, min, max }
 @export var drop_table: Array = [
@@ -40,6 +51,11 @@ const ATK_START := 0.5
 const ATK_ACTIVE := 0.10
 const ATK_RECOVERY := 0.36
 const HURT_TIME := 0.18
+## How often a sleeping mob re-checks the player's distance, in physics
+## frames. At 60 fps that's ~7 checks a second; the player covers ~27px
+## between checks, so with sleep_range hundreds of px outside aggro_range
+## there is no way to sneak up on a sleeping mob.
+const WAKE_CHECK_FRAMES := 8
 const ACCEL := 900.0
 const FRICTION := 1200.0
 const LUNGE_SPEED := 400.0
@@ -64,11 +80,19 @@ var _hurt_t := 0.0
 var _hitbox_on := false
 var _projectile_spawned := false
 var _last_attacker: Node = null
+## True while this mob is skipping its per-frame work (see sleep_range).
+var _asleep := false
+## Physics frames left before the next wake check. Seeded to a per-mob
+## random offset so a field of mobs spreads its checks across frames
+## instead of every one of them testing on the same tick.
+var _wake_countdown := 0
 
 
 func _ready() -> void:
 	_home = global_position
 	_base_color = body_color
+	sleep_range = maxf(sleep_range, maxf(deaggro_range, leash_range) + 200.0)
+	_wake_countdown = randi() % WAKE_CHECK_FRAMES
 	sprite.sprite_frames = MobSprites.build_slime()
 	health.max_hp = max_hp
 	health.hp = max_hp
@@ -95,6 +119,16 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _asleep:
+		_wake_countdown -= 1
+		if _wake_countdown > 0:
+			return
+		_wake_countdown = WAKE_CHECK_FRAMES
+		var near := _get_player()
+		if near == null or global_position.distance_squared_to(near.global_position) > sleep_range * sleep_range:
+			return
+		_wake_up()
+
 	_cd = maxf(0.0, _cd - delta)
 
 	if ai == AIState.DEAD:
@@ -136,6 +170,13 @@ func _physics_process(delta: float) -> void:
 				_set_chase_visual()
 			else:
 				velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
+				# Standing still at home with the player far away: nothing
+				# this mob does for the next few seconds can matter, so stop
+				# paying for it. Requires being settled at home (not merely
+				# IDLE) so it can never doze off somewhere it doesn't belong.
+				if dist > sleep_range and home_dist <= 16.0 and velocity.is_zero_approx():
+					_fall_asleep()
+					return
 		AIState.CHASE:
 			if dist > deaggro_range or home_dist > leash_range:
 				ai = AIState.RETURN
@@ -161,6 +202,37 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_refresh_label()
+
+
+## Stops everything a far-away idle mob was paying for every frame: the
+## physics query in move_and_slide(), the sprite's animation stepping, and
+## _process()'s facing flip. Deliberately does NOT hide the mob or touch its
+## collision — it stays solid and hittable, so a stray projectile or an AoE
+## still lands on it exactly as before.
+func _fall_asleep() -> void:
+	if _asleep:
+		return
+	_asleep = true
+	velocity = Vector2.ZERO
+	sprite.stop()
+	set_process(false)
+	_wake_countdown = WAKE_CHECK_FRAMES
+
+
+func _wake_up() -> void:
+	if not _asleep:
+		return
+	_asleep = false
+	set_process(true)
+	_set_idle_visual()
+
+
+## Anything that damages a sleeping mob has to wake it first, or it would
+## take the hit and go on standing there — a ranged attack from beyond
+## sleep_range is the obvious way to hit one (see _on_damaged()).
+func _wake_if_asleep() -> void:
+	if _asleep:
+		_wake_up()
 
 
 func _go_idle_or_return(delta: float) -> void:
@@ -279,6 +351,9 @@ func _on_damaged_by(_amount: float, _current: float, source: Node) -> void:
 func _on_damaged(_amount: float, _current: float) -> void:
 	if ai == AIState.DEAD:
 		return
+	# Before anything else: a mob shot from outside sleep_range is asleep,
+	# and would otherwise absorb the hit without ever starting to chase.
+	_wake_if_asleep()
 	if _last_attacker == null:
 		_last_attacker = Game.get_local_player()
 
@@ -306,6 +381,9 @@ func _on_flash_end() -> void:
 
 
 func _on_died() -> void:
+	# A mob killed outright while asleep (an AoE from off-screen) still has to
+	# run its death/respawn sequence, which lives in _physics_process().
+	_wake_if_asleep()
 	ai = AIState.DEAD
 	hitbox.deactivate()
 	_hitbox_on = false

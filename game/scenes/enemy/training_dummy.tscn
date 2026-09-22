@@ -1,72 +1,71 @@
 [gd_scene format=3 uid="uid://f75o3adsym77"]
 
-[ext_resource type="Script" path="res://scripts/enemy/training_dummy.gd" id="1_dummy"]
-[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
-[ext_resource type="Script" path="res://scripts/combat/health.gd" id="3_health"]
-[ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="4_hitbox"]
+[ext_resource type="Script" uid="uid://dihjbnsrn82kn" path="res://scripts/enemy/training_dummy.gd" id="1_dummy"]
+[ext_resource type="Script" uid="uid://b16a6rw57aegs" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://drtk0pl8b2d5w" path="res://scripts/combat/health.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://dy16u5lusoqgy" path="res://scripts/combat/hitbox.gd" id="4_hitbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(28, 28)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
 size = Vector2(28, 28)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
 size = Vector2(22, 18)
 
-[node name="TrainingDummy" type="CharacterBody2D" groups=["enemy"]]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(28, 28)
+
+[node name="TrainingDummy" type="CharacterBody2D" unique_id=2126002139 groups=["enemy"]]
 collision_layer = 4
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("1_dummy")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=659349527]
 shape = SubResource("RectangleShape2D_body")
 
-[node name="Body" type="Polygon2D" parent="."]
+[node name="Body" type="Polygon2D" parent="." unique_id=1426327482]
 color = Color(0.75, 0.35, 0.4, 1)
 polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
 
-[node name="Facing" type="Node2D" parent="."]
+[node name="Facing" type="Node2D" parent="." unique_id=1088171333]
 
-[node name="Hitbox" type="Area2D" parent="Facing"]
+[node name="Hitbox" type="Area2D" parent="Facing" unique_id=1700209185]
 collision_layer = 16
 collision_mask = 2
 monitorable = false
 script = ExtResource("4_hitbox")
 team = &"enemy"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox" unique_id=989025441]
 position = Vector2(22, 0)
 shape = SubResource("RectangleShape2D_hit")
 
-[node name="Slash" type="Polygon2D" parent="Facing/Hitbox"]
+[node name="Slash" type="Polygon2D" parent="Facing/Hitbox" unique_id=622523664]
 color = Color(1, 0.3, 0.3, 0.45)
 polygon = PackedVector2Array(10, -10, 34, -8, 34, 8, 10, 10)
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=310541872]
 collision_layer = 4
 collision_mask = 0
 monitoring = false
 script = ExtResource("2_hurtbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=246935771]
 shape = SubResource("RectangleShape2D_hurt")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." unique_id=1701724829]
 script = ExtResource("3_health")
 max_hp = 500.0
 
-[node name="HpLabel" type="Label" parent="."]
+[node name="HpLabel" type="Label" parent="." unique_id=2114689317]
 offset_left = -70.0
 offset_top = -40.0
 offset_right = 70.0
 offset_bottom = -18.0
-horizontal_alignment = 1
 theme_override_font_sizes/font_size = 12
 text = "Trainer"
+horizontal_alignment = 1
 
-[node name="FlashTimer" type="Timer" parent="."]
+[node name="FlashTimer" type="Timer" parent="." unique_id=76807546]
 one_shot = true
 
-[node name="AttackTimer" type="Timer" parent="."]
+[node name="AttackTimer" type="Timer" parent="." unique_id=833675001]

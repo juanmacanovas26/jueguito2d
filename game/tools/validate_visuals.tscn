@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://validatevisuals001"]
+[gd_scene format=3 uid="uid://mruiknwl58oq"]
 
-[ext_resource type="Script" path="res://tools/validate_visuals.gd" id="1_validate"]
+[ext_resource type="Script" uid="uid://dkvliepnlf8bv" path="res://tools/validate_visuals.gd" id="1_validate"]
 
-[node name="ValidateVisuals" type="Node"]
+[node name="ValidateVisuals" type="Node" unique_id=82685682]
 script = ExtResource("1_validate")

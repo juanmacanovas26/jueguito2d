@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://c7k2p9x4m1r8w"]
+[gd_scene format=3 uid="uid://c7k2qax4m1r8w"]
 
-[ext_resource type="Script" path="res://tools/kit_switch_screenshot.gd" id="1_kitswitch"]
+[ext_resource type="Script" uid="uid://c0csio5peoulr" path="res://tools/kit_switch_screenshot.gd" id="1_kitswitch"]
 
-[node name="KitSwitchScreenshot" type="Node"]
+[node name="KitSwitchScreenshot" type="Node" unique_id=456409924]
 script = ExtResource("1_kitswitch")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b7nvcdvw0lab5"]
+
+[ext_resource type="Script" path="res://tools/paint_screenshot.gd" id="1_paint"]
+
+[node name="PaintScreenshot" type="Node2D"]
+script = ExtResource("1_paint")

@@ -20,6 +20,65 @@ const RESOURCE_ART := {
 }
 const MOB_ART := "res://assets/mobs/slime/idle.png"
 
+## Shape id (StructureTileset.WALL_PIECES, plus "floor") -> its icon art,
+## always rendered in the "stone" material — the icon shows the SHAPE the
+## button places; Game.build_wall_material (chosen separately, see hud.gd)
+## decides which material it actually paints with.
+const STRUCTURE_ART := {
+	"wall_n": "res://assets/world/structures/kit/stone/wall_n.png",
+	"wall_e": "res://assets/world/structures/kit/stone/wall_e.png",
+	"wall_s": "res://assets/world/structures/kit/stone/wall_s.png",
+	"wall_w": "res://assets/world/structures/kit/stone/wall_w.png",
+	"corner_out_ne": "res://assets/world/structures/kit/stone/corner_out_ne.png",
+	"corner_out_nw": "res://assets/world/structures/kit/stone/corner_out_nw.png",
+	"corner_out_se": "res://assets/world/structures/kit/stone/corner_out_se.png",
+	"corner_out_sw": "res://assets/world/structures/kit/stone/corner_out_sw.png",
+	"corner_in_ne": "res://assets/world/structures/kit/stone/corner_in_ne.png",
+	"corner_in_nw": "res://assets/world/structures/kit/stone/corner_in_nw.png",
+	"corner_in_se": "res://assets/world/structures/kit/stone/corner_in_se.png",
+	"corner_in_sw": "res://assets/world/structures/kit/stone/corner_in_sw.png",
+	"partition_n": "res://assets/world/structures/kit/stone/partition_n.png",
+	"partition_e": "res://assets/world/structures/kit/stone/partition_e.png",
+	"partition_s": "res://assets/world/structures/kit/stone/partition_s.png",
+	"partition_w": "res://assets/world/structures/kit/stone/partition_w.png",
+	"partition_hub": "res://assets/world/structures/kit/stone/partition_hub.png",
+	"column": "res://assets/world/structures/kit/stone/column.png",
+	"floor": "res://assets/world/structures/kit/floor.png",
+	"door": "res://assets/world/structures/door.png",
+	"window_arched": "res://assets/world/decor/window_arched.png",
+	"window_small": "res://assets/world/decor/window_small.png",
+	"window_medium": "res://assets/world/decor/window_medium.png",
+	"window_large": "res://assets/world/decor/window_large.png",
+	"window_flowerbox": "res://assets/world/decor/window_flowerbox.png",
+	"torch": "res://assets/world/decor/torch.png",
+}
+
+## "roof_<piece>" palette id -> its icon art, always rendered in the "slate"
+## material — same split as STRUCTURE_ART: the icon shows the shape,
+## Game.build_roof_material decides the material.
+const ROOF_ART := {
+	"roof_eave_n": "res://assets/world/structures/kit/roof_slate/eave_n.png",
+	"roof_eave_e": "res://assets/world/structures/kit/roof_slate/eave_e.png",
+	"roof_eave_s": "res://assets/world/structures/kit/roof_slate/eave_s.png",
+	"roof_eave_w": "res://assets/world/structures/kit/roof_slate/eave_w.png",
+	"roof_hip_ne": "res://assets/world/structures/kit/roof_slate/hip_ne.png",
+	"roof_hip_nw": "res://assets/world/structures/kit/roof_slate/hip_nw.png",
+	"roof_hip_se": "res://assets/world/structures/kit/roof_slate/hip_se.png",
+	"roof_hip_sw": "res://assets/world/structures/kit/roof_slate/hip_sw.png",
+	"roof_valley_ne": "res://assets/world/structures/kit/roof_slate/valley_ne.png",
+	"roof_valley_nw": "res://assets/world/structures/kit/roof_slate/valley_nw.png",
+	"roof_valley_se": "res://assets/world/structures/kit/roof_slate/valley_se.png",
+	"roof_valley_sw": "res://assets/world/structures/kit/roof_slate/valley_sw.png",
+	"roof_ridge_ew": "res://assets/world/structures/kit/roof_slate/ridge_ew.png",
+	"roof_ridge_ns": "res://assets/world/structures/kit/roof_slate/ridge_ns.png",
+	"roof_end_n": "res://assets/world/structures/kit/roof_slate/end_n.png",
+	"roof_end_e": "res://assets/world/structures/kit/roof_slate/end_e.png",
+	"roof_end_s": "res://assets/world/structures/kit/roof_slate/end_s.png",
+	"roof_end_w": "res://assets/world/structures/kit/roof_slate/end_w.png",
+	"roof_pyramid": "res://assets/world/structures/kit/roof_slate/pyramid.png",
+	"roof_interior": "res://assets/world/structures/kit/roof_slate/interior.png",
+}
+
 const POI_COLORS := {
 	"vendor": Color(0.3, 0.55, 0.85),
 	"bank": Color(0.75, 0.65, 0.15),
@@ -31,11 +90,17 @@ const POI_COLORS := {
 static var _cache: Dictionary = {}
 
 
-static func get_icon(kind: String) -> Texture2D:
-	if _cache.has(kind):
-		return _cache[kind]
-	var tex := _build(kind)
-	_cache[kind] = tex
+## `facing_steps` only matters for a "building_<kind>" whose art is a real
+## 4-direction set (BuildingMarker.has_directional_art()) — the build-mode
+## ghost preview passes the facing it's about to place at (see
+## build_ghost.gd) so the preview shows the right sprite instead of always
+## the front one. Every other kind ignores it.
+static func get_icon(kind: String, facing_steps: int = 0) -> Texture2D:
+	var cache_key := "%s#%d" % [kind, facing_steps]
+	if _cache.has(cache_key):
+		return _cache[cache_key]
+	var tex := _build(kind, facing_steps)
+	_cache[cache_key] = tex
 	return tex
 
 
@@ -43,14 +108,42 @@ static func clear_cache() -> void:
 	_cache.clear()
 
 
-static func _build(kind: String) -> Texture2D:
+static func _build(kind: String, facing_steps: int) -> Texture2D:
 	if kind == "mob":
 		return _load_square(MOB_ART)
 	if RESOURCE_ART.has(kind):
 		return _load_square(str(RESOURCE_ART[kind]))
+	if STRUCTURE_ART.has(kind):
+		return _load_square(str(STRUCTURE_ART[kind]))
+	if ROOF_ART.has(kind):
+		return _load_square(str(ROOF_ART[kind]))
+	if kind.begins_with("decor_"):
+		return _load_square(DecorMarker.texture_path(kind.trim_prefix("decor_")))
+	if PaintLayer.is_paint_id(kind):
+		return _load_square(PaintLayer.texture_path(PaintLayer.texture_of(kind)))
+	if kind.begins_with("floor_"):
+		return _load_square(PaintedFloorTileset.path_for(kind.trim_prefix("floor_")))
+	if kind.begins_with("building_"):
+		return _load_square(BuildingMarker.texture_path(kind.trim_prefix("building_"), facing_steps))
+	if kind.begins_with("collision_"):
+		return _collision_icon()
 	if POI_COLORS.has(kind):
 		return _poi_icon(kind, POI_COLORS[kind])
 	return _blank()
+
+
+## No in-world sprite of its own (see collision_marker.gd) — a plain "no
+## entry" glyph, same procedural-icon spirit as POI_COLORS below.
+static func _collision_icon() -> Texture2D:
+	var img := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c := Color(0.85, 0.2, 0.2, 0.9)
+	for i in range(6, 26):
+		_px(img, i, i, c)
+		_px(img, i, i - 1, c)
+		_px(img, i, 31 - i, c)
+		_px(img, i, 32 - i, c)
+	return ImageTexture.create_from_image(img)
 
 
 ## Real art doesn't need pre-resizing to SIZE — the palette buttons already

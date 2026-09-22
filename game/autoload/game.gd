@@ -38,6 +38,47 @@ var build_selected_kind: String = "mob"
 ## it to the placed marker. Cosmetic for today's round content, but real
 ## structures (the future player-facing construction mode) need it.
 var build_rotation: float = 0.0
+## R cycles this in build mode (see hud.gd): "slate", "red", or "none" (see
+## StructureTileset.ROOF_MATERIALS and world_zone.gd's ROOF_NONE). Stamped
+## onto a RoofMarker.roof_material at placement time — see
+## world_zone.gd's _place_marker(). "none" refuses both a manual roof-piece
+## click and the "G" bulk-fill (generate_roof_over_walls()) — a courtyard/
+## ruin/open pen is built by simply not placing roof there, or by clearing
+## whatever roof pieces already exist with right-click.
+var build_roof_material: String = "slate"
+## Y cycles this in build mode (see hud.gd): "stone", "brick", "plain", or
+## "wood" (see StructureTileset.WALL_MATERIALS). Stamped onto a
+## StructureMarker.wall_material at placement time — see world_zone.gd's
+## _place_marker(). A separate axis from `piece` (which shape button is
+## selected): pick the shape, then pick the material, same split R already
+## gives roof.
+var build_wall_material: String = "stone"
+## T toggles this in build mode (see hud.gd). Off by default (raw cursor
+## position, today's original behavior — good for organic scatter like
+## bushes/rocks); on snaps free-placed markers (decor/resources/mobs/POIs —
+## anything that isn't already grid-locked like "wall") to BuildGrid, the
+## same grid walls always snap to, so decor lines up cleanly against a wall
+## instead of needing to be pixel-hunted into place.
+var build_snap_to_grid: bool = false
+## Side of the square block of cells one click paints, for the grid-cell
+## floor brushes ("SUELO"/"CAMINO (auto)"). [ and ] step it in build mode
+## (see hud.gd), the convention every tile/paint editor already uses.
+##
+## An auto-road brush paints at least 2x2 whatever this says, because its art
+## has no narrower piece (RoadAutotiler.brush_size_for()) — that minimum is
+## applied on the way out and never written back here, so switching to a road
+## and back does not quietly resize the brush someone chose.
+var build_brush_size: int = 1
+## Upper bound for build_brush_size. Six cells a side is already a 192px
+## stamp; past that a click covers more than it is possible to aim.
+const MAX_BRUSH_SIZE := 6
+
+## Dev/admin toggle (F2, see hud.gd): while on, the player floats through
+## walls/obstacles at a much higher speed instead of running the normal
+## combat state machine, and takes no damage — a fast way to fly around and
+## eyeball a large map while using build mode, without a mob interrupting the
+## trip. See player.gd's _physics_process()/resolve_incoming_hit().
+var gm_mode: bool = false
 
 ## Authoritative world root (the current zone). Set by the zone's _ready().
 var world: Node = null

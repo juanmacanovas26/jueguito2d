@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c8h3vs0e3k7a"]
 
-[ext_resource type="Script" path="res://tools/validate_save.gd" id="1_save"]
+[ext_resource type="Script" uid="uid://ou6f1heknpp4" path="res://tools/validate_save.gd" id="1_save"]
 
-[node name="ValidateSave" type="Node"]
+[node name="ValidateSave" type="Node" unique_id=1919788601]
 script = ExtResource("1_save")

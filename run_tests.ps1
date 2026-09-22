@@ -34,7 +34,10 @@ $suites = @(
     @{ Name = "save";      Scene = "res://tools/validate_save.tscn";        Frames = 600 },
     @{ Name = "skills";    Scene = "res://tools/validate_skills.tscn";      Frames = 600 },
     @{ Name = "zonebuild"; Scene = "res://tools/validate_zone_builder.tscn"; Frames = 600 },
-    @{ Name = "buildmode"; Scene = "res://tools/validate_build_mode.tscn";   Frames = 600 }
+    @{ Name = "buildmode"; Scene = "res://tools/validate_build_mode.tscn";   Frames = 600 },
+    @{ Name = "structgrid"; Scene = "res://tools/validate_structure_grid.tscn"; Frames = 300 },
+    @{ Name = "roadauto";  Scene = "res://tools/validate_road_autotile.tscn"; Frames = 600 },
+    @{ Name = "paint";     Scene = "res://tools/validate_paint_layer.tscn";  Frames = 600 }
 )
 
 Write-Host ""

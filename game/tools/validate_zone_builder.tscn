@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d3f8n1q05j2m"]
 
-[ext_resource type="Script" path="res://tools/validate_zone_builder.gd" id="1_zb"]
+[ext_resource type="Script" uid="uid://cg5wsi5n37vnd" path="res://tools/validate_zone_builder.gd" id="1_zb"]
 
-[node name="ValidateZoneBuilder" type="Node"]
+[node name="ValidateZoneBuilder" type="Node" unique_id=92345408]
 script = ExtResource("1_zb")

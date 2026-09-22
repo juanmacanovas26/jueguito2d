@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://d5m9w3k7t2q6x"]
+[gd_scene format=3 uid="uid://8fc1nyauvf6"]
 
-[ext_resource type="Script" path="res://tools/discovery_screenshot.gd" id="1_discovery"]
+[ext_resource type="Script" uid="uid://co0ms3pff11dl" path="res://tools/discovery_screenshot.gd" id="1_discovery"]
 
-[node name="DiscoveryScreenshot" type="Node"]
+[node name="DiscoveryScreenshot" type="Node" unique_id=1589660098]
 script = ExtResource("1_discovery")

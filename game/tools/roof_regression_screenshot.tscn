@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c2i5prxiilqvb"]
+
+[ext_resource type="Script" uid="uid://w072fjvw68qp" path="res://tools/roof_regression_screenshot.gd" id="1_roofreg"]
+
+[node name="RoofRegressionScreenshot" type="Node" unique_id=552051551]
+script = ExtResource("1_roofreg")

@@ -1,0 +1,18 @@
+"RPG Pixel Realms - The Plains" by pixel-banner
+https://pixel-banner.itch.io/rpg-pixel-realms-the-plains
+
+These PNGs are individual props sliced out of the pack's Props.png (the
+pack ships one showcase sheet with the props laid out at irregular
+positions, not a uniform grid). Nothing was recoloured or redrawn — each
+file is a straight crop of its sprite's opaque bounding box.
+
+Consult the pack's own license/readme from the itch.io download for the
+terms that apply to shipping these in a build. The rest of this project's
+decor (assets/world/decor/*.png, one level up) is a DIFFERENT pack —
+"Medieval Village Exterior" by Hypnobius, see the LICENSE.txt there.
+
+The pack's other sheet, GrassTiles.png, is terrain art on a 32px grid
+(grass/dirt/pond/water/cliff blobs plus shoreline strips). It is not
+imported yet — it needs an autotile or stamp system to be useful, and the
+project has none right now (the old Ground/Terrain systems were removed).
+The raw sheet is kept in assets/_incoming/plains_pack/.

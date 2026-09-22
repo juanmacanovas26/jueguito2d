@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/roof_wide_screenshot.gd" id="1_roofwide"]
+
+[node name="RoofWideScreenshot" type="Node"]
+script = ExtResource("1_roofwide")

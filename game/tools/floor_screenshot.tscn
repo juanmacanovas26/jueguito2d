@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dmt2sy5xe5kdk"]
 
-[ext_resource type="Script" path="res://tools/floor_screenshot.gd" id="1_floor"]
+[ext_resource type="Script" uid="uid://clvcl2fd8ubfk" path="res://tools/floor_screenshot.gd" id="1_floor"]
 
-[node name="FloorScreenshot" type="Node2D"]
+[node name="FloorScreenshot" type="Node2D" unique_id=762974696]
 script = ExtResource("1_floor")

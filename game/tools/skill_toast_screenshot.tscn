@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b4vnq7x2h8t1w"]
 
-[ext_resource type="Script" path="res://tools/skill_toast_screenshot.gd" id="1_toast"]
+[ext_resource type="Script" uid="uid://m4j2ync53pkt" path="res://tools/skill_toast_screenshot.gd" id="1_toast"]
 
-[node name="SkillToastScreenshot" type="Node"]
+[node name="SkillToastScreenshot" type="Node" unique_id=1081462176]
 script = ExtResource("1_toast")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bd8864wsdv4i8"]
+
+[ext_resource type="Script" uid="uid://b76x5bsxr1f61" path="res://tools/validate_structure_grid.gd" id="1_structgrid"]
+
+[node name="ValidateStructureGrid" type="Node" unique_id=1831158931]
+script = ExtResource("1_structgrid")

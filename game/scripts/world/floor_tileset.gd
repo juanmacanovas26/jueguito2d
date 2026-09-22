@@ -6,7 +6,7 @@ extends RefCounted
 ## automatically, no code changes needed. Until then, a flat placeholder
 ## color is used so the scene keeps running.
 
-const TILE_SIZE := Vector2i(32, 32)
+const TILE_SIZE := BuildGrid.TILE_SIZE_2I
 
 const GRASS_BASE := "res://assets/tiles/grass_01.png"
 const GRASS_VARIANT_A := "res://assets/tiles/grass_02.png"

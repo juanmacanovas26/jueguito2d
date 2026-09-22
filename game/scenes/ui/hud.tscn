@@ -1,26 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://hud001"]
+[gd_scene format=3 uid="uid://hud001"]
 
-[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
-[ext_resource type="PackedScene" path="res://scenes/ui/skill_bar.tscn" id="2_skillbar"]
+[ext_resource type="Script" uid="uid://6vfn5cnhrxt5" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://skillbar001" path="res://scenes/ui/skill_bar.tscn" id="2_skillbar"]
+[ext_resource type="Theme" uid="uid://ctac28brn6lhr" path="res://resources/ui/build_panel_theme.tres" id="9_buildtheme"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=1971122860]
 process_mode = 3
 script = ExtResource("1_hud")
 
-[node name="SkillBar" parent="." instance=ExtResource("2_skillbar")]
+[node name="SkillBar" parent="." unique_id=181891521 instance=ExtResource("2_skillbar")]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
 offset_left = -200.0
 offset_top = -84.0
 offset_right = 200.0
 offset_bottom = -20.0
-grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=1874409901]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -32,61 +31,56 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1175798469]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 4
 
-[node name="LevelText" type="Label" parent="Margin/VBox"]
+[node name="LevelText" type="Label" parent="Margin/VBox" unique_id=1904540202]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
 theme_override_font_sizes/font_size = 14
 text = "Lv 1   XP 0/65   Gold 0"
 
-[node name="HpText" type="Label" parent="Margin/VBox"]
+[node name="HpText" type="Label" parent="Margin/VBox" unique_id=906055279]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 0.9, 1)
 theme_override_font_sizes/font_size = 14
 text = "HP 100/100   ST 100/100   MP 100/100"
 
-[node name="HpBar" type="ProgressBar" parent="Margin/VBox"]
+[node name="HpBar" type="ProgressBar" parent="Margin/VBox" unique_id=536599998]
 custom_minimum_size = Vector2(240, 16)
 layout_mode = 2
-max_value = 100.0
 value = 100.0
 show_percentage = false
 
-[node name="StaminaBar" type="ProgressBar" parent="Margin/VBox"]
-custom_minimum_size = Vector2(240, 12)
-layout_mode = 2
-max_value = 100.0
-value = 100.0
-show_percentage = false
+[node name="StaminaBar" type="ProgressBar" parent="Margin/VBox" unique_id=1748984086]
 modulate = Color(0.55, 0.85, 0.55, 1)
-
-[node name="ManaBar" type="ProgressBar" parent="Margin/VBox"]
 custom_minimum_size = Vector2(240, 12)
 layout_mode = 2
-max_value = 100.0
 value = 100.0
 show_percentage = false
-modulate = Color(0.55, 0.55, 0.95, 1)
 
-[node name="XpBar" type="ProgressBar" parent="Margin/VBox"]
+[node name="ManaBar" type="ProgressBar" parent="Margin/VBox" unique_id=1769410437]
+modulate = Color(0.55, 0.55, 0.95, 1)
+custom_minimum_size = Vector2(240, 12)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="XpBar" type="ProgressBar" parent="Margin/VBox" unique_id=667759483]
+modulate = Color(0.95, 0.8, 0.35, 1)
 custom_minimum_size = Vector2(240, 10)
 layout_mode = 2
-max_value = 100.0
-value = 0.0
 show_percentage = false
-modulate = Color(0.95, 0.8, 0.35, 1)
 
-[node name="StyleText" type="Label" parent="Margin/VBox"]
+[node name="StyleText" type="Label" parent="Margin/VBox" unique_id=1024359640]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.85, 0.7, 1)
 theme_override_font_sizes/font_size = 13
 text = "WARRIOR / SHIELD"
 
-[node name="Help" type="Label" parent="Margin"]
+[node name="Help" type="Label" parent="Margin" unique_id=1157519907]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
@@ -96,7 +90,7 @@ text = "controls"
 horizontal_alignment = 2
 vertical_alignment = 2
 
-[node name="Toast" type="Label" parent="."]
+[node name="Toast" type="Label" parent="." unique_id=914059923]
 visible = false
 anchors_preset = 7
 anchor_left = 0.5
@@ -111,10 +105,9 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.95, 0.7, 1)
 theme_override_font_sizes/font_size = 16
-text = ""
 horizontal_alignment = 1
 
-[node name="InvPanel" type="PanelContainer" parent="."]
+[node name="InvPanel" type="PanelContainer" parent="." unique_id=2032779469]
 visible = false
 anchors_preset = 1
 anchor_left = 1.0
@@ -125,117 +118,117 @@ offset_right = -16.0
 offset_bottom = 470.0
 grow_horizontal = 0
 
-[node name="Margin" type="MarginContainer" parent="InvPanel"]
+[node name="Margin" type="MarginContainer" parent="InvPanel" unique_id=591604609]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="InvPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="InvPanel/Margin" unique_id=1801734963]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="InvTitle" type="Label" parent="InvPanel/Margin/VBox"]
+[node name="InvTitle" type="Label" parent="InvPanel/Margin/VBox" unique_id=290744694]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Inventory — 0 gold"
 
-[node name="EquipLabel" type="Label" parent="InvPanel/Margin/VBox"]
+[node name="EquipLabel" type="Label" parent="InvPanel/Margin/VBox" unique_id=2098070135]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.75, 0.7, 1)
 theme_override_font_sizes/font_size = 11
 text = "EQUIPPED  (click a slot to remove)"
 
-[node name="EquipRow" type="GridContainer" parent="InvPanel/Margin/VBox"]
+[node name="EquipRow" type="GridContainer" parent="InvPanel/Margin/VBox" unique_id=491966163]
 layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 5
 
-[node name="weapon" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="weapon" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1579773834]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Weapon"
 icon_alignment = 1
 expand_icon = true
 
-[node name="armor" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="armor" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1013550558]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Armor"
 icon_alignment = 1
 expand_icon = true
 
-[node name="legs" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="legs" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=462746156]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Legs"
 icon_alignment = 1
 expand_icon = true
 
-[node name="helmet" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="helmet" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1494275752]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Helmet"
 icon_alignment = 1
 expand_icon = true
 
-[node name="secondary" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="secondary" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=419638270]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Off-hand"
 icon_alignment = 1
 expand_icon = true
 
-[node name="shoulders" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="shoulders" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1525288954]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Shoulders"
 icon_alignment = 1
 expand_icon = true
 
-[node name="arms" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="arms" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1932786032]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Arms"
 icon_alignment = 1
 expand_icon = true
 
-[node name="wrists" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="wrists" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=434167670]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Wrists"
 icon_alignment = 1
 expand_icon = true
 
-[node name="gloves" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="gloves" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=1158815982]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Gloves"
 icon_alignment = 1
 expand_icon = true
 
-[node name="feet" type="Button" parent="InvPanel/Margin/VBox/EquipRow"]
+[node name="feet" type="Button" parent="InvPanel/Margin/VBox/EquipRow" unique_id=796580231]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 tooltip_text = "Boots"
 icon_alignment = 1
 expand_icon = true
 
-[node name="StatsText" type="Label" parent="InvPanel/Margin/VBox"]
+[node name="StatsText" type="Label" parent="InvPanel/Margin/VBox" unique_id=1736729118]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.78, 1)
 theme_override_font_sizes/font_size = 12
 text = "DMG 10   ARMOR 0%"
 
-[node name="InvList" type="ItemList" parent="InvPanel/Margin/VBox"]
+[node name="InvList" type="ItemList" parent="InvPanel/Margin/VBox" unique_id=1516136525]
 custom_minimum_size = Vector2(240, 240)
 layout_mode = 2
 size_flags_vertical = 3
 fixed_icon_size = Vector2i(24, 24)
 
-[node name="CraftPanel" type="PanelContainer" parent="."]
+[node name="CraftPanel" type="PanelContainer" parent="." unique_id=1742645879]
 visible = false
 anchors_preset = 1
 anchor_left = 1.0
@@ -246,28 +239,28 @@ offset_right = -16.0
 offset_bottom = 700.0
 grow_horizontal = 0
 
-[node name="Margin" type="MarginContainer" parent="CraftPanel"]
+[node name="Margin" type="MarginContainer" parent="CraftPanel" unique_id=1095435359]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="CraftPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="CraftPanel/Margin" unique_id=1220996088]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CraftTitle" type="Label" parent="CraftPanel/Margin/VBox"]
+[node name="CraftTitle" type="Label" parent="CraftPanel/Margin/VBox" unique_id=2092642443]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Crafting (click to craft)"
 
-[node name="CraftList" type="ItemList" parent="CraftPanel/Margin/VBox"]
+[node name="CraftList" type="ItemList" parent="CraftPanel/Margin/VBox" unique_id=204502799]
 custom_minimum_size = Vector2(240, 220)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PausePanel" type="PanelContainer" parent="."]
+[node name="PausePanel" type="PanelContainer" parent="." unique_id=1411200669]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -281,44 +274,44 @@ offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Margin" type="MarginContainer" parent="PausePanel"]
+[node name="Margin" type="MarginContainer" parent="PausePanel" unique_id=217490806]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="PausePanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="PausePanel/Margin" unique_id=1299956400]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PauseTitle" type="Label" parent="PausePanel/Margin/VBox"]
+[node name="PauseTitle" type="Label" parent="PausePanel/Margin/VBox" unique_id=263779591]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Pausa"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="PausePanel/Margin/VBox"]
+[node name="ResumeButton" type="Button" parent="PausePanel/Margin/VBox" unique_id=182640786]
 custom_minimum_size = Vector2(180, 34)
 layout_mode = 2
 text = "Reanudar"
 
-[node name="SaveButton" type="Button" parent="PausePanel/Margin/VBox"]
+[node name="SaveButton" type="Button" parent="PausePanel/Margin/VBox" unique_id=1415947429]
 custom_minimum_size = Vector2(180, 34)
 layout_mode = 2
 text = "Guardar"
 
-[node name="SaveQuitButton" type="Button" parent="PausePanel/Margin/VBox"]
+[node name="SaveQuitButton" type="Button" parent="PausePanel/Margin/VBox" unique_id=1937051654]
 custom_minimum_size = Vector2(180, 34)
 layout_mode = 2
 text = "Guardar y salir al menú"
 
-[node name="QuitButton" type="Button" parent="PausePanel/Margin/VBox"]
+[node name="QuitButton" type="Button" parent="PausePanel/Margin/VBox" unique_id=54699359]
 custom_minimum_size = Vector2(180, 34)
 layout_mode = 2
 text = "Salir del juego"
 
-[node name="DiscoveryPanel" type="PanelContainer" parent="."]
+[node name="DiscoveryPanel" type="PanelContainer" parent="." unique_id=1296702618]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -332,69 +325,70 @@ offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Margin" type="MarginContainer" parent="DiscoveryPanel"]
+[node name="Margin" type="MarginContainer" parent="DiscoveryPanel" unique_id=1156618059]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="DiscoveryPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="DiscoveryPanel/Margin" unique_id=1116018961]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="DiscoveryTitle" type="Label" parent="DiscoveryPanel/Margin/VBox"]
+[node name="DiscoveryTitle" type="Label" parent="DiscoveryPanel/Margin/VBox" unique_id=1872581501]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-autowrap_mode = 2
 text = "Descubrimiento — elegí 1"
 horizontal_alignment = 1
+autowrap_mode = 2
 
-[node name="Choices" type="VBoxContainer" parent="DiscoveryPanel/Margin/VBox"]
+[node name="Choices" type="VBoxContainer" parent="DiscoveryPanel/Margin/VBox" unique_id=1470828419]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="DismissButton" type="Button" parent="DiscoveryPanel/Margin/VBox"]
+[node name="DismissButton" type="Button" parent="DiscoveryPanel/Margin/VBox" unique_id=554051699]
 custom_minimum_size = Vector2(220, 30)
 layout_mode = 2
 text = "Descartar"
 
-[node name="BuildPanel" type="PanelContainer" parent="."]
+[node name="BuildPanel" type="PanelContainer" parent="." unique_id=974330988]
 visible = false
-anchors_preset = 0
 offset_left = 16.0
 offset_top = 170.0
 offset_right = 268.0
-offset_bottom = 470.0
+offset_bottom = 660.0
+theme = ExtResource("9_buildtheme")
 
-[node name="Margin" type="MarginContainer" parent="BuildPanel"]
+[node name="Margin" type="MarginContainer" parent="BuildPanel" unique_id=1942308098]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="BuildPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="BuildPanel/Margin" unique_id=113582998]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BuildTitle" type="Label" parent="BuildPanel/Margin/VBox"]
+[node name="BuildTitle" type="Label" parent="BuildPanel/Margin/VBox" unique_id=261526635]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
+text = "Build mode — click (o arrastrar): colocar, click derecho: borrar, Ctrl+Z: deshacer, G: generar techo, Q/E: rotar, 1-9: elegir, T: snap, [ ]: ancho de pincel, R: material techo, Y: material pared, H: ocultar techo, rueda: zoom"
 autowrap_mode = 2
-text = "Build mode — click: colocar, click derecho: borrar, Q/E: rotar, 1-9: elegir"
 
-[node name="Categories" type="VBoxContainer" parent="BuildPanel/Margin/VBox"]
+[node name="CategoriesScroll" type="ScrollContainer" parent="BuildPanel/Margin/VBox" unique_id=857761107]
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Categories" type="VBoxContainer" parent="BuildPanel/Margin/VBox/CategoriesScroll" unique_id=313280557]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="SelectedLabel" type="Label" parent="BuildPanel/Margin/VBox"]
+[node name="SelectedLabel" type="Label" parent="BuildPanel/Margin/VBox" unique_id=630525043]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
 theme_override_font_sizes/font_size = 12
 text = "Selección: Mob"
-
-[node name="SaveButton" type="Button" parent="BuildPanel/Margin/VBox"]
-custom_minimum_size = Vector2(220, 32)
-layout_mode = 2
-text = "Guardar zona"

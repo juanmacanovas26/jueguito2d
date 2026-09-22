@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://l70eqqescruy"]
 
-[ext_resource type="Script" path="res://tools/validate_systems.gd" id="1_sys"]
+[ext_resource type="Script" uid="uid://c4le0kma3ukiy" path="res://tools/validate_systems.gd" id="1_sys"]
 
-[node name="ValidateSystems" type="Node"]
+[node name="ValidateSystems" type="Node" unique_id=21417206]
 script = ExtResource("1_sys")

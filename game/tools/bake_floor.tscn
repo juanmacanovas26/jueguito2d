@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cxsl2aukl5efd"]
+
+[ext_resource type="Script" uid="uid://dgb25pjhowut8" path="res://tools/bake_floor.gd" id="1_bakefloor"]
+
+[node name="BakeFloor" type="Node" unique_id=705235684]
+script = ExtResource("1_bakefloor")

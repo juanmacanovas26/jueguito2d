@@ -1,64 +1,63 @@
 [gd_scene format=3 uid="uid://chasemob001"]
 
-[ext_resource type="Script" path="res://scripts/enemy/chase_mob.gd" id="1_mob"]
-[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
-[ext_resource type="Script" path="res://scripts/combat/health.gd" id="3_health"]
-[ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="4_hitbox"]
+[ext_resource type="Script" uid="uid://d2v3hjl1m4e51" path="res://scripts/enemy/chase_mob.gd" id="1_mob"]
+[ext_resource type="Script" uid="uid://b16a6rw57aegs" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://drtk0pl8b2d5w" path="res://scripts/combat/health.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://dy16u5lusoqgy" path="res://scripts/combat/hitbox.gd" id="4_hitbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(20, 22)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
 size = Vector2(20, 22)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
 size = Vector2(20, 16)
 
-[node name="ChaseMob" type="CharacterBody2D" groups=["enemy", "mob"]]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(20, 22)
+
+[node name="ChaseMob" type="CharacterBody2D" unique_id=1510593382 groups=["enemy", "mob"]]
 collision_layer = 4
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("1_mob")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1113950946]
 shape = SubResource("RectangleShape2D_body")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=160062060]
 
-[node name="Facing" type="Node2D" parent="."]
+[node name="Facing" type="Node2D" parent="." unique_id=1992577953]
 
-[node name="Hitbox" type="Area2D" parent="Facing"]
+[node name="Hitbox" type="Area2D" parent="Facing" unique_id=1079835508]
 collision_layer = 16
 collision_mask = 2
 monitorable = false
 script = ExtResource("4_hitbox")
 team = &"enemy"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox" unique_id=662046000]
 position = Vector2(18, 0)
 shape = SubResource("RectangleShape2D_hit")
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1472867884]
 collision_layer = 4
 collision_mask = 0
 monitoring = false
 script = ExtResource("2_hurtbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=735871460]
 shape = SubResource("RectangleShape2D_hurt")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." unique_id=1050302388]
 script = ExtResource("3_health")
 max_hp = 80.0
 
-[node name="HpLabel" type="Label" parent="."]
+[node name="HpLabel" type="Label" parent="." unique_id=1697036776]
 offset_left = -48.0
 offset_top = -30.0
 offset_right = 48.0
 offset_bottom = -12.0
-horizontal_alignment = 1
 theme_override_font_sizes/font_size = 11
 text = "Mob"
+horizontal_alignment = 1
 
-[node name="FlashTimer" type="Timer" parent="."]
+[node name="FlashTimer" type="Timer" parent="." unique_id=1391267175]
 one_shot = true

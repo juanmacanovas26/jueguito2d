@@ -26,14 +26,88 @@ const ResourceNodeScene := preload("res://scenes/world/resource_node.tscn")
 ## get embedded and serialized the next time the marker is packed to disk.
 static func build(markers_root: Node, zone_root: Node, out_spawns: Dictionary = {}) -> Array[POIMarker]:
 	var pois: Array[POIMarker] = []
-	for child in markers_root.get_children():
+	for child in _all_descendants(markers_root):
 		if child is POIMarker:
 			pois.append(child)
+		elif child is StructureMarker:
+			continue # collected separately, see collect_structures() — no entity of its own
+		elif child is RoofMarker:
+			continue # collected separately, see collect_roofs() — no entity of its own
+		elif child is CollisionMarker:
+			continue # collected separately, see collect_collision() — no entity of its own
 		else:
 			var spawned := build_one(child, zone_root)
 			if spawned:
 				out_spawns[child] = spawned
 	return pois
+
+
+## Every descendant of `root`, at any depth — not just direct children. Lets
+## an author group several markers under a plain Node2D (or save that group
+## as its OWN scene and instance it repeatedly, Godot's equivalent of a
+## Unity prefab — "build a house once, drag copies of it into other zones")
+## anywhere under "Markers" without losing them: build()/collect_*() below
+## all walk the whole subtree, so nesting is purely an authoring convenience
+## with zero effect on what actually gets built or painted. A node that
+## isn't a marker (the grouping Node2D itself, or an instanced sub-scene's
+## own root) is simply not a POIMarker/StructureMarker/RoofMarker/
+## MobSpawnMarker/ResourceNodeMarker and gets skipped by whichever type
+## check is doing the collecting — no special-casing needed here.
+static func _all_descendants(root: Node) -> Array[Node]:
+	var out: Array[Node] = []
+	for child in root.get_children():
+		out.append(child)
+		out.append_array(_all_descendants(child))
+	return out
+
+
+## Every StructureMarker under markers_root (at any depth — see
+## _all_descendants()) — the "Structures" TileMapLayer is repainted from
+## the whole set at once (each marker already knows its own
+## piece/material, see world_zone.gd's _rebuild_structures()), not spawned
+## one at a time like a mob or a gatherable.
+static func collect_structures(markers_root: Node) -> Array[StructureMarker]:
+	var out: Array[StructureMarker] = []
+	for child in _all_descendants(markers_root):
+		if child is StructureMarker:
+			out.append(child)
+	return out
+
+
+## Every hand-painted RoofMarker under markers_root (at any depth) — same
+## reasoning as collect_structures(): the "Roof" TileMapLayer is repainted
+## from the whole set at once (merged with the automatic roof), not spawned
+## one at a time.
+static func collect_roofs(markers_root: Node) -> Array[RoofMarker]:
+	var out: Array[RoofMarker] = []
+	for child in _all_descendants(markers_root):
+		if child is RoofMarker:
+			out.append(child)
+	return out
+
+
+## Every CollisionMarker under markers_root (at any depth) — collected as a
+## set (not spawned one at a time like a mob) because world_zone.gd's
+## _rebuild_collision() diffs the whole set against its live StaticBody2D
+## map every rebuild, same shape as the TileMapLayer-backed collect_*()
+## above even though collision has no layer of its own.
+static func collect_collision(markers_root: Node) -> Array[CollisionMarker]:
+	var out: Array[CollisionMarker] = []
+	for child in _all_descendants(markers_root):
+		if child is CollisionMarker:
+			out.append(child)
+	return out
+
+
+## Every FloorTileMarker under markers_root (at any depth) — same collect-the
+## -whole-set shape as the others, feeding world_zone.gd's
+## _rebuild_floor_tiles() repaint of the "Suelo" layer.
+static func collect_floor_tiles(markers_root: Node) -> Array[FloorTileMarker]:
+	var out: Array[FloorTileMarker] = []
+	for child in _all_descendants(markers_root):
+		if child is FloorTileMarker:
+			out.append(child)
+	return out
 
 
 ## Spawns the single live entity a marker describes (mob or gatherable) and

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://resnode001"]
 
-[ext_resource type="Script" path="res://scripts/world/resource_node.gd" id="1_node"]
-[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
-[ext_resource type="Script" path="res://scripts/combat/health.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://f2w5y1tox4ni" path="res://scripts/world/resource_node.gd" id="1_node"]
+[ext_resource type="Script" uid="uid://b16a6rw57aegs" path="res://scripts/combat/hurtbox.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://drtk0pl8b2d5w" path="res://scripts/combat/health.gd" id="3_health"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_collision"]
 radius = 18.0
@@ -10,25 +10,24 @@ radius = 18.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
 radius = 20.0
 
-[node name="ResourceNode" type="StaticBody2D"]
-collision_layer = 1
+[node name="ResourceNode" type="StaticBody2D" unique_id=732153297]
 collision_mask = 0
 script = ExtResource("1_node")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1139937926]
 shape = SubResource("CircleShape2D_collision")
 
-[node name="Visual" type="Node2D" parent="."]
+[node name="Visual" type="Node2D" parent="." unique_id=1825653191]
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1514077226]
 collision_layer = 4
 collision_mask = 0
 monitoring = false
 script = ExtResource("2_hurtbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=400107947]
 shape = SubResource("CircleShape2D_hurt")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." unique_id=171225150]
 script = ExtResource("3_health")
 max_hp = 40.0

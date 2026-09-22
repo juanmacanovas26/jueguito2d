@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bmfxl7l3di1qn"]
+
+[ext_resource type="Script" uid="uid://dssk2c5odwj0y" path="res://tools/sidewall_column_screenshot.gd" id="1_sidewall"]
+
+[node name="SidewallColumnScreenshot" type="Node" unique_id=237177397]
+script = ExtResource("1_sidewall")

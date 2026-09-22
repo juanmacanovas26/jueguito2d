@@ -1,15 +1,15 @@
-[gd_scene load_steps=13 format=3 uid="uid://player001"]
+[gd_scene format=3 uid="uid://player001"]
 
-[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
-[ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="2_hitbox"]
-[ext_resource type="Script" path="res://scripts/combat/hurtbox.gd" id="3_hurtbox"]
-[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
-[ext_resource type="Script" path="res://scripts/player/inventory.gd" id="5_inv"]
-[ext_resource type="Script" path="res://scripts/player/skills.gd" id="6_prog"]
-[ext_resource type="Script" path="res://scripts/combat/skill_caster.gd" id="10_skills"]
-[ext_resource type="Script" path="res://scripts/combat/skill_aimer.gd" id="11_aimer"]
-[ext_resource type="Script" path="res://scripts/visual/character_visual.gd" id="7_visual"]
-[ext_resource type="Resource" path="res://resources/visuals/lpc_male_set.tres" id="8_visualset"]
+[ext_resource type="Script" uid="uid://c5mdasj4mhgke" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://dy16u5lusoqgy" path="res://scripts/combat/hitbox.gd" id="2_hitbox"]
+[ext_resource type="Script" uid="uid://b16a6rw57aegs" path="res://scripts/combat/hurtbox.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://drtk0pl8b2d5w" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" uid="uid://d2q3yepircyox" path="res://scripts/player/inventory.gd" id="5_inv"]
+[ext_resource type="Script" uid="uid://bild4vrrb0gps" path="res://scripts/player/skills.gd" id="6_prog"]
+[ext_resource type="Script" uid="uid://xhdxrjqugykc" path="res://scripts/visual/character_visual.gd" id="7_visual"]
+[ext_resource type="Resource" uid="uid://cvs0lpcmale" path="res://resources/visuals/lpc_male_set.tres" id="8_visualset"]
+[ext_resource type="Script" uid="uid://b406mvkf4x4po" path="res://scripts/combat/skill_caster.gd" id="10_skills"]
+[ext_resource type="Script" uid="uid://d2d6quslad850" path="res://scripts/combat/skill_aimer.gd" id="11_aimer"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(18, 26)
@@ -20,89 +20,84 @@ size = Vector2(16, 16)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
 size = Vector2(18, 26)
 
-[node name="Player" type="CharacterBody2D" groups=["player"]]
+[node name="Player" type="CharacterBody2D" unique_id=216491327 groups=["player"]]
 collision_layer = 2
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("1_player")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1345125592]
 position = Vector2(0, 2)
 shape = SubResource("RectangleShape2D_body")
 
-[node name="Body" type="Polygon2D" parent="."]
+[node name="Body" type="Polygon2D" parent="." unique_id=153652965]
 color = Color(0.45, 0.72, 0.95, 1)
 polygon = PackedVector2Array(-9, -12, 9, -12, 9, 14, -9, 14)
 
-[node name="CharacterVisual" type="Node2D" parent="."]
+[node name="CharacterVisual" type="Node2D" parent="." unique_id=1929589101]
 script = ExtResource("7_visual")
 visual_set = ExtResource("8_visualset")
-body_piece = "body/Body Color"
-head_piece = "head/Human Male"
-hair_piece = "hair/Spiked"
 feet_offset = Vector2(0, -14)
-autoplay = &"idle"
 
-[node name="GuardFx" type="Polygon2D" parent="."]
+[node name="GuardFx" type="Polygon2D" parent="." unique_id=1078457421]
 visible = false
 z_index = 2
 color = Color(0.55, 0.75, 1, 0.4)
 polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
-[node name="ChargeFx" type="Polygon2D" parent="."]
+[node name="ChargeFx" type="Polygon2D" parent="." unique_id=1742643709]
 visible = false
 z_index = 1
 color = Color(1, 0.6, 0.25, 0.35)
 polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
 
-[node name="Facing" type="Node2D" parent="."]
+[node name="Facing" type="Node2D" parent="." unique_id=1971379818]
 
-[node name="Hitbox" type="Area2D" parent="Facing"]
+[node name="Hitbox" type="Area2D" parent="Facing" unique_id=1281207818]
 collision_layer = 8
 collision_mask = 4
 monitorable = false
 script = ExtResource("2_hitbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Facing/Hitbox" unique_id=1946063628]
 position = Vector2(18, 0)
 shape = SubResource("RectangleShape2D_hit")
 debug_color = Color(1, 0.2, 0.2, 0.4)
 
-[node name="Slash" type="Polygon2D" parent="Facing/Hitbox"]
+[node name="Slash" type="Polygon2D" parent="Facing/Hitbox" unique_id=1579319637]
 color = Color(1, 0.85, 0.4, 0.5)
 polygon = PackedVector2Array(10, -8, 26, -6, 26, 6, 10, 8)
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1675456193]
 collision_layer = 2
 collision_mask = 0
 monitoring = false
 script = ExtResource("3_hurtbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1856920463]
 position = Vector2(0, 2)
 shape = SubResource("RectangleShape2D_hurt")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." unique_id=472800381]
 script = ExtResource("4_health")
 
-[node name="Inventory" type="Node" parent="."]
+[node name="Inventory" type="Node" parent="." unique_id=210793746]
 script = ExtResource("5_inv")
 
-[node name="Skills" type="Node" parent="."]
+[node name="Skills" type="Node" parent="." unique_id=1851998757]
 script = ExtResource("6_prog")
 
-[node name="AnimTimer" type="Timer" parent="."]
+[node name="AnimTimer" type="Timer" parent="." unique_id=1396483690]
 one_shot = true
 
-[node name="GcdTimer" type="Timer" parent="."]
+[node name="GcdTimer" type="Timer" parent="." unique_id=1721876435]
 one_shot = true
 
-[node name="SkillCaster" type="Node" parent="."]
+[node name="SkillCaster" type="Node" parent="." unique_id=1259018218]
 script = ExtResource("10_skills")
 
-[node name="SkillAimer" type="Node2D" parent="."]
+[node name="SkillAimer" type="Node2D" parent="." unique_id=1241933163]
 script = ExtResource("11_aimer")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1304151710]
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0

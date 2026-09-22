@@ -1,0 +1,28 @@
+"Medieval Town & Fantasy 2D Mega Props Pack" v1.0 by nacl1234 (c) 2026.
+Original download kept at assets/_incoming/MedievalTown&Fantasy2DMegaPropsPack_v1.0/
+— its Documentation/LICENSE.txt is the authoritative terms.
+
+Summary of that license as it applies here: use in commercial games is
+permitted, and so is modifying the art for use inside the game. NOT permitted:
+redistributing these files standalone, or including them in another asset
+pack. Shipping them compiled into the game build is the permitted form.
+
+All 144 props imported, driven by the pack's own Documentation/ASSET_LIST.json
+(name, category, size and anchor per asset). Two transforms on import:
+
+ - CROPPED to the opaque bounding box. The pack ships 16px of transparent
+   padding and declares an `anchor` at the foot of the content; DecorMarker
+   draws bottom-centred on the click point, so trimming the padding makes a
+   prop stand exactly on its anchor instead of floating 16px above it.
+
+ - DOWNSCALED 1/4 (LANCZOS). The pack's art is about 4.7x the scale of the
+   rest of the project — its well is 261x279 where the Plains pack's is
+   55x61. This is painted illustration, not pixel art, so resampling is safe
+   here in a way it would not be for a real pixel-art sheet.
+
+STYLE WARNING, recorded deliberately: this art is painted illustration in a
+pronounced isometric 3/4 view, while the rest of the game (Plains props, the
+road tiles, the Hypnobius structures) is flat-shaded pixel art seen closer to
+top-down. They do not share a look or a camera angle. Imported anyway at the
+user's explicit request, after a side-by-side comparison; see
+assets/_incoming/COMPARACION_megapack_vs_plains.png.

@@ -24,9 +24,8 @@ extends CanvasLayer
 @onready var save_quit_button: Button = $PausePanel/Margin/VBox/SaveQuitButton
 @onready var quit_button: Button = $PausePanel/Margin/VBox/QuitButton
 @onready var build_panel: PanelContainer = $BuildPanel
-@onready var build_categories: VBoxContainer = $BuildPanel/Margin/VBox/Categories
+@onready var build_categories: VBoxContainer = $BuildPanel/Margin/VBox/CategoriesScroll/Categories
 @onready var build_selected_label: Label = $BuildPanel/Margin/VBox/SelectedLabel
-@onready var build_save_button: Button = $BuildPanel/Margin/VBox/SaveButton
 @onready var discovery_panel: PanelContainer = $DiscoveryPanel
 @onready var discovery_choices: VBoxContainer = $DiscoveryPanel/Margin/VBox/Choices
 @onready var discovery_dismiss_button: Button = $DiscoveryPanel/Margin/VBox/DismissButton
@@ -73,9 +72,7 @@ func _ready() -> void:
 	if quit_button:
 		quit_button.pressed.connect(_on_quit_game)
 	_build_palette()
-	if build_save_button:
-		build_save_button.pressed.connect(_on_build_save_pressed)
-	help.text = "Q Warrior | E Mage | F Archer | LMB tap/hold | RMB guard | G auto-gather | I inv | C craft | B build | ESC pause | F1 hitboxes"
+	help.text = "Q Warrior | E Mage | F Archer | LMB tap/hold | RMB guard | G auto-gather | I inv | C craft | B build | ESC pause | F1 hitboxes | F2 gm-mode | T snap / R techo (build)"
 	hp_bar.max_value = 100
 	stamina_bar.max_value = 100
 	if mana_bar:
@@ -181,7 +178,48 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode == KEY_B:
 			_toggle_build_mode()
 			return
+		# GM mode has to work whether or not build mode is on — it's the
+		# fly-around tool FOR mapping a large world in build mode, not just a
+		# standalone dev toggle — so it's checked before the build_mode branch
+		# below returns early and swallows every other key.
+		if event.keycode == KEY_F2:
+			Game.gm_mode = not Game.gm_mode
+			Game.toast("GM mode ON (float + no damage, middle-click to teleport)" if Game.gm_mode else "GM mode OFF")
+			return
 		if Game.build_mode:
+			# Ctrl+Z undoes the last build action (a whole drag counts as
+			# one). Checked before the plain-key branches below so the Z in
+			# Ctrl+Z can't also read as a bare hotkey.
+			if event.keycode == KEY_Z and event.ctrl_pressed:
+				var zone := Game.get_world()
+				if zone and zone.has_method("undo_build_action"):
+					Game.toast("Deshecho" if zone.undo_build_action() else "Nada para deshacer")
+				return
+			# Hide the roof to work on what's under it — every real tile
+			# editor has a layer toggle, and here the roof covers the whole
+			# interior by design, so without this the floor/interior cells
+			# are unreachable to look at while editing.
+			# G: the explicit roof-generation tool. The wall brush no longer
+			# creates roof as a side effect, so this is how a finished
+			# building gets covered in one action.
+			if event.keycode == KEY_G:
+				var zone := Game.get_world()
+				if zone and zone.has_method("generate_roof_over_walls"):
+					var added: int = zone.generate_roof_over_walls()
+					if added > 0:
+						Game.toast("Techo generado (%d celdas)" % added)
+					elif Game.build_roof_material == "none":
+						Game.toast("Techo en 'sin techo' — cambialo con R")
+					else:
+						Game.toast("Nada que techar")
+				return
+			if event.keycode == KEY_H:
+				var zone := Game.get_world()
+				var roof: TileMapLayer = zone.get_node_or_null("Roof") if zone else null
+				if roof:
+					roof.visible = not roof.visible
+					Game.toast("Techo: %s" % ("visible" if roof.visible else "oculto"))
+				return
 			# Q/E rotate the ghost/piece before placing (same convention as
 			# Rust/Valheim's building mode) and 1-9 are a hotbar shortcut for
 			# the palette click — both only make sense while build mode is
@@ -191,6 +229,45 @@ func _unhandled_input(event: InputEvent) -> void:
 				Game.build_rotation = wrapf(Game.build_rotation - PI / 4.0, 0.0, TAU)
 			elif event.keycode == KEY_E:
 				Game.build_rotation = wrapf(Game.build_rotation + PI / 4.0, 0.0, TAU)
+			elif event.keycode == KEY_T:
+				Game.build_snap_to_grid = not Game.build_snap_to_grid
+				Game.toast("Snap a grilla: ON" if Game.build_snap_to_grid else "Snap a grilla: OFF")
+			elif event.keycode == KEY_BRACKETLEFT or event.keycode == KEY_BRACKETRIGHT:
+				# [ / ] resize the floor brush — the binding every paint and
+				# tile editor already uses, so it needs no explaining.
+				var step := -1 if event.keycode == KEY_BRACKETLEFT else 1
+				Game.build_brush_size = clampi(
+					Game.build_brush_size + step, 1, Game.MAX_BRUSH_SIZE)
+				# Same setting, two meanings: cells for the grid brushes, a
+				# radius in pixels for the free one. Say which, or the number
+				# on screen means nothing.
+				if PaintLayer.is_paint_id(Game.build_selected_kind):
+					Game.toast("Pincel: radio %dpx"
+						% int(PaintLayer.radius_for(Game.build_brush_size)))
+				else:
+					Game.toast("Pincel: %dx%d" % [Game.build_brush_size, Game.build_brush_size])
+			elif event.keycode == KEY_R:
+				# Three-way rather than a separate on/off key: "no roof" is
+				# just another option of the same choice, and it keeps the
+				# build-mode control surface small.
+				var roof_labels := {"slate": "pizarra", "red": "teja roja", "none": "SIN TECHO"}
+				match Game.build_roof_material:
+					"slate": Game.build_roof_material = "red"
+					"red": Game.build_roof_material = "none"
+					_: Game.build_roof_material = "slate"
+				Game.toast("Techo: %s" % roof_labels.get(Game.build_roof_material, Game.build_roof_material))
+			elif event.keycode == KEY_Y:
+				# Same split as R for roof: which SHAPE button is selected in
+				# the palette is a separate choice from which material paints
+				# it (see Game.build_wall_material / StructureTileset.
+				# WALL_MATERIALS).
+				var wall_labels := {"stone": "piedra", "brick": "ladrillo", "plain": "lisa", "wood": "madera"}
+				match Game.build_wall_material:
+					"stone": Game.build_wall_material = "brick"
+					"brick": Game.build_wall_material = "plain"
+					"plain": Game.build_wall_material = "wood"
+					_: Game.build_wall_material = "stone"
+				Game.toast("Material pared: %s" % wall_labels.get(Game.build_wall_material, Game.build_wall_material))
 			elif event.keycode >= KEY_1 and event.keycode <= KEY_9:
 				var idx: int = event.keycode - KEY_1
 				if idx < _build_hotbar_ids.size():
@@ -285,6 +362,12 @@ func _toggle_build_mode() -> void:
 		build_panel.visible = Game.build_mode
 	if Game.build_mode:
 		Game.build_rotation = 0.0
+	else:
+		# Leaving build mode restores normal combat framing — a zoomed-out
+		# view left over from mapping would otherwise carry into combat.
+		var player := Game.get_local_player()
+		if player and ("camera" in player) and player.camera:
+			player.camera.zoom = Vector2(1.0, 1.0)
 
 
 func _on_build_kind_toggled(is_pressed: bool, kind: String) -> void:
@@ -293,12 +376,15 @@ func _on_build_kind_toggled(is_pressed: bool, kind: String) -> void:
 	Game.build_selected_kind = kind
 	if build_selected_label:
 		build_selected_label.text = "Selección: %s" % BuildCatalog.label_for(kind)
-
-
-func _on_build_save_pressed() -> void:
-	var world := Game.get_world()
-	var saved: bool = world != null and world.has_method("save_markers_layout") and world.save_markers_layout()
-	Game.toast("Zona guardada" if saved else "No se pudo guardar la zona")
+	# The road art has no one-cell-wide piece, so an auto-road brush always
+	# paints at least 2x2 whatever the brush is set to (see
+	# RoadAutotiler.brush_size_for()). Say so when that is actually
+	# overriding what the user asked for, rather than silently widening the
+	# ghost and letting them wonder.
+	var effective := RoadAutotiler.brush_size_for(kind, Game.build_brush_size)
+	if effective > Game.build_brush_size:
+		Game.toast("Camino auto: mínimo %dx%d — los caminos necesitan 2 celdas de ancho"
+			% [effective, effective])
 
 
 func _on_save_pressed() -> void:

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://skillbar001"]
 
-[ext_resource type="Script" path="res://scripts/ui/skill_bar.gd" id="1_bar"]
+[ext_resource type="Script" uid="uid://ddegt7dqwplbm" path="res://scripts/ui/skill_bar.gd" id="1_bar"]
 
-[node name="SkillBar" type="Control"]
+[node name="SkillBar" type="Control" unique_id=2068189031]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_bar")
 
-[node name="SlotRow" type="HBoxContainer" parent="."]
+[node name="SlotRow" type="HBoxContainer" parent="." unique_id=10315552]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

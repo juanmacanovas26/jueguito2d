@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b2w8k4n7p3yaq"]
+
+[ext_resource type="Script" uid="uid://y7k1fcxvrvf6" path="res://tools/ghost_preview_screenshot.gd" id="1_ghost"]
+
+[node name="GhostPreviewScreenshot" type="Node" unique_id=1107920187]
+script = ExtResource("1_ghost")

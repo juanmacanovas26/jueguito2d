@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dqk8m2s5j0f3x"]
 
-[ext_resource type="Script" path="res://tools/validate_skills.gd" id="1_skills"]
+[ext_resource type="Script" uid="uid://c8xmf6knlylgv" path="res://tools/validate_skills.gd" id="1_skills"]
 
-[node name="ValidateSkills" type="Node"]
+[node name="ValidateSkills" type="Node" unique_id=55275508]
 script = ExtResource("1_skills")

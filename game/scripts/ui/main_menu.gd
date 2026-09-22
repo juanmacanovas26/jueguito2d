@@ -1,9 +1,12 @@
 extends Control
-## Entry point (project.godot run/main_scene). Only one overworld zone exists
-## today, so both New Game and Continue point at it directly; once Fase 3
-## adds more zones, Continue should read the saved "zone" path instead.
+## Entry point (project.godot run/main_scene). Only one overworld zone is
+## live at a time, so both New Game and Continue point at it directly; once
+## Fase 3 adds more zones, Continue should read the saved "zone" path instead.
 
-const ZONE_SCENE := "res://scenes/world/pradera.tscn"
+## The MVP zone being built (town + surrounding field, 8000x6000). The older
+## pradera.tscn is deliberately left in the project as a scratch/test zone —
+## it still opens and plays, it just isn't what the menu boots into any more.
+const ZONE_SCENE := "res://scenes/world/praderas_del_alba.tscn"
 
 @onready var new_game_button: Button = $Center/VBox/NewGameButton
 @onready var continue_button: Button = $Center/VBox/ContinueButton

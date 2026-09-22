@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b7ke14wu7t2gy"]
+
+[ext_resource type="Script" uid="uid://chp6o8mk6wlh3" path="res://tools/structure_screenshot.gd" id="1_structure"]
+
+[node name="StructureScreenshot" type="Node" unique_id=847107273]
+script = ExtResource("1_structure")

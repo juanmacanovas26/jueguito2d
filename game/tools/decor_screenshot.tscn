@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dc612n1evwh51"]
+
+[ext_resource type="Script" uid="uid://cwj6jwnp1os3g" path="res://tools/decor_screenshot.gd" id="1_decor"]
+
+[node name="DecorScreenshot" type="Node" unique_id=681867684]
+script = ExtResource("1_decor")

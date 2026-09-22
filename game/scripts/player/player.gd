@@ -104,6 +104,12 @@ const HITBOX_ORIGIN_X := 10.0
 
 const AUTO_GATHER_RANGE := 70.0
 
+## Game.gm_mode ("flotar"): fast enough to cross a large map quickly, way
+## above normal combat speeds on purpose — this is a fly-around dev tool, not
+## a gameplay state that needs to feel fair.
+const GM_MOVE_SPEED := 520.0
+const GM_SPRINT_MULT := 1.8
+
 # Mage bolt (basic = free skillshot; charged spends mana)
 const MAGE_BOLT_MANA_MIN := 10.0
 const MAGE_BOLT_MANA_MAX := 28.0
@@ -202,6 +208,10 @@ var _shoulders_def: Dictionary = {}
 var _wrists_item: String = ""
 var _wrists_def: Dictionary = {}
 var auto_gather: bool = false
+## Mirrors Game.gm_mode so _physics_process() can detect the on/off edge and
+## flip collision_mask exactly once per transition, instead of writing to it
+## every single frame gm_mode happens to be on.
+var _gm_mode_was_active: bool = false
 ## Logical facing. Simulation state, not a visual detail: it is resolved here
 ## (CharacterFacing) and handed down to CharacterVisual, so the sprite can never
 ## disagree with the simulation about which way the character is looking.
@@ -260,9 +270,21 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if Game.gm_mode != _gm_mode_was_active:
+		_gm_mode_was_active = Game.gm_mode
+		# collision_mask=1 is "world" (walls/obstacles, see project.godot's
+		# layer_names) — dropping it to 0 is what makes gm_mode "float"
+		# through them instead of just moving faster.
+		collision_mask = 0 if Game.gm_mode else 1
+	if Game.gm_mode:
+		_process_gm_move(delta)
+		move_and_slide()
+		_emit_stats()
+		return
 	# Build mode (see world_zone.gd) repurposes clicks for placing/removing
 	# markers instead of attacking, so the player is simply frozen in place
-	# rather than trying to make every input path build-mode-aware.
+	# rather than trying to make every input path build-mode-aware. gm_mode
+	# (handled above) is the escape hatch for wanting to move around anyway.
 	if Game.build_mode:
 		return
 	_skill_click_consumed = false
@@ -917,6 +939,10 @@ func _update_parry_window() -> void:
 ## parry and block are resolved first, then worn armour reduces whatever damage
 ## is left — so armour helps whether or not you were blocking.
 func resolve_incoming_hit(hit_data: Dictionary) -> Dictionary:
+	if Game.gm_mode:
+		var gm_data := hit_data.duplicate()
+		gm_data["cancelled"] = true
+		return gm_data
 	var data := _resolve_guard(hit_data)
 	if bool(data.get("cancelled", false)):
 		return data
@@ -1136,6 +1162,30 @@ func _start_heavy_charged(charge_ratio: float) -> void:
 	state = State.ATTACK
 	gcd_timer.start(GCD)
 	body_sprite.color = Color(0.95, 0.45 + 0.2 * (1.0 - charge_ratio), 0.30)
+
+
+## Game.gm_mode's own movement — a flat fast speed with no state/combat
+## multipliers, no stamina cost on sprint, and (via collision_mask=0, set in
+## _physics_process) no collision with the world. Combat input is skipped
+## entirely while this is active; see _physics_process()'s early return.
+func _process_gm_move(delta: float) -> void:
+	var input_dir := _get_move_input()
+	var speed := GM_MOVE_SPEED * (GM_SPRINT_MULT if Input.is_action_pressed("sprint") else 1.0)
+	if input_dir != Vector2.ZERO:
+		velocity = velocity.move_toward(input_dir * speed, ACCEL * delta)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
+
+
+## Middle-click ("la ruedita del mouse") teleports straight to the cursor
+## while gm_mode is on — the fast way to cross a large map instead of flying
+## there. Only bound here, not gated behind Game.build_mode: gm_mode is
+## useful as a general fly-around/no-clip dev tool on its own.
+func _unhandled_input(event: InputEvent) -> void:
+	if not Game.gm_mode:
+		return
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_MIDDLE:
+		global_position = get_global_mouse_position()
 
 
 func _apply_move(delta: float, speed_mul: float) -> void:

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://mainmenu001"]
 
-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://oaipyucwwa5i" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=1615517193]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=270653157]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.09, 0.1, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=2061949993]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,39 +28,39 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=514751977]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Center/VBox"]
+[node name="Title" type="Label" parent="Center/VBox" unique_id=521415249]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 32
 text = "Jueguito2D"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/VBox"]
+[node name="Subtitle" type="Label" parent="Center/VBox" unique_id=1260453934]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.78, 0.72, 0.85)
 theme_override_font_sizes/font_size = 14
 text = "MMORPG 2D action-grind — slice"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="Center/VBox"]
+[node name="Spacer" type="Control" parent="Center/VBox" unique_id=692379759]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 
-[node name="NewGameButton" type="Button" parent="Center/VBox"]
+[node name="NewGameButton" type="Button" parent="Center/VBox" unique_id=1193912078]
 custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
 text = "Nuevo Juego"
 
-[node name="ContinueButton" type="Button" parent="Center/VBox"]
+[node name="ContinueButton" type="Button" parent="Center/VBox" unique_id=1717743158]
 custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
 text = "Continuar"
 
-[node name="QuitButton" type="Button" parent="Center/VBox"]
+[node name="QuitButton" type="Button" parent="Center/VBox" unique_id=1557369416]
 custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
 text = "Salir"

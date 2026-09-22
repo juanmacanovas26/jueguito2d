@@ -1,0 +1,19 @@
+Road tiles from a free CraftPix road set.
+Original download kept at assets/_incoming/free_roads/ (license.txt there
+points at https://craftpix.net/file-licenses/ — read it before shipping).
+
+Cut from the pack's PNG_Tiled/RoadN.png sheets: the "bare" variants, which
+carry ALPHA. That matters — a road tile painted on the Suelo layer shows the
+floor underneath around its edges, so the same piece works on grass, dirt or
+sand without a per-surface variant. The pack also ships RoadN_grass.png and
+RoadN_ground.png with the background baked in; those are deliberately NOT
+imported, since they would only work on one surface.
+
+UPSCALED 2x (nearest neighbour) on import: the source art is 16x16 and this
+project's grid is 32. Its pixels are therefore 2x2 against the 32px-native
+Plains tiles next to them — visible if you look for it, and the reason to
+weigh this set against redrawing roads at native 32.
+
+Sliced and deduplicated by a one-off script; the selection per style is the
+distinct fills, edges and corners, with the 1-2px curb slivers dropped
+(useless once a cell is 32px).

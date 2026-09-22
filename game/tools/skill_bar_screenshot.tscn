@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dru6rt5so4vns"]
 
-[ext_resource type="Script" path="res://tools/skill_bar_screenshot.gd" id="1_shot"]
+[ext_resource type="Script" uid="uid://dcwtkkn6hhcs5" path="res://tools/skill_bar_screenshot.gd" id="1_shot"]
 
-[node name="SkillBarScreenshot" type="Node"]
+[node name="SkillBarScreenshot" type="Node" unique_id=1909218398]
 script = ExtResource("1_shot")
