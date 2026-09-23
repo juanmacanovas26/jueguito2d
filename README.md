@@ -49,12 +49,25 @@ pip install pillow
 
 El repo es público, así que hay dos cosas que se sincronizan por fuera:
 
-- **`game/assets/_incoming/`** (~103 MB) — arte crudo y packs comprados, en
+- **`game/assets/_incoming/`** (~102 MB) — arte crudo y packs comprados, en
   staging antes de procesarse. No va al repo porque incluye packs de pago y
   publicarlos no corresponde. **Nada del proyecto lo referencia**: el juego
-  corre sin esta carpeta, hace falta solo para generar assets nuevos. Se pasa
-  por Drive o pendrive cuando la necesitás. Lo que sí está versionado es el
-  resultado procesado, en `game/assets/world/`.
+  corre sin esta carpeta, hace falta solo para generar assets nuevos. Lo que
+  sí está versionado es el resultado procesado, en `game/assets/world/`.
+
+  Vive en Drive como `jueguito2d_incoming.zip` (214 archivos, sin los
+  `.import` ni los `__MACOSX`, que se regeneran o son basura de zip). Se
+  descomprime en `game/assets/_incoming/` y listo. Qué hay adentro, ordenado
+  por qué pasa si lo perdés:
+
+  | Carpeta | Qué es | Si se pierde |
+  |---|---|---|
+  | `houses_t1`…`t5`, `civic` (~55 MB) | 29 casas + 3 edificios cívicos crudos, generados con PixelLab | **No vuelve.** Regenerar con el mismo prompt da otra cosa, y cuesta créditos |
+  | `MedievalTown&Fantasy2DMegaPropsPack_v1.0` (41 MB) | Pack comprado, con su `Documentation/LICENSE.txt` | Se re-descarga **si conservás el comprobante de compra** — guardalo en Drive al lado del zip |
+  | `free_roads` (3 MB), `plains_pack` | Packs gratis, con `license.txt` y `COUPON.pdf` | Se re-descargan |
+
+  La licencia de cada pack viaja adentro del zip a propósito: es lo que
+  respalda el uso del arte, y separada del pack no sirve de nada.
 - **La config local de Claude Code** (`~/.claude/`): `settings.json`
   (permisos, modelo), `agents/`, y las skills personales. Las skills *del
   proyecto* sí viajan, en [`.claude/skills/`](.claude/skills/) — hoy
