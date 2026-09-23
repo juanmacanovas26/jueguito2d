@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://d0yehgks35am0" path="res://assets/world/decor/plains/tiles/pasto_01.png" id="2_djdgs"]
 [ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://hud001" path="res://scenes/ui/hud.tscn" id="3_hud"]
-[ext_resource type="Script" uid="uid://cssmi8wec7yed" path="res://scripts/world/floor_tile_marker.gd" id="5_v8r0e"]
 [ext_resource type="Script" uid="uid://cx3jbrcu222d2" path="res://scripts/world/building_marker.gd" id="6_rmfgh"]
 [ext_resource type="Shader" uid="uid://b2ho03w0t3b2v" path="res://assets/shaders/painted_ground.gdshader" id="7_xttny"]
 [ext_resource type="Texture2D" uid="uid://dsddkd4k8b5w" path="res://assets/world/decor/plains/tiles/tierra_05.png" id="8_u5us2"]
@@ -113,120 +112,6 @@ tile_set = SubResource("TileSet_ob5sn")
 [node name="HUD" parent="." unique_id=1212556301 instance=ExtResource("3_hud")]
 
 [node name="Markers" type="Node2D" parent="." unique_id=61048624]
-
-[node name="@Marker2D@22292" type="Marker2D" parent="Markers" unique_id=546217143]
-position = Vector2(-512, 192)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 6)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22293" type="Marker2D" parent="Markers" unique_id=629317196]
-position = Vector2(-512, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22294" type="Marker2D" parent="Markers" unique_id=1981431722]
-position = Vector2(-544, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-17, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22295" type="Marker2D" parent="Markers" unique_id=1252503917]
-position = Vector2(-576, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-18, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22296" type="Marker2D" parent="Markers" unique_id=1200806398]
-position = Vector2(-608, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-19, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22297" type="Marker2D" parent="Markers" unique_id=1099234197]
-position = Vector2(-640, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-20, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22298" type="Marker2D" parent="Markers" unique_id=1921937712]
-position = Vector2(-672, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-21, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22299" type="Marker2D" parent="Markers" unique_id=776179853]
-position = Vector2(-704, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-22, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22300" type="Marker2D" parent="Markers" unique_id=1603078962]
-position = Vector2(-736, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-23, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22301" type="Marker2D" parent="Markers" unique_id=1182222489]
-position = Vector2(-480, 192)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 6)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22302" type="Marker2D" parent="Markers" unique_id=1667023613]
-position = Vector2(-480, 160)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 5)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22303" type="Marker2D" parent="Markers" unique_id=1766940851]
-position = Vector2(-480, 128)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 4)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22304" type="Marker2D" parent="Markers" unique_id=672900768]
-position = Vector2(-512, 128)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 4)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22305" type="Marker2D" parent="Markers" unique_id=323037914]
-position = Vector2(-512, 96)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 3)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22306" type="Marker2D" parent="Markers" unique_id=381819014]
-position = Vector2(-512, 64)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 2)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22307" type="Marker2D" parent="Markers" unique_id=1287336322]
-position = Vector2(-480, 96)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 3)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22308" type="Marker2D" parent="Markers" unique_id=1920697519]
-position = Vector2(-480, 64)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 2)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22309" type="Marker2D" parent="Markers" unique_id=1108129025]
-position = Vector2(-480, 32)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-15, 1)
-tile_id = "road_ladrillo_02"
-
-[node name="@Marker2D@22310" type="Marker2D" parent="Markers" unique_id=1306222011]
-position = Vector2(-512, 32)
-script = ExtResource("5_v8r0e")
-grid_pos = Vector2i(-16, 1)
-tile_id = "road_ladrillo_02"
 
 [node name="@Marker2D@22481" type="Marker2D" parent="Markers" unique_id=412255439]
 position = Vector2(-3253.9019, -622.7826)
