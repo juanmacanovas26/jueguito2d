@@ -17,9 +17,23 @@ extends Marker2D
 ## caveat that makes StructureMarker-built houses non-relocatable (see
 ## docs/GDD.md).
 ##
-## No collision yet, same v1 gap as StructureMarker walls — this is visual
-## city-dressing, not a physical obstacle, until build mode grows real
-## construction collision.
+## UN EDIFICIO ES UNA ESCENA, cuando existe. Si hay un
+## `res://scenes/world/buildings/<id>.tscn`, este marker la instancia y esa
+## escena es el edificio: su sprite, sus colliders, y lo que se le agregue
+## después (trigger de puerta, link al interior, oclusión). Author-time a
+## mano, que es la única forma de que un collider siga de verdad la planta
+## de la casa — medirlo de los píxeles del sprite da una caja aproximada y
+## el alero, que se dibuja hacia arriba, miente sobre cuánto suelo ocupa.
+##
+## Sin escena, el marker cae al modo viejo: dibuja el PNG plano y no tiene
+## colisión, igual que las paredes de StructureMarker. Los dos modos conviven
+## a propósito — convertir los 45 edificios a escena es trabajo de arte que se
+## hace de a uno, y mientras tanto el catálogo entero sigue colocable.
+##
+## La instancia NUNCA se guarda en el .tscn de la zona: se agrega sin `owner`,
+## así lo que queda serializado es el marker (id + posición) y nada más. La
+## escena del edificio sigue siendo la única fuente de su arte, de modo que
+## arreglarle el collider a una casa arregla todas las ya colocadas.
 ##
 ## Anchored bottom-center, same convention as every other world sprite
 ## (resource_node.gd's trees/rocks, DecorMarker's props, StructureTileset's
@@ -86,6 +100,15 @@ const _PATHS := {
 
 const _FACING_KEYS := ["n", "e", "s", "w"]
 
+## Dónde viven las escenas de edificio. El nombre del archivo ES el id: una
+## escena nueva acá aparece sola en la paleta y en el dock del editor (ver
+## BuildCatalog.scanned_building_ids()), sin tocar código.
+const SCENE_DIR := "res://scenes/world/buildings/"
+
+## Dónde vive el arte plano, para resolver por convención el PNG de un
+## edificio que no está en _PATHS (ver texture_path()).
+const ART_DIR := "res://assets/world/buildings/"
+
 ## Buildings whose art only reads correctly from one side (a single drawn
 ## facade — door, steps, columns — with no back/side view ever generated):
 ## these ALWAYS place facing front, ignoring whatever Game.build_rotation /
@@ -132,7 +155,35 @@ static func texture_path(id: String, facing_steps: int = 0) -> String:
 	if typeof(entry) == TYPE_DICTIONARY:
 		var key: String = _FACING_KEYS[((facing_steps % 4) + 4) % 4]
 		return str((entry as Dictionary).get(key, ""))
-	return str(entry) if entry != null else ""
+	if entry != null:
+		return str(entry)
+	# Un edificio que entró por escena (ver SCENE_DIR) no está en _PATHS. Su
+	# PNG, si existe con el mismo nombre, sigue sirviendo para el ícono de la
+	# paleta y para clearance_for(); si tampoco existe, "" y cada caller ya
+	# sabe degradar.
+	var by_convention := ART_DIR + id + ".png"
+	return by_convention if ResourceLoader.exists(by_convention) else ""
+
+
+## La escena de `id` para `facing_steps`, o "" si no hay. Se resuelve por el
+## MISMO nombre que el sprite (blacksmith_n.tscn junto a blacksmith_n.png),
+## así un edificio direccional puede tener una escena —y una planta— por
+## vista, y cae a "<id>.tscn" para el caso isotrópico normal.
+static func scene_path(id: String, facing_steps: int = 0) -> String:
+	var by_texture := texture_path(id, facing_steps).get_file().get_basename()
+	if by_texture != "":
+		var directional := SCENE_DIR + by_texture + ".tscn"
+		if ResourceLoader.exists(directional):
+			return directional
+	var plain := SCENE_DIR + id + ".tscn"
+	return plain if ResourceLoader.exists(plain) else ""
+
+
+## True cuando `id` ya está armado como escena (con sus colliders) en vez de
+## ser un PNG suelto. Lo que separa un edificio "de verdad" de uno que
+## todavía es decorado visual.
+static func has_scene(id: String, facing_steps: int = 0) -> bool:
+	return scene_path(id, facing_steps) != ""
 
 
 ## What a placed building's Node2D.rotation AND facing_steps should be, given
@@ -162,8 +213,7 @@ static func placement_for(id: String, requested_rotation: float) -> Dictionary:
 @export var building_id: String = "house_small_a":
 	set(value):
 		building_id = value
-		_load_texture()
-		queue_redraw()
+		_refresh_on_change()
 
 ## Which of the 4 sprites to show for a directional building (see
 ## has_directional_art()) — meaningless (always 0) for an isotropic one.
@@ -171,10 +221,20 @@ static func placement_for(id: String, requested_rotation: float) -> Dictionary:
 @export_range(0, 3, 1) var facing_steps: int = 0:
 	set(value):
 		facing_steps = ((value % 4) + 4) % 4
-		_load_texture()
-		queue_redraw()
+		_refresh_on_change()
+
+
+## Los setters corren también mientras Godot arma la escena, antes de _ready()
+## — y ahí add_child() todavía no es legal. Antes de estar listo no se hace
+## nada: _ready() llama a _refresh_visual() igual y deja todo en su lugar.
+func _refresh_on_change() -> void:
+	if is_node_ready():
+		_refresh_visual()
 
 var _tex: Texture2D
+## La escena instanciada, cuando el edificio tiene una. Mientras exista, este
+## marker no dibuja nada por su cuenta: el sprite lo pone la escena.
+var _instance: Node2D
 
 
 func _ready() -> void:
@@ -182,7 +242,7 @@ func _ready() -> void:
 	# sit ON TOP of buildings (see world_zone.gd's Z_* block), and that only
 	# holds if buildings pin themselves to the marker baseline.
 	z_index = WorldZone.Z_BUILDING
-	_load_texture()
+	_refresh_visual()
 	set_process(Engine.is_editor_hint())
 
 
@@ -192,12 +252,47 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	if _tex == null:
+	# Con escena instanciada dibujar acá además sería pintar el edificio dos
+	# veces, una encima de la otra.
+	if _instance != null or _tex == null:
 		return
 	draw_texture(_tex, Vector2(-_tex.get_width() / 2.0, -_tex.get_height()))
 
 
+## Instancia la escena del edificio si existe; si no, carga el PNG plano para
+## que _draw() haga lo de siempre. Un solo lugar decide entre los dos modos.
+##
+## La instancia se agrega SIN owner a propósito: Godot solo serializa los
+## nodos que tienen owner, así que el .tscn de la zona guarda el marker y
+## nada más. Si se guardara la instancia, cada casa colocada quedaría
+## congelada con la versión de la escena que había el día que se colocó.
+func _refresh_visual() -> void:
+	if _instance != null and is_instance_valid(_instance):
+		_instance.queue_free()
+	_instance = null
+
+	var path := BuildingMarker.scene_path(building_id, facing_steps)
+	if path != "":
+		var packed: Resource = load(path)
+		if packed is PackedScene:
+			var node: Node = (packed as PackedScene).instantiate()
+			if node is Node2D:
+				_instance = node as Node2D
+				add_child(_instance)
+			else:
+				# Una escena de edificio tiene que ser Node2D (o derivado:
+				# StaticBody2D lo es) para poder posicionarse en el mundo.
+				push_error("BuildingMarker: %s no es un Node2D" % path)
+				node.free()
+
+	_load_texture()
+	queue_redraw()
+
+
 func _load_texture() -> void:
+	if _instance != null:
+		_tex = null
+		return
 	var path := BuildingMarker.texture_path(building_id, facing_steps)
 	_tex = load(path) if path != "" and ResourceLoader.exists(path) else null
 

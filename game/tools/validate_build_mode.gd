@@ -108,6 +108,8 @@ func _run() -> void:
 	_check_structure_save_round_trip()
 	await _check_structure_rendering()
 	await _check_decor_placement()
+	await _check_building_scenes()
+	_check_dock_filters()
 	await _check_building_placement()
 	await _check_collision_placement()
 	_check_floor_tile_painting()
@@ -698,7 +700,11 @@ func _check_building_placement() -> void:
 		b.building_id = kind
 		add_child(b)
 		await get_tree().process_frame
-		_expect(b._tex != null, "'%s' resolves a real texture" % kind)
+		# Dos modos válidos desde que un edificio puede ser una escena armada a
+		# mano (ver BuildingMarker): o instanció su escena, o cayó al PNG
+		# plano. Lo que no puede es no mostrar nada.
+		_expect(b._tex != null or b._instance != null,
+			"'%s' resolves art (escena o sprite)" % kind)
 		b.free()
 
 	zone.free()
@@ -1188,3 +1194,123 @@ func _check_manual_roof() -> void:
 
 	if override_parked:
 		DirAccess.rename_absolute(PRADERA_OVERRIDE + ".parked", PRADERA_OVERRIDE)
+
+
+## Un edificio armado como escena (con sus colliders) en vez de un PNG plano
+## — ver BuildingMarker y tools/collider_editor.gd. Lo que se cubre acá es lo
+## que hace que una casa deje de ser "un sprite vacío": que el marker
+## instancie la escena, que esa escena traiga un cuerpo sólido de verdad, y
+## que la instancia NO termine serializada en el .tscn de la zona (si se
+## guardara, arreglarle el collider a una casa no arreglaría las ya puestas).
+func _check_building_scenes() -> void:
+	print("\n[12c] BuildingMarker: edificios como escena, con colisión")
+
+	_expect(BuildingMarker.has_scene("house_small_a"),
+		"'house_small_a' ya está armado como escena")
+	_expect(BuildingMarker.scene_path("house_small_a").ends_with("house_small_a.tscn"),
+		"scene_path() resuelve el .tscn por el nombre del edificio")
+
+	var with_scene := BuildingMarker.new()
+	with_scene.building_id = "house_small_a"
+	add_child(with_scene)
+	await get_tree().process_frame
+
+	_expect(with_scene._instance != null, "el marker instancia la escena del edificio")
+	_expect(with_scene._tex == null,
+		"con escena instanciada el marker no dibuja además el PNG (sería el edificio dos veces)")
+
+	var body := with_scene._instance as StaticBody2D
+	_expect(body != null, "la escena del edificio es un cuerpo sólido (StaticBody2D)")
+	if body != null:
+		_expect(body.collision_layer == 1,
+			"el edificio vive en la capa 1, la misma que WorldBounds y CollisionMarker")
+		var shapes: Array[CollisionShape2D] = []
+		for child in body.get_children():
+			if child is CollisionShape2D:
+				shapes.append(child as CollisionShape2D)
+		_expect(not shapes.is_empty(), "la escena trae al menos un CollisionShape2D")
+		var solid := false
+		var grounded := false
+		for shape_node in shapes:
+			var rect := shape_node.shape as RectangleShape2D
+			if rect == null:
+				continue
+			if rect.size.x > 0.0 and rect.size.y > 0.0:
+				solid = true
+			# El collider es la planta: tiene que estar abajo, a los pies del
+			# edificio, no flotando a la altura del techo.
+			if shape_node.position.y + rect.size.y * 0.5 > -64.0:
+				grounded = true
+		_expect(solid, "el collider tiene área real (no un rect de 0x0)")
+		_expect(grounded, "el collider se apoya en el suelo, no queda flotando en el techo")
+
+	_expect(with_scene._instance.owner == null,
+		"la instancia no tiene owner: la zona guarda el marker, nunca el edificio entero")
+
+	# Cambiar a un edificio sin escena vuelve al modo viejo, sin dejar la
+	# instancia anterior colgada.
+	with_scene.building_id = "mansion"
+	await get_tree().process_frame
+	_expect(not BuildingMarker.has_scene("mansion"), "'mansion' todavía no tiene escena")
+	_expect(with_scene._instance == null and with_scene._tex != null,
+		"un edificio sin escena cae al PNG plano y libera la instancia anterior")
+	with_scene.free()
+
+	# El catálogo no duplica un edificio que ya declara ENTRIES solo porque
+	# ahora además tenga escena.
+	var scanned := BuildCatalog.scanned_building_ids()
+	_expect(not scanned.has("building_house_small_a"),
+		"un edificio ya declarado no se duplica al armarle la escena")
+	var building_ids := BuildCatalog.ids_in_category("building")
+	var seen := {}
+	var duplicated := false
+	for id in building_ids:
+		if seen.has(id):
+			duplicated = true
+		seen[id] = true
+	_expect(not duplicated, "la categoría EDIFICIOS no repite ids")
+
+
+## El buscador y el filtro por categoría del dock del editor. Son de la
+## vista, no del catálogo, así que lo que importa es que jamás cambien QUÉ
+## existe: solo qué botones se dibujan.
+func _check_dock_filters() -> void:
+	print("\n[12d] Dock del editor: buscador y filtro por categoría")
+	var dock_script: GDScript = load("res://addons/build_mode_editor/build_dock.gd")
+	var dock: PanelContainer = dock_script.new()
+	add_child(dock)
+
+	_expect(dock._fold("Árbol") == "arbol", "el buscador ignora tildes")
+	_expect(dock._fold("HERRERÍA") == "herreria", "el buscador ignora mayúsculas y tildes")
+
+	dock._search_text = ""
+	_expect(dock._matches("tree"), "sin texto, todo entra")
+
+	dock._search_text = "arbol"
+	_expect(dock._matches("tree"), "busca por etiqueta ('Árbol' -> tree)")
+	_expect(not dock._matches("rock"), "y deja afuera lo que no coincide")
+
+	dock._search_text = "house_small"
+	_expect(dock._matches("building_house_small_a"), "busca también por id, no solo por etiqueta")
+
+	dock._search_text = ""
+	dock._category_filter = "building"
+	dock._populate_palette()
+	var only_buildings := true
+	for id in dock._kind_buttons.keys():
+		if not BuildCatalog.ids_in_category("building").has(str(id)):
+			only_buildings = false
+	_expect(only_buildings and not dock._kind_buttons.is_empty(),
+		"filtrando por EDIFICIOS solo quedan botones de edificios")
+
+	dock._category_filter = ""
+	dock._search_text = "no_existe_este_id_zzz"
+	dock._populate_palette()
+	_expect(dock._kind_buttons.is_empty(), "una búsqueda sin resultados no deja botones")
+
+	dock._search_text = ""
+	dock._populate_palette()
+	_expect(dock._kind_buttons.size() == BuildCatalog.all_ids().size(),
+		"limpiar el filtro devuelve el catálogo completo")
+
+	dock.free()

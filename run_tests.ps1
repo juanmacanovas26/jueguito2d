@@ -15,7 +15,7 @@ $ErrorActionPreference = "Continue"
 
 $godot = $env:GODOT
 if (-not $godot) {
-    $godot = "C:\Users\Juanma\Downloads\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64_console.exe"
+    $godot = "C:\Users\Juanma\Desktop\Godot_v4.7.1-stable_win64_console.exe"
 }
 if (-not (Test-Path $godot)) {
     Write-Host "Godot not found at: $godot" -ForegroundColor Red

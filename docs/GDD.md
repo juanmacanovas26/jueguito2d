@@ -2360,6 +2360,75 @@ máscara, el trazo/undo, el round-trip de guardado y el cableado de la zona; y
 `tools/paint_screenshot.tscn` para lo único que no se puede medir, cómo queda
 el borde.
 
+
+**Implementado — buscador y filtro por categoría en el dock:** pedido al usar
+la herramienta con el catálogo ya grande. La paleta pasó de una docena de ids
+a varios cientos (los ~200 tiles de camino, 45 edificios, 8 pinceles) y
+encontrar algo era scrollear. Ahora hay un campo de búsqueda —que matchea
+contra la etiqueta **y** contra el id, porque se lo piensa de las dos formas
+("herrería" es lo que dice el botón, "blacksmith" es como se llama el
+archivo), e ignora tildes y mayúsculas— y un desplegable de categoría. Los dos
+son de la vista y no del catálogo: filtran qué botones se dibujan, nunca qué
+existe, y la selección activa sobrevive aunque el filtro la esconda. Un
+contador ("42 de 340") evita la duda de si el filtro escondió algo. Redibuja
+solo la lista de botones y no el dock entero, porque reconstruir todo perdía
+el foco del campo en la primera letra.
+
+**Implementado — un edificio es una escena, y entra al mundo con colisión:**
+reportado como "que no sean solo sprites vacíos". Hasta acá un
+`BuildingMarker` dibujaba un PNG plano y nada más: la casa no era un
+obstáculo, se le caminaba por encima. El primer intento fue medir la huella
+de los píxeles del sprite y hornear una tabla, y la corrección del usuario fue
+mejor: **armar cada edificio como escena a mano**, con sus colliders puestos.
+Es exacto donde la medición es aproximada, y deja lugar para lo que viene
+(trigger de puerta, link al interior de la casa del sistema de lotes,
+oclusión).
+
+Entonces: si existe `scenes/world/buildings/<id>.tscn`, el marker la
+instancia y esa escena *es* el edificio; si no existe, sigue el modo viejo.
+Los dos conviven a propósito — convertir los 45 edificios es trabajo de a uno
+y mientras tanto el catálogo entero sigue colocable. El nombre del archivo es
+el id, así que una escena nueva aparece sola en la paleta y en el dock
+(`BuildCatalog.scanned_building_ids()`) sin agregar una línea de código.
+
+La decisión que importa: **la instancia se agrega sin `owner`**, y Godot solo
+serializa lo que tiene owner, así que el `.tscn` de la zona guarda el marker
+(id + posición) y nada más. Gracias a eso arreglarle el collider a una casa
+arregla todas las ya colocadas; si se guardara la instancia, cada casa
+quedaría congelada con la versión que había el día que se puso.
+
+La otra: **el collider es la planta, no el sprite**. El arte es una fachada
+casi de frente y el techo se dibuja hacia arriba sin ocupar suelo — un
+collider del tamaño del sprite bloquearía cuatro tiles de pasto por los que se
+tiene que poder caminar por detrás. `house_small_a` queda de referencia:
+126x56 de collider contra 176x224 de sprite.
+
+**Implementado — `tools/collider_editor.tscn`, para armarlos:** pedido
+explícito ("agregame una escena para agregar colliders a los diferentes
+models"). Se elige el edificio de la lista, se dibujan los rectángulos de la
+planta sobre el sprite (arrastrar para uno nuevo, esquinas para
+redimensionar, click derecho para borrar, rueda para zoom, Ctrl+Z) y "Guardar"
+escribe la escena con el `StaticBody2D`, el `Sprite2D` anclado y un
+`CollisionShape2D` por rectángulo. La grilla es de un tile del mundo, así la
+planta se piensa en tiles. El ✓ en la lista marca qué edificios ya tienen
+escena, que en una lista de 45 es la mitad del trabajo.
+
+La medición por píxeles que se había descartado como fuente de verdad
+sobrevive acá como **botón** ("Sugerir planta"): mide la caja opaca debajo del
+alero —el ancho de cada fila crece mientras baja el techo, toca un máximo en
+el borde del alero y cae cuando empieza la pared— y deja un punto de partida
+razonable para corregir a ojo. Como automatismo mentía; como sugerencia
+ahorra el 80% del trabajo.
+
+Verificación: `validate_build_mode.tscn` suma 23 checks (2566 en total) — que
+el marker instancie la escena y no dibuje además el PNG, que el cuerpo esté en
+la capa 1 con área real, que el collider se apoye en el suelo y no flote a la
+altura del techo, que cambiar a un edificio sin escena libere la instancia y
+vuelva al sprite, que el catálogo no duplique un id al armarle la escena, y el
+buscador/filtro del dock (tildes, búsqueda por id, filtro por categoría,
+limpiar el filtro devuelve el catálogo completo). Lo que no se puede medir
+—cómo se ve la herramienta— se miró con una captura real antes de darla por
+buena.
 ---
 
 ## Economía y monetización

@@ -78,4 +78,5 @@ caché (`game/.godot/`, `__pycache__/`), y está bien así: se regenera.
 | `art_pipeline/` | Scripts y plantillas para generar/cortar arte (LPC, VFX) |
 | `lpc/` | Assets base de Liberated Pixel Cup |
 | `Effects/`, `CharEditor/` | Packs de efectos y el editor de personajes de referencia |
+| `game/tools/` | Herramientas de autor y suites de validación. `collider_editor.tscn` (F6) es con la que se le ponen colliders a los edificios — ver [`game/scenes/world/buildings/README.md`](game/scenes/world/buildings/README.md) |
 | `run_tests.ps1` | Corre las 10 suites y devuelve código de salida distinto de cero si algo falla |

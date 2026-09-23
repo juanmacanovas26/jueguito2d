@@ -637,16 +637,69 @@ static func label_for(id: String) -> String:
 	for entry in ENTRIES:
 		if str(entry[0]) == id:
 			return str(entry[1].get("label", id))
+	# Un edificio que entró por escena (ver scanned_building_ids()) no está en
+	# ENTRIES: se le arma una etiqueta legible desde el nombre del archivo.
+	if id.begins_with("building_"):
+		return id.trim_prefix("building_").replace("_", " ").capitalize()
 	return id
 
 
-## Ids belonging to one category, in palette order.
+## Ids belonging to one category, in palette order. La categoría "building"
+## suma además lo que haya como escena en disco (ver scanned_building_ids()).
 static func ids_in_category(category: String) -> Array[String]:
 	var out: Array[String] = []
 	for entry in ENTRIES:
 		if str(entry[1].get("category", "")) == category:
 			out.append(str(entry[0]))
+	if category == "building":
+		out.append_array(scanned_building_ids())
 	return out
+
+
+## Edificios que existen como escena armada a mano (BuildingMarker.SCENE_DIR)
+## y que ENTRIES todavía no declara — el camino de "armo la casa con sus
+## colliders en una escena y aparece sola en el editor", sin pasar por acá a
+## agregar una línea.
+##
+## Un edificio YA declarado en ENTRIES no se duplica: cuando se le arma la
+## escena, el marker la usa igual (BuildingMarker.scene_path()) y la entrada
+## de siempre sigue siendo la suya. Lo mismo para una vista direccional
+## suelta —blacksmith_n.tscn— que pertenece al "blacksmith" que ya existe y
+## no es un edificio nuevo.
+static func scanned_building_ids() -> Array[String]:
+	var out: Array[String] = []
+	var dir := DirAccess.open(BuildingMarker.SCENE_DIR)
+	if dir == null:
+		return out
+	var declared := {}
+	for entry in ENTRIES:
+		declared[str(entry[0])] = true
+	dir.list_dir_begin()
+	var file := dir.get_next()
+	while file != "":
+		if not dir.current_is_dir():
+			# .scn/.remap: una escena exportada no se llama .tscn dentro del
+			# pack (Godot convierte texto a binario al exportar), así que
+			# buscar solo .tscn haría que esto funcione en el editor y
+			# devuelva vacío en el juego exportado.
+			var base := file.trim_suffix(".remap")
+			if base.ends_with(".tscn") or base.ends_with(".scn"):
+				var id := "building_" + base.get_basename()
+				if not declared.has(id) and not declared.has(_strip_facing(id)):
+					out.append(id)
+		file = dir.get_next()
+	dir.list_dir_end()
+	out.sort()
+	return out
+
+
+## "building_blacksmith_n" -> "building_blacksmith". Devuelve el id igual si
+## no termina en una vista cardinal.
+static func _strip_facing(id: String) -> String:
+	for suffix in ["_n", "_e", "_s", "_w"]:
+		if id.ends_with(suffix):
+			return id.trim_suffix(suffix)
+	return id
 
 
 ## Flat list of every placeable id, in the order the whole palette (and the

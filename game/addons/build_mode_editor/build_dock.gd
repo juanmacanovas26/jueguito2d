@@ -46,6 +46,15 @@ const _CARDINAL_LABELS := ["Norte", "Este", "Sur", "Oeste"]
 
 var _kind_buttons: Dictionary = {}
 var _status_label: Label
+## Filtro de la paleta. El catálogo pasó de una docena de ids a varios
+## cientos (los ~200 tiles de camino, 45 edificios, 8 pinceles): scrollear
+## hasta encontrar algo dejó de ser viable. Ninguno de los dos filtra el
+## catálogo de verdad, solo qué botones se dibujan — la selección activa
+## sobrevive aunque el filtro la esconda.
+var _search_text: String = ""
+var _category_filter: String = ""
+var _categories_box: VBoxContainer
+var _match_label: Label
 var _rotation_button: Button
 var _zone_dropdown: OptionButton
 ## Parallel to _zone_dropdown's items — index i's path is this zone_id's
@@ -96,44 +105,18 @@ func _build_ui() -> void:
 	vbox.add_child(_rotation_row())
 	vbox.add_child(_brush_row())
 
+	vbox.add_child(_filter_row())
+
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	vbox.add_child(scroll)
 
-	var categories_box := VBoxContainer.new()
-	categories_box.add_theme_constant_override("separation", 4)
-	categories_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(categories_box)
+	_categories_box = VBoxContainer.new()
+	_categories_box.add_theme_constant_override("separation", 4)
+	_categories_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_categories_box)
 
-	var group := ButtonGroup.new()
-	_kind_buttons.clear()
-	for cat in BuildCatalog.CATEGORIES:
-		var category_id := str(cat[0])
-		var category_label := str(cat[1].get("label", category_id))
-		var ids := BuildCatalog.ids_in_category(category_id)
-		if ids.is_empty():
-			continue
-
-		var header := Label.new()
-		header.text = category_label
-		categories_box.add_child(header)
-
-		var grid := GridContainer.new()
-		grid.columns = 5
-		categories_box.add_child(grid)
-
-		for id in ids:
-			var button := Button.new()
-			button.toggle_mode = true
-			button.button_group = group
-			button.custom_minimum_size = Vector2(36, 36)
-			button.icon = BuildIcons.get_icon(id)
-			button.expand_icon = true
-			button.tooltip_text = BuildCatalog.label_for(id)
-			button.button_pressed = (id == selected_kind)
-			button.toggled.connect(_on_kind_toggled.bind(id))
-			grid.add_child(button)
-			_kind_buttons[id] = button
+	_populate_palette()
 
 	_status_label = Label.new()
 	_status_label.text = "Selección: %s" % BuildCatalog.label_for(selected_kind)
@@ -321,6 +304,139 @@ func _update_rotation_button_text() -> void:
 		return
 	var steps := int(roundf(building_rotation / (PI / 2.0))) % 4
 	_rotation_button.text = "⟳ %s" % _CARDINAL_LABELS[steps]
+
+
+## Buscador + filtro por categoría. Los dos son del DOCK, no del catálogo:
+## no hay forma de que un filtro mal puesto haga desaparecer un placeable del
+## juego, solo de esta lista.
+func _filter_row() -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+
+	var search := LineEdit.new()
+	search.placeholder_text = "Buscar (nombre o id)…"
+	search.clear_button_enabled = true
+	search.text = _search_text
+	search.text_changed.connect(func(text: String) -> void:
+		_search_text = text
+		_populate_palette())
+	box.add_child(search)
+
+	var row := HBoxContainer.new()
+	var label := Label.new()
+	label.text = "Categoría:"
+	label.custom_minimum_size = Vector2(90, 0)
+	row.add_child(label)
+
+	var opt := OptionButton.new()
+	opt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	opt.add_item("Todas")
+	# Paralelo a los items, igual que _zone_paths con el dropdown de zonas:
+	# el índice 0 es "Todas" y de ahí en adelante sigue el orden de CATEGORIES.
+	var filter_ids: Array[String] = [""]
+	for cat in BuildCatalog.CATEGORIES:
+		var category_id := str(cat[0])
+		if BuildCatalog.ids_in_category(category_id).is_empty():
+			continue
+		opt.add_item(str(cat[1].get("label", category_id)))
+		filter_ids.append(category_id)
+	opt.selected = maxi(filter_ids.find(_category_filter), 0)
+	opt.item_selected.connect(func(i: int) -> void:
+		_category_filter = filter_ids[i] if i < filter_ids.size() else ""
+		_populate_palette())
+	row.add_child(opt)
+	box.add_child(row)
+
+	_match_label = Label.new()
+	box.add_child(_match_label)
+
+	return box
+
+
+## Redibuja los botones de la paleta aplicando los filtros. Se llama en cada
+## tecla del buscador, así que rehace SOLO esta lista y no el dock entero:
+## reconstruir todo perdería el foco del LineEdit en la primera letra.
+func _populate_palette() -> void:
+	if _categories_box == null:
+		return
+	for child in _categories_box.get_children():
+		_categories_box.remove_child(child)
+		child.queue_free()
+
+	var group := ButtonGroup.new()
+	_kind_buttons.clear()
+	var shown := 0
+	var total := 0
+
+	for cat in BuildCatalog.CATEGORIES:
+		var category_id := str(cat[0])
+		var category_label := str(cat[1].get("label", category_id))
+		var ids := BuildCatalog.ids_in_category(category_id)
+		total += ids.size()
+		if _category_filter != "" and category_id != _category_filter:
+			continue
+
+		var matching: Array[String] = []
+		for id in ids:
+			if _matches(id):
+				matching.append(id)
+		if matching.is_empty():
+			continue
+		shown += matching.size()
+
+		var header := Label.new()
+		header.text = category_label
+		_categories_box.add_child(header)
+
+		var grid := GridContainer.new()
+		grid.columns = 5
+		_categories_box.add_child(grid)
+
+		for id in matching:
+			var button := Button.new()
+			button.toggle_mode = true
+			button.button_group = group
+			button.custom_minimum_size = Vector2(36, 36)
+			button.icon = BuildIcons.get_icon(id)
+			button.expand_icon = true
+			button.tooltip_text = BuildCatalog.label_for(id)
+			button.button_pressed = (id == selected_kind)
+			button.toggled.connect(_on_kind_toggled.bind(id))
+			grid.add_child(button)
+			_kind_buttons[id] = button
+
+	if _match_label:
+		if shown == total:
+			_match_label.text = "%d placeables" % total
+		elif shown == 0:
+			_match_label.text = "Nada coincide con el filtro (%d en total)" % total
+		else:
+			_match_label.text = "%d de %d" % [shown, total]
+
+
+## Un id entra si el texto buscado aparece en su etiqueta o en el id mismo.
+## Busca en los dos porque se lo piensa de las dos formas: "herrería" es lo
+## que dice el botón, "blacksmith" es como se llama el archivo.
+func _matches(id: String) -> bool:
+	if _search_text.strip_edges() == "":
+		return true
+	var needle := _fold(_search_text)
+	return _fold(BuildCatalog.label_for(id)).contains(needle) or _fold(id).contains(needle)
+
+
+## Minúsculas y sin tildes. Medio catálogo está acentuado ("Árbol",
+## "Antorcha", "Cumbrera", "Límatesa") y nadie escribe las tildes buscando.
+func _fold(text: String) -> String:
+	var out := text.to_lower()
+	const ACCENTS := {
+		"á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+		"à": "a", "è": "e", "ì": "i", "ò": "o", "ù": "u",
+		"ä": "a", "ë": "e", "ï": "i", "ö": "o", "ü": "u",
+		"ñ": "n", "ç": "c",
+	}
+	for accented in ACCENTS:
+		out = out.replace(accented, str(ACCENTS[accented]))
+	return out
 
 
 func _on_kind_toggled(pressed: bool, id: String) -> void:
