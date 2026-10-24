@@ -292,6 +292,15 @@ func ensure_render_layers() -> void:
 	_pin_floor_z()
 	_build_structures()
 	_build_floor_tiles()
+	# El vallado se arma Y se repinta acá, no solo se arma: a diferencia de
+	# "Suelo"/"Structures", la capa "Vallas" no es un nodo guardado en el
+	# .tscn de la zona (ver _ensure_layer(): se agrega sin owner), así que al
+	# abrir la escena en el editor nace vacía y lo único que sabe dónde va
+	# cada valla son los FenceMarker. Sin este repintado el editor mostraba
+	# el gizmo del marker y ningún sprite — reportado como "no veo el sprite
+	# en el editor".
+	_build_fences()
+	_rebuild_fences()
 	_build_paint_layers()
 
 

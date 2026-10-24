@@ -9,14 +9,21 @@ extends Node
 ## captura real (tools/fence_screenshot.tscn), igual que el pincel y el techo.
 
 const WORLD_ZONE_SCRIPT := preload("res://scripts/world/world_zone.gd")
-const MIN_CHECKS := 30
+## Piso real de checks: si una sección se saltea (ver _ready()), esto es lo
+## que lo grita. No bajarlo para que "pase" — ese fue exactamente el error.
+const MIN_CHECKS := 50
 
 var _checks := 0
 var _failures: Array[String] = []
 
 
 func _ready() -> void:
-	_run()
+	# await, no _run() a secas: _run() tiene awaits adentro, así que sin
+	# esperarlo _ready() sigue de largo y reporta el resultado antes de que
+	# la mitad de las secciones hayan corrido. Pasó: la suite daba verde
+	# salteando el round-trip por la zona, y el piso de MIN_CHECKS fue lo
+	# único que lo delató.
+	await _run()
 	_check_ran_enough()
 	print("\n-- %d checks, %d failures --" % [_checks, _failures.size()])
 	for f in _failures:
@@ -62,6 +69,8 @@ func _run() -> void:
 	_check_atlas()
 	_check_tileset_and_collision()
 	await _check_zone_round_trip()
+	await _check_editor_path()
+	_check_palette_icon()
 
 
 ## El bitmask: solo cruz, sin diagonales, y el sur no cuenta porque no tiene
@@ -241,3 +250,56 @@ func _check_zone_round_trip() -> void:
 		_expect(layer.get_cell_atlas_coords(Vector2i(0, 0)).x == 0,
 			"al partirse la tirada, la celda que quedó sola vuelve a poste aislado")
 	zone.free()
+
+
+## La regresión de "no veo el sprite en el editor". En el editor la zona no
+## pasa por _build_world() —eso es solo al jugar— sino por
+## ensure_render_layers(), y la capa "Vallas" no es un nodo guardado en el
+## .tscn de la zona: nace vacía cada vez que se abre la escena. Si
+## ensure_render_layers() no la repinta desde los markers, el editor muestra
+## el gizmo del marker y ningún sprite.
+func _check_editor_path() -> void:
+	print("
+[6] El camino del editor (ensure_render_layers)")
+	var zone := _make_zone()
+	var kind := FenceAutotiler.palette_id(FenceAutotiler.styles()[0])
+	for x in 2:
+		zone.call("_place_marker", kind, BuildGrid.cell_to_world(Vector2i(x, 9)))
+	await get_tree().process_frame
+
+	# Tirar la capa y rearmar por donde entra el editor: es exactamente lo
+	# que pasa al cerrar y volver a abrir la escena.
+	var layer: TileMapLayer = zone.get_node_or_null("Vallas")
+	_expect(layer != null, "la capa existe después de colocar")
+	if layer != null:
+		layer.free()
+	_expect(zone.get_node_or_null("Vallas") == null, "la capa se fue, como al reabrir la escena")
+
+	zone.call("ensure_render_layers")
+	var rebuilt: TileMapLayer = zone.get_node_or_null("Vallas")
+	_expect(rebuilt != null, "ensure_render_layers() vuelve a armar la capa")
+	if rebuilt != null:
+		_expect(rebuilt.get_used_cells().size() == 2,
+			"y la REPINTA desde los markers (si no, en el editor no se ve nada)")
+		_expect(rebuilt.collision_enabled == false or not Engine.is_editor_hint(),
+			"la colisión no se arma de gusto mientras se mapea")
+	zone.free()
+
+
+## El botón de la paleta: el atlas son 8 combinaciones en fila, así que el
+## ícono tiene que ser un recorte y no el PNG entero — si no, el botón
+## muestra ocho vallas apretadas.
+func _check_palette_icon() -> void:
+	print("
+[7] El ícono de la paleta")
+	var style: String = FenceAutotiler.styles()[0]
+	var icon := BuildIcons.get_icon(FenceAutotiler.palette_id(style))
+	_expect(icon != null, "la paleta resuelve un ícono para la valla")
+	_expect(icon is AtlasTexture, "es un recorte del atlas, no el atlas entero")
+	if icon is AtlasTexture:
+		var region := (icon as AtlasTexture).region
+		_expect(int(region.size.x) == BuildGrid.TILE_SIZE
+			and int(region.size.y) == BuildGrid.TILE_SIZE,
+			"el recorte es de una celda")
+		_expect(int(region.position.x) == FenceAutotiler.ICON_MASK * BuildGrid.TILE_SIZE,
+			"muestra la tirada horizontal, que es la que se lee como 'valla'")

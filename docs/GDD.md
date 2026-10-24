@@ -2480,7 +2480,7 @@ una valla parada delante de una casa tiene que taparla. El precio es el
 inverso (una detrás también la tapa), el mismo trato que ya acepta la
 decoración mientras el proyecto no tenga Y-sort de verdad.
 
-Verificación: `validate_fence.tscn`, 39 checks nuevos (3336 en total, 11
+Verificación: `validate_fence.tscn`, 58 checks nuevos (3355 en total, 11
 suites) — el bitmask de 3 bits incluyendo que una diagonal NO conecte y que
 el sur no cambie la pieza, la tirada recta en los cuatro sentidos, que las 8
 combinaciones del atlas sean dibujos **distintos** (si el baker se equivoca de
@@ -2492,6 +2492,26 @@ una celda no apile markers, y que borrar la del medio devuelva a las otras
 dos a poste aislado. Lo que no se puede medir —si se ve continuo— se miró
 con `tools/fence_screenshot.tscn`, renderizando por la capa real y no por una
 composición aparte.
+
+**Fix — "no veo el sprite en el editor":** reportado apenas se probó. La
+valla se colocaba (el gizmo del marker estaba ahí) pero no se dibujaba nada.
+La causa: en el editor la zona no pasa por `_build_world()` —eso corre solo
+al jugar— sino por `ensure_render_layers()`, y ahí la capa "Vallas" no estaba.
+Lo que lo hace distinto de "Suelo"/"Structures" es que esas capas tampoco
+están guardadas en el `.tscn`, pero sus rebuilds sí se llamaban desde el
+camino del editor. Ahora `ensure_render_layers()` arma **y repinta** el
+vallado desde los markers, que es lo único que sabe dónde va cada valla
+cuando la escena se abre de cero.
+
+**Y un error de método que el fix destapó:** la suite del vallado hacía
+`_run()` en vez de `await _run()`, así que `_ready()` seguía de largo en el
+primer `await` y reportaba el resultado antes de que corrieran las últimas
+secciones — incluido el round-trip por la zona, que es lo más valioso que
+prueba. Daba verde sobre 39 checks de los 58 que creía estar corriendo. El
+piso de `MIN_CHECKS` lo detectó (39 < 40) y la primera reacción fue **bajar
+el piso para que pasara**, que es exactamente la forma de convertir un
+canario en adorno. El piso vuelve a estar en un valor que grita si se saltea
+una sección, con el porqué escrito al lado.
 ---
 
 ## Economía y monetización
