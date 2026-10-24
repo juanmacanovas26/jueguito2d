@@ -65,6 +65,7 @@ El repo es público, así que hay dos cosas que se sincronizan por fuera:
   | `houses_t1`…`t5`, `civic` (~55 MB) | 29 casas + 3 edificios cívicos crudos, generados con PixelLab | **No vuelve.** Regenerar con el mismo prompt da otra cosa, y cuesta créditos |
   | `MedievalTown&Fantasy2DMegaPropsPack_v1.0` (41 MB) | Pack comprado, con su `Documentation/LICENSE.txt` | Se re-descarga **si conservás el comprobante de compra** — guardalo en Drive al lado del zip |
   | `free_roads` (3 MB), `plains_pack` | Packs gratis, con `license.txt` y `COUPON.pdf` | Se re-descargan |
+  | `fences/<estilo>/source.png` | Hojas de valla, origen de los atlas horneados por `tools/bake_fence_tiles.py` | Se re-descargan (Fence & Barrier Pack) |
 
   La licencia de cada pack viaja adentro del zip a propósito: es lo que
   respalda el uso del arte, y separada del pack no sirve de nada.

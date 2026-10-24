@@ -202,6 +202,14 @@ var _drag_button: int = 0
 
 
 ## Screen -> world for the 2D editor viewport's current pan/zoom.
+## Celda donde arrancó el arrastre de vallado, o null si no hay uno en curso.
+## El gesto de AoE: se hace click en una punta, se arrastra hasta la otra y
+## al soltar se coloca el tramo entero — no una celda por cada píxel que
+## recorrió el mouse. Mientras tanto el overlay previsualiza el tramo.
+var _fence_anchor = null
+var _fence_cursor := Vector2i.ZERO
+
+
 func _viewport_world_pos(screen_pos: Vector2) -> Vector2:
 	var viewport := get_editor_interface().get_editor_viewport_2d()
 	return viewport.global_canvas_transform.affine_inverse() * screen_pos
@@ -235,6 +243,12 @@ func _forward_canvas_gui_input(event: InputEvent) -> bool:
 		_edited_zone = zone
 		_ensure_zone_layers()
 		var drag_pos := _viewport_world_pos((event as InputEventMouseMotion).position)
+		# El vallado no pinta mientras se arrastra: solo mueve la punta del
+		# tramo y deja que el overlay lo muestre. Se coloca al soltar.
+		if _fence_anchor != null:
+			_fence_cursor = BuildGrid.to_cell(BuildGrid.snap(drag_pos))
+			update_overlays()
+			return true
 		if PaintLayer.is_paint_id(_dock.selected_kind):
 			_paint(_dock.selected_kind, drag_pos, _drag_button == MOUSE_BUTTON_RIGHT)
 		elif _drag_button == MOUSE_BUTTON_LEFT:
@@ -260,6 +274,8 @@ func _forward_canvas_gui_input(event: InputEvent) -> bool:
 	if not mb.pressed:
 		if mb.button_index == _drag_button:
 			_drag_button = 0
+			if _fence_anchor != null:
+				_commit_fence_run(_dock.selected_kind)
 			# A stroke is only undoable once its dirty rect is known, which is
 			# on release — see _end_paint_stroke().
 			if PaintLayer.is_paint_id(_dock.selected_kind):
@@ -275,11 +291,34 @@ func _forward_canvas_gui_input(event: InputEvent) -> bool:
 	if PaintLayer.is_paint_id(_dock.selected_kind):
 		_begin_paint_stroke(_dock.selected_kind)
 		_paint(_dock.selected_kind, world_pos, mb.button_index == MOUSE_BUTTON_RIGHT)
+	elif (BuildPlacement.is_fence(_dock.selected_kind)
+			and mb.button_index == MOUSE_BUTTON_LEFT):
+		# Ancla el tramo. Un click sin arrastre termina siendo una tirada de
+		# una celda, que es exactamente lo que se espera de un click.
+		_fence_anchor = BuildGrid.to_cell(BuildGrid.snap(world_pos))
+		_fence_cursor = _fence_anchor
+		update_overlays()
 	elif mb.button_index == MOUSE_BUTTON_LEFT:
 		_place(_dock.selected_kind, world_pos)
 	else:
 		_remove_nearest(world_pos)
 	return true
+
+
+## Coloca de una las celdas del tramo arrastrado y recalcula la capa una sola
+## vez al final: con un repintado por celda, una tirada de 40 postes
+## recalcularía el vecindario 40 veces para llegar al mismo dibujo.
+func _commit_fence_run(kind: String) -> void:
+	var anchor = _fence_anchor
+	_fence_anchor = null
+	if anchor == null or _edited_zone == null:
+		update_overlays()
+		return
+	for cell in FenceAutotiler.line_cells(anchor, _fence_cursor):
+		_place(kind, BuildGrid.cell_to_world(cell))
+	if _edited_zone.has_method("_rebuild_fences"):
+		_edited_zone.call("_rebuild_fences")
+	update_overlays()
 
 
 ## ------------------------------------------------------------- placement
@@ -481,6 +520,8 @@ func _rebuild(zone: Node2D, marker: Node) -> void:
 	elif marker is FloorTileMarker and zone.has_method("_rebuild_floor_tiles"):
 		zone.call("_rebuild_floor_tiles")
 		print("[BuildModeEditor] _rebuild_floor_tiles() called")
+	elif marker is FenceMarker and zone.has_method("_rebuild_fences"):
+		zone.call("_rebuild_fences")
 	elif marker is CollisionMarker:
 		pass # no TileMapLayer/visual to rebuild — CollisionMarker's own
 		# editor-only _draw() already shows it; the real StaticBody2D is
@@ -550,6 +591,19 @@ func _forward_canvas_draw_over_viewport(overlay: Control) -> void:
 		var r := float(_dock.brush_radius) * xform_now.get_scale().x
 		overlay.draw_circle(centre, r, Color(0.95, 0.85, 0.45, 0.16))
 		overlay.draw_arc(centre, r, 0.0, TAU, 48, Color(0.95, 0.85, 0.45, 0.9), 1.5)
+		return
+
+	# Vallado en curso: se previsualiza el TRAMO, no una celda suelta. Es la
+	# única forma de saber antes de soltar qué va a quedar colocado.
+	if _fence_anchor != null and BuildPlacement.is_fence(kind):
+		var run := FenceAutotiler.line_cells(_fence_anchor, _fence_cursor)
+		var cell_px := float(BuildGrid.TILE_SIZE)
+		var scale := xform_now.get_scale().x
+		for cell in run:
+			var at := xform_now * (BuildGrid.cell_to_world(cell) - Vector2(cell_px, cell_px) * 0.5)
+			var rect := Rect2(at, Vector2(cell_px, cell_px) * scale)
+			overlay.draw_rect(rect, Color(0.95, 0.75, 0.35, 0.22))
+			overlay.draw_rect(rect, Color(0.95, 0.75, 0.35, 0.8), false, 1.0)
 		return
 
 	var is_grid := BuildPlacement.is_grid_kind(kind)

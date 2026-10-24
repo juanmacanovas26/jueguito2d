@@ -206,7 +206,7 @@ func _check_hud_build_panel_wiring() -> void:
 	await get_tree().process_frame
 
 	var expected_ids := BuildCatalog.all_ids()
-	_expect(expected_ids.size() == 581, "BuildCatalog lists 581 placeable ids (got %d)" % expected_ids.size())
+	_expect(expected_ids.size() == 582, "BuildCatalog lists 582 placeable ids (got %d)" % expected_ids.size())
 
 	var button_map: Dictionary = hud._build_kind_buttons
 	_expect(button_map.size() == expected_ids.size(),

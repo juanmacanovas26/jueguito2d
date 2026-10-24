@@ -110,6 +110,16 @@ static func collect_floor_tiles(markers_root: Node) -> Array[FloorTileMarker]:
 	return out
 
 
+## Las celdas de vallado, para que world_zone resuelva el vecindario de cada
+## una (ver FenceAutotiler).
+static func collect_fences(markers_root: Node) -> Array[FenceMarker]:
+	var out: Array[FenceMarker] = []
+	for child in _all_descendants(markers_root):
+		if child is FenceMarker:
+			out.append(child)
+	return out
+
+
 ## Spawns the single live entity a marker describes (mob or gatherable) and
 ## returns it, or null for a POI (nothing consumes those yet) or an unknown
 ## node. Used both by build() above and by the runtime build-mode overlay

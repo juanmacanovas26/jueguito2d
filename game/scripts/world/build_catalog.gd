@@ -27,6 +27,7 @@ const CATEGORIES := [
 	["suelo", {"label": "SUELO (pintar)", "dev_only": true}],
 	["decor", {"label": "DECORACIÓN", "dev_only": true}],
 	["building", {"label": "EDIFICIOS (prefab)", "dev_only": true}],
+	["fence", {"label": "VALLADO (auto)", "dev_only": true}],
 	["collision", {"label": "COLISIÓN", "dev_only": true}],
 ]
 
@@ -397,6 +398,10 @@ const ENTRIES := [
 	["decor_bush", {"category": "decor", "label": "Arbusto"}],
 	["decor_spigot", {"category": "decor", "label": "Grifo de pared"}],
 	["decor_fence", {"category": "decor", "label": "Cerca de madera"}],
+	# VALLADO: un estilo = un atlas horneado en assets/world/fences/ + esta
+	# línea. FenceAutotiler.styles() lee de acá y no del disco, para que la
+	# lista siga existiendo en un build exportado (ver su encabezado).
+	["fence_wood", {"category": "fence", "label": "Valla: Madera"}],
 	["decor_garden_bed", {"category": "decor", "label": "Jardinera"}],
 	["decor_plank", {"category": "decor", "label": "Tabla de madera"}],
 	["decor_stone_platform", {"category": "decor", "label": "Plataforma de piedra"}],

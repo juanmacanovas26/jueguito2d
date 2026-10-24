@@ -48,6 +48,11 @@ static func is_floor_tile(kind: String) -> bool:
 	return kind.begins_with("floor_")
 
 
+## Las celdas de vallado ("fence_<estilo>", ver FenceAutotiler).
+static func is_fence(kind: String) -> bool:
+	return FenceAutotiler.is_fence_id(kind)
+
+
 ## Ids that occupy one fixed grid cell rather than being free-placed at an
 ## arbitrary position. Drives grid snapping, the per-cell dedup below, and
 ## whether a drag across the viewport paints a run of cells.
@@ -56,7 +61,8 @@ static func is_grid_kind(kind: String) -> bool:
 		or StructureTileset.WALL_DECOR.has(kind)
 		or is_roof(kind)
 		or is_collision(kind)
-		or is_floor_tile(kind))
+		or is_floor_tile(kind)
+		or is_fence(kind))
 
 
 ## Every node type build mode can place. Used to tell a marker apart from a
@@ -66,7 +72,8 @@ static func is_marker(node: Node) -> bool:
 	return (node is StructureMarker or node is RoofMarker
 		or node is DecorMarker or node is MobSpawnMarker or node is ResourceNodeMarker
 		or node is POIMarker or node is BuildingMarker
-		or node is CollisionMarker or node is FloorTileMarker)
+		or node is CollisionMarker or node is FloorTileMarker
+		or node is FenceMarker)
 
 
 ## True only for markers that occupy real SPACE in the world — the ones the
@@ -84,7 +91,8 @@ static func blocks_free_placement(node: Node) -> bool:
 	if not is_marker(node):
 		return false
 	return not (node is FloorTileMarker or node is CollisionMarker
-		or node is StructureMarker or node is RoofMarker)
+		or node is StructureMarker or node is RoofMarker
+		or node is FenceMarker)
 
 
 ## The marker a palette id places, fully configured except for its position.
@@ -113,6 +121,10 @@ static func make_marker(kind: String, wall_material: String = "", roof_material:
 		var ft := FloorTileMarker.new()
 		ft.tile_id = kind.trim_prefix("floor_")
 		return ft
+	if is_fence(kind):
+		var fm := FenceMarker.new()
+		fm.style = FenceAutotiler.style_of(kind)
+		return fm
 	if kind.begins_with("decor_"):
 		var dm := DecorMarker.new()
 		dm.decor_id = kind.trim_prefix("decor_")
@@ -176,6 +188,10 @@ static func grid_marker_at(markers: Node, kind: String, cell: Vector2i) -> Node2
 		for m in ZoneBuilder.collect_floor_tiles(markers):
 			if m.grid_pos == cell:
 				return m
+	elif is_fence(kind):
+		for m in ZoneBuilder.collect_fences(markers):
+			if m.grid_pos == cell:
+				return m
 	return null
 
 
@@ -189,4 +205,9 @@ static func is_redundant_placement(kind: String, existing: Node2D) -> bool:
 		return false
 	if is_floor_tile(kind) and existing is FloorTileMarker:
 		return (existing as FloorTileMarker).tile_id == kind.trim_prefix("floor_")
+	# Una valla se comporta como el piso y no como la pared: pasar un estilo
+	# distinto por encima la cambia (es lo que uno espera arrastrando), y
+	# volver a pasar el mismo no apila un segundo marker en la celda.
+	if is_fence(kind) and existing is FenceMarker:
+		return (existing as FenceMarker).style == FenceAutotiler.style_of(kind)
 	return true

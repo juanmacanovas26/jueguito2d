@@ -125,11 +125,32 @@ static func _build(kind: String, facing_steps: int) -> Texture2D:
 		return _load_square(PaintedFloorTileset.path_for(kind.trim_prefix("floor_")))
 	if kind.begins_with("building_"):
 		return _load_square(BuildingMarker.texture_path(kind.trim_prefix("building_"), facing_steps))
+	if FenceAutotiler.is_fence_id(kind):
+		return _fence_icon(FenceAutotiler.style_of(kind))
 	if kind.begins_with("collision_"):
 		return _collision_icon()
 	if POI_COLORS.has(kind):
 		return _poi_icon(kind, POI_COLORS[kind])
 	return _blank()
+
+
+## El atlas de una valla son 8 combinaciones en fila, así que el ícono no
+## puede ser el PNG entero: se recorta la tirada horizontal, que es la que se
+## lee de un vistazo como "valla" (ver FenceAutotiler.ICON_MASK). AtlasTexture
+## y no una copia del recorte, para no duplicar la imagen en memoria por cada
+## estilo.
+static func _fence_icon(style: String) -> Texture2D:
+	var path := FenceAutotiler.atlas_path(style)
+	if not ResourceLoader.exists(path):
+		return _blank()
+	var tex: Resource = load(path)
+	if not (tex is Texture2D):
+		return _blank()
+	var atlas := AtlasTexture.new()
+	atlas.atlas = tex as Texture2D
+	var cell := BuildGrid.TILE_SIZE
+	atlas.region = Rect2(FenceAutotiler.ICON_MASK * cell, 0, cell, cell)
+	return atlas
 
 
 ## No in-world sprite of its own (see collision_marker.gd) — a plain "no

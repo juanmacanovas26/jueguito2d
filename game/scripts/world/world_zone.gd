@@ -39,6 +39,12 @@ const Z_SUELO := -2       # hand-painted floor + terrain pieces
 const Z_STRUCTURES := -1  # walls and interior floors
 ## Markers (buildings, decor, mobs, resources, POIs) sit at relative 0, and
 ## order among themselves through the per-marker z below.
+## El vallado se dibuja a la altura de la decoración y no de las paredes
+## (Z_STRUCTURES): una valla parada DELANTE de una casa tiene que taparla.
+## El precio es el inverso —una valla detrás de la casa también la tapa—, que
+## es el mismo trato que ya acepta la decoración mientras el proyecto no
+## tenga Y-sort de verdad.
+const Z_FENCE := 1
 const Z_BUILDING := 0
 const Z_DECOR := 1        # decor goes over buildings AND over painted floor
 
@@ -83,6 +89,8 @@ var _roof_piece_source_ids: Dictionary = {}
 var _wall_decor_source_ids: Dictionary = {}
 ## PaintedFloorTileset tile id -> TileSet source_id (Suelo layer).
 var _floor_tile_source_ids: Dictionary = {}
+## estilo de valla -> source id en el TileSet de la capa "Vallas".
+var _fence_source_ids: Dictionary = {}
 
 
 const BuildGhostScript := preload("res://scripts/world/build_ghost.gd")
@@ -473,6 +481,8 @@ func _build_world() -> void:
 	_rebuild_collision()
 	_build_floor_tiles()
 	_rebuild_floor_tiles()
+	_build_fences()
+	_rebuild_fences()
 	_build_paint_layers()
 
 
@@ -834,6 +844,65 @@ func _floor_tile_marker_at(world_pos: Vector2) -> FloorTileMarker:
 		if m.grid_pos == cell:
 			return m
 	return null
+
+
+## La celda de vallado en world_pos, o null — misma forma que los otros
+## lookups por celda de este archivo.
+func _fence_marker_at(world_pos: Vector2) -> FenceMarker:
+	var markers := get_node_or_null("Markers")
+	if markers == null:
+		return null
+	var cell := BuildGrid.to_cell(BuildGrid.snap(world_pos))
+	for m in ZoneBuilder.collect_fences(markers):
+		if m.grid_pos == cell:
+			return m
+	return null
+
+
+## Crea la capa "Vallas" con el TileSet de los atlas horneados. La colisión
+## viene adentro del TileSet (ver FenceTileset), así que la capa la arma sola
+## y no hay un segundo sistema de cuerpos que mantener sincronizado.
+func _build_fences() -> void:
+	var layer := _ensure_layer("Vallas", "", Z_FENCE)
+	layer.position = Vector2(-TILE_PX / 2.0, -TILE_PX / 2.0)
+	var built := FenceTileset.build()
+	layer.tile_set = built["tileset"]
+	_fence_source_ids = built["source_ids"]
+	# En el editor la física no corre, y una capa con colisión activa
+	# mientras se mapea solo gasta: los cuerpos se arman igual al jugar.
+	layer.collision_enabled = not Engine.is_editor_hint()
+
+
+## Repinta "Vallas" desde cero a partir de los FenceMarker — misma forma que
+## _rebuild_floor_tiles(), y por la misma razón: la pieza de una celda
+## depende de sus vecinas, así que poner una sola cambia hasta tres más y un
+## repintado completo ya lo cubre sin llevar contabilidad de vecindarios.
+##
+## Dos pasadas porque hace falta conocer TODAS las celdas antes de resolver
+## cualquiera. Agrupadas por estilo: dos vallas de estilos distintos que se
+## tocan rematan cada una por su lado en vez de fundirse (ver
+## FenceAutotiler.mask_at()).
+func _rebuild_fences() -> void:
+	var layer: TileMapLayer = get_node_or_null("Vallas")
+	if layer == null:
+		return
+	layer.clear()
+	var markers := get_node_or_null("Markers")
+	if markers == null:
+		return
+	var placed := ZoneBuilder.collect_fences(markers)
+	var by_style := {}
+	for m in placed:
+		if not by_style.has(m.style):
+			by_style[m.style] = {}
+		by_style[m.style][m.grid_pos] = true
+	for m in placed:
+		var source_id := int(_fence_source_ids.get(m.style, -1))
+		if source_id < 0:
+			continue
+		var occupied: Dictionary = by_style[m.style]
+		var mask := FenceAutotiler.mask_at(occupied, m.grid_pos)
+		layer.set_cell(m.grid_pos, source_id, FenceAutotiler.atlas_coords(mask))
 
 
 ## Detaches one marker, routing it through the same undo bookkeeping
@@ -1204,13 +1273,14 @@ func _place_marker(kind: String, world_pos: Vector2, single_cell: bool = false) 
 	var is_roof := kind.begins_with("roof_")
 	var is_collision := kind.begins_with("collision_")
 	var is_floor_tile := kind.begins_with("floor_")
+	var is_fence := FenceAutotiler.is_fence_id(kind)
 	# A roof piece with no material selected (Game.build_roof_material ==
 	# "none") has nothing to paint with — refuse the click rather than
 	# stamp a RoofMarker whose material has no art (see StructureTileset;
 	# it would silently paint nothing, which reads as a broken click).
 	if is_roof and Game.build_roof_material == ROOF_NONE:
 		return
-	if is_wall or is_roof or is_collision or is_floor_tile:
+	if is_wall or is_roof or is_collision or is_floor_tile or is_fence:
 		world_pos = BuildGrid.snap(world_pos)
 		var dup: Node2D = null
 		if is_wall:
@@ -1219,6 +1289,15 @@ func _place_marker(kind: String, world_pos: Vector2, single_cell: bool = false) 
 			dup = _roof_marker_at(world_pos)
 		elif is_collision:
 			dup = _collision_marker_at(world_pos)
+		elif is_fence:
+			# Misma regla que el piso: pasar otro estilo por encima lo
+			# cambia, pasar el mismo es no-op para que un arrastre no apile
+			# markers en la celda.
+			var fence_here := _fence_marker_at(world_pos)
+			if fence_here != null:
+				if fence_here.style == FenceAutotiler.style_of(kind):
+					return
+				_remove_marker(fence_here)
 		else:
 			# Repainting a cell that already holds a DIFFERENT floor tile
 			# replaces it (that's what painting over something means), but
@@ -1272,6 +1351,9 @@ func _place_marker(kind: String, world_pos: Vector2, single_cell: bool = false) 
 	elif is_floor_tile:
 		(marker as FloorTileMarker).grid_pos = BuildGrid.to_cell(world_pos)
 		_rebuild_floor_tiles()
+	elif is_fence:
+		(marker as FenceMarker).grid_pos = BuildGrid.to_cell(world_pos)
+		_rebuild_fences()
 	else:
 		marker.global_position = world_pos
 		# Buildings don't get the flat free-45°-steps rotation every other
@@ -1416,6 +1498,10 @@ func _instantiate_marker(kind: String) -> Node2D:
 			p.kind = POIMarker.Kind[kind.to_upper()] as POIMarker.Kind
 			return p
 		_:
+			if FenceAutotiler.is_fence_id(kind):
+				var fm := FenceMarker.new()
+				fm.style = FenceAutotiler.style_of(kind)
+				return fm
 			if WALL_PIECE_IDS.has(kind):
 				var sm := StructureMarker.new()
 				sm.piece = kind
@@ -1472,6 +1558,7 @@ func _remove_nearest_marker(world_pos: Vector2, max_dist: float = 24.0) -> void:
 	var was_structure := closest is StructureMarker or closest is RoofMarker
 	var was_collision := closest is CollisionMarker
 	var was_floor_tile := closest is FloorTileMarker
+	var was_fence := closest is FenceMarker
 	markers.remove_child(closest)
 	# NOT queue_free()'d when an undo action is open: the orphaned node is
 	# what undo puts back, with every property already intact. _flush_build_
@@ -1486,6 +1573,8 @@ func _remove_nearest_marker(world_pos: Vector2, max_dist: float = 24.0) -> void:
 		_rebuild_collision()
 	elif was_floor_tile:
 		_rebuild_floor_tiles()
+	elif was_fence:
+		_rebuild_fences()
 
 
 ## Packs the current "Markers" subtree (original content + anything placed

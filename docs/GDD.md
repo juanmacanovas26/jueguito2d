@@ -2429,6 +2429,69 @@ buscador/filtro del dock (tildes, búsqueda por id, filtro por categoría,
 limpiar el filtro devuelve el catálogo completo). Lo que no se puede medir
 —cómo se ve la herramienta— se miró con una captura real antes de darla por
 buena.
+
+**Implementado — vallado tipo Age of Empires (categoría "VALLADO (auto)"):**
+pedido así: "el mapper debería tener un sistema de vallado tipo AoE". Se
+marcan celdas y cada una elige su pieza según qué vecinas también son valla:
+esquinas, remates y cruces salen solos. Y el gesto es el de AoE — click en
+una punta, arrastrar hasta la otra, y al soltar se coloca el tramo entero,
+con el overlay previsualizando qué va a quedar antes de soltar.
+
+**El hallazgo que ahorró quince dibujos.** El arte que llegó
+(`spr_fencePost.png`) no es un tileset de 16 piezas: son 6 muestras, y mirando
+el alfa fila por fila se ve que están construidas como **poste + barandas**,
+con el poste anclado abajo y el tronco llegando al borde inferior de la
+celda. De ahí sale lo importante: **conectar hacia el sur no necesita dibujo
+propio**, porque la celda de abajo pone su baranda norte y las dos se
+encuentran en la costura. Quedan tres bits (N/E/O) = 8 combinaciones, y las 8
+se hornean de 4 primitivas recortadas de la hoja
+(`tools/bake_fence_tiles.py`). Un estilo nuevo cuesta cuatro recortes y una
+línea en el catálogo, no dieciséis dibujos — que importa porque hay un pack
+con 12 estilos más esperando.
+
+Eso no se dedujo del arte y se dio por bueno: se compuso un corral cerrado,
+una L y tiradas sueltas en una pasada aparte, se miró, y recién ahí se
+escribió el sistema.
+
+**A diferencia de `RoadAutotiler`, no hay diagonales.** Un camino es una
+mancha de 8 bits con biseles; una valla es una línea de postes que solo
+conecta en cruz. Dos vallas que se tocan en diagonal son dos vallas, no una
+curva, y el arte no tiene pieza para eso. Por lo mismo, arrastrar en diagonal
+**endereza al eje más largo** en vez de dibujar una escalera de postes: una
+escalera casi nunca es lo que se quiso, y para una L se hacen dos tiradas,
+que además es como se hace en AoE.
+
+Dos estilos distintos que se tocan tampoco se conectan: cada uno remata
+contra el otro. Una valla de madera fundiéndose con una de piedra no es algo
+que nadie haya dibujado.
+
+**La colisión viaja en el TileSet, no en markers aparte.** Es la decisión que
+más cambia el uso: una valla es sólida siempre y en todas sus celdas, así que
+dejarlo en manos de acordarse de pintar `COLISIÓN` encima de cada tramo es
+exactamente el error que se comete. Con la capa de física del TileSet, poner
+la valla **ya** la hace sólida y la `TileMapLayer` arma los cuerpos sola. Las
+cajas siguen al arte medido sobre el atlas (poste 12x26, barandas 10x16), y
+poste + barandas cubren la celda entera en el eje en que la valla conecta, así
+que una tirada no deja agujeros por donde colarse. La capa va apagada en el
+editor, donde la física no corre y solo costaría.
+
+Z: el vallado se dibuja a la altura de la decoración y no de las paredes —
+una valla parada delante de una casa tiene que taparla. El precio es el
+inverso (una detrás también la tapa), el mismo trato que ya acepta la
+decoración mientras el proyecto no tenga Y-sort de verdad.
+
+Verificación: `validate_fence.tscn`, 39 checks nuevos (3336 en total, 11
+suites) — el bitmask de 3 bits incluyendo que una diagonal NO conecte y que
+el sur no cambie la pieza, la tirada recta en los cuatro sentidos, que las 8
+combinaciones del atlas sean dibujos **distintos** (si el baker se equivoca de
+recorte lo más probable es que escriba ocho veces lo mismo y todo "funcione"
+con una valla que nunca conecta), que cada tile traiga poste + una caja por
+baranda, y el viaje completo por la zona: colocar tres celdas, que la del
+medio resuelva a tirada horizontal y las puntas a sus remates, que repasar
+una celda no apile markers, y que borrar la del medio devuelva a las otras
+dos a poste aislado. Lo que no se puede medir —si se ve continuo— se miró
+con `tools/fence_screenshot.tscn`, renderizando por la capa real y no por una
+composición aparte.
 ---
 
 ## Economía y monetización
