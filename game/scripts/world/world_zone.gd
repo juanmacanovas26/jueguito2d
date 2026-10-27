@@ -33,7 +33,8 @@ const TILE_PX := BuildGrid.TILE_SIZE
 ## creates them with add_child(), which appends them AFTER "Markers" in the
 ## tree, and equal-z siblings draw in tree order. So a painted road covered
 ## the barrels standing on it.
-const Z_FLOOR := -4       # procedural/baked base ground
+const Z_FLOOR := -5       # procedural/baked base ground
+const Z_TERRENO := -4     # biome terrain brush (BiomeTileset), auto borders
 const Z_PINTURA := -3     # free-brush ground (PaintLayer), no grid
 const Z_SUELO := -2       # hand-painted floor + terrain pieces
 const Z_STRUCTURES := -1  # walls and interior floors
@@ -89,6 +90,8 @@ var _roof_piece_source_ids: Dictionary = {}
 var _wall_decor_source_ids: Dictionary = {}
 ## PaintedFloorTileset tile id -> TileSet source_id (Suelo layer).
 var _floor_tile_source_ids: Dictionary = {}
+## BiomeTileset sheet -> TileSet source_id (Terreno layer).
+var _terrain_source_ids: Dictionary = {}
 ## estilo de valla -> source id en el TileSet de la capa "Vallas".
 var _fence_source_ids: Dictionary = {}
 
@@ -332,6 +335,21 @@ func _build_floor_tiles() -> void:
 	var built := PaintedFloorTileset.build()
 	layer.tile_set = built["tileset"]
 	_floor_tile_source_ids = built["source_ids"]
+	_build_terrain()
+
+
+## The "Terreno" layer the TERRENO brush paints into (see BiomeTileset). Built
+## alongside "Suelo" because its cells are FloorTileMarkers too, so every place
+## that builds or repaints the floor tiles covers the terrain for free. Sits
+## over the zone's Floor and under the free brush, so a dirt track painted with
+## the PINCEL still runs across a beach.
+func _build_terrain() -> void:
+	var layer := _ensure_layer("Terreno", "")
+	layer.position = Vector2(-TILE_PX / 2.0, -TILE_PX / 2.0)
+	layer.z_index = Z_TERRENO
+	var built := BiomeTileset.build()
+	layer.tile_set = built["tileset"]
+	_terrain_source_ids = built["source_ids"]
 
 
 ## Repaints "Suelo" from every FloorTileMarker under "Markers" — same
@@ -348,15 +366,19 @@ func _rebuild_floor_tiles() -> void:
 		return
 	var markers := get_node_or_null("Markers")
 	var cells := {}
+	var terrain := {}
 	if markers != null:
 		var painted := ZoneBuilder.collect_floor_tiles(markers)
 		# Auto-road cells read their neighbours, so every cell has to be
 		# known before any of them can be resolved — hence the first pass.
 		# Kept per style, so two road styles meeting keep their own edges
-		# instead of merging into one blob.
+		# instead of merging into one blob. Terrain cells are gathered in
+		# the same pass and drawn on their own layer (_rebuild_terrain()).
 		var road_cells := {}
 		for m in painted:
-			if RoadAutotiler.is_auto(m.tile_id):
+			if BiomeTileset.is_terrain_id(m.tile_id):
+				terrain[m.grid_pos] = BiomeTileset.terrain_of(m.tile_id)
+			elif RoadAutotiler.is_auto(m.tile_id):
 				var style := RoadAutotiler.style_of(m.tile_id)
 				if not road_cells.has(style):
 					road_cells[style] = {}
@@ -364,6 +386,8 @@ func _rebuild_floor_tiles() -> void:
 		for m in painted:
 			var tile_id := m.tile_id
 			var alternative := 0
+			if BiomeTileset.is_terrain_id(tile_id):
+				continue
 			if RoadAutotiler.is_auto(tile_id):
 				var of_style: Dictionary = road_cells[RoadAutotiler.style_of(tile_id)]
 				var mask := RoadAutotiler.mask_at(of_style, m.grid_pos)
@@ -378,6 +402,22 @@ func _rebuild_floor_tiles() -> void:
 			if source_id >= 0:
 				cells[m.grid_pos] = [source_id, Vector2i.ZERO, alternative]
 	_repaint_owned(layer, "Suelo", cells)
+	_rebuild_terrain(terrain)
+
+
+## Repaints "Terreno" from {cell -> terrain}. Whole-layer redo for the same
+## reason as the auto-road: one painted cell changes the borders around it.
+func _rebuild_terrain(painted: Dictionary) -> void:
+	var layer: TileMapLayer = get_node_or_null("Terreno")
+	if layer == null:
+		return
+	var resolved := BiomeTileset.resolve(painted)
+	var cells := {}
+	for cell in resolved:
+		var source_id := int(_terrain_source_ids.get(resolved[cell][0], -1))
+		if source_id >= 0:
+			cells[cell] = [source_id, BiomeTileset.atlas_coords(int(resolved[cell][1]))]
+	_repaint_owned(layer, "Terreno", cells)
 
 
 ## One PaintLayer per paintable texture, between the base Floor and the

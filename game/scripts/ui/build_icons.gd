@@ -121,6 +121,9 @@ static func _build(kind: String, facing_steps: int) -> Texture2D:
 		return _load_square(DecorMarker.texture_path(kind.trim_prefix("decor_")))
 	if PaintLayer.is_paint_id(kind):
 		return _load_square(PaintLayer.texture_path(PaintLayer.texture_of(kind)))
+	if BiomeTileset.is_terrain_id(kind.trim_prefix("floor_")):
+		var terrain_icon := BiomeTileset.icon(BiomeTileset.terrain_of(kind.trim_prefix("floor_")))
+		return terrain_icon if terrain_icon != null else _blank()
 	if kind.begins_with("floor_"):
 		return _load_square(PaintedFloorTileset.path_for(kind.trim_prefix("floor_")))
 	if kind.begins_with("building_"):

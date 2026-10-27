@@ -113,6 +113,7 @@ func _run() -> void:
 	await _check_building_placement()
 	await _check_collision_placement()
 	_check_floor_tile_painting()
+	_check_terrain_painting()
 	_check_build_placement_parity()
 	_check_draw_order()
 	_check_props_over_ground()
@@ -206,7 +207,7 @@ func _check_hud_build_panel_wiring() -> void:
 	await get_tree().process_frame
 
 	var expected_ids := BuildCatalog.all_ids()
-	_expect(expected_ids.size() == 582, "BuildCatalog lists 582 placeable ids (got %d)" % expected_ids.size())
+	_expect(expected_ids.size() == 587, "BuildCatalog lists 587 placeable ids (got %d)" % expected_ids.size())
 
 	var button_map: Dictionary = hud._build_kind_buttons
 	_expect(button_map.size() == expected_ids.size(),
@@ -965,6 +966,77 @@ func _check_floor_tile_painting() -> void:
 	_expect(layer != null and layer.get_cell_source_id(Vector2i(0, 0)) == -1,
 		"  and the tile is erased from the layer, not just the marker")
 
+	zone.free()
+
+
+## The "TERRENO" brush (BiomeTileset). The corner rules first, on plain data —
+## a pond ringed with sand has to pick a different sheet on each side of the
+## ring — then the real paint path: cells land on their own "Terreno" layer,
+## never on "Suelo", and borders follow when a neighbour is added or removed.
+func _check_terrain_painting() -> void:
+	print("\n[13d-bis] TERRENO brush: corner resolution, own layer, removal")
+	var ids := BuildCatalog.ids_in_category("terreno")
+	_expect(ids.size() == BiomeTileset.PRIORITY.size(),
+		"one palette id per terrain (%d of %d)" % [ids.size(), BiomeTileset.PRIORITY.size()])
+	for id in ids:
+		var terrain := BiomeTileset.terrain_of(id.trim_prefix("floor_"))
+		_expect(BuildPlacement.is_grid_kind(id) and BiomeTileset.PRIORITY.has(terrain),
+			"  '%s' is a grid brush for a known terrain" % id)
+		_expect(BiomeTileset.icon(terrain) != null, "  '%s' has a palette icon" % id)
+
+	# A 3x3 pond with a one-cell sand ring, in an unpainted (grass) field.
+	var pond := {}
+	for y in range(-1, 4):
+		for x in range(-1, 4):
+			var inner := x >= 0 and x <= 2 and y >= 0 and y <= 2
+			pond[Vector2i(x, y)] = "agua" if inner else "arena"
+	var r := BiomeTileset.resolve(pond)
+	_expect(r.get(Vector2i(1, 1)) == ["water_sand", 0], "  pond centre is pure water (%s)" % [r.get(Vector2i(1, 1))])
+	_expect(r.get(Vector2i(-1, 1)) == ["water_sand", 10],
+		"  the sand ring blends into the water on its inner side (%s)" % [r.get(Vector2i(-1, 1))])
+	_expect(r.get(Vector2i(-2, 1)) == ["sand_grass", 10],
+		"  and the unpainted grass outside blends into the sand (%s)" % [r.get(Vector2i(-2, 1))])
+	_expect(not r.has(Vector2i(10, 10)), "  untouched grass far away draws nothing")
+	var mouth := {Vector2i(0, 0): "agua", Vector2i(1, 0): "arena", Vector2i(0, 1): "arena"}
+	_expect(BiomeTileset._vertex(mouth, Vector2i(1, 1)) == "arena",
+		"  where water, sand and grass meet the vertex is sand, so the shore stays continuous")
+	var lonely := BiomeTileset.resolve({Vector2i(0, 0): "agua"})
+	_expect(lonely.get(Vector2i(0, 0)) == ["water_sand", 0] and lonely.size() == 1,
+		"  water straight onto grass has no sheet: a hard edge, no stray tiles (%d)" % lonely.size())
+	_expect(BiomeTileset.resolve({Vector2i(5, 5): "pasto"}).get(Vector2i(5, 5)) == ["sand_grass", 15],
+		"  painted grass draws pure grass (covers the Floor's dirt patches)")
+
+	var zone := _make_zone()
+	zone._build_floor_tiles()
+	var layer: TileMapLayer = zone.get_node_or_null("Terreno")
+	var suelo: TileMapLayer = zone.get_node_or_null("Suelo")
+	_expect(layer != null and layer.z_index == WorldZone.Z_TERRENO,
+		"a 'Terreno' layer is created at Z_TERRENO")
+	_expect(WorldZone.Z_FLOOR < WorldZone.Z_TERRENO and WorldZone.Z_TERRENO < WorldZone.Z_PINTURA,
+		"  between the base Floor and the free brush")
+	_expect(layer != null and layer.tile_set != null and layer.tile_set.get_source_count() == BiomeTileset.SHEETS.size(),
+		"  its TileSet has every sheet (%d)" % (0 if layer == null or layer.tile_set == null else layer.tile_set.get_source_count()))
+	if layer == null:
+		zone.free()
+		return
+
+	# A column of water with a column of sand beside it: the middle sand cell
+	# borders water on its left and grass on its right.
+	for y in [-1, 0, 1]:
+		zone._place_marker("floor_terreno_agua", Vector2(0, y * 32))
+	_expect(layer.get_cell_source_id(Vector2i(0, 0)) >= 0, "painting water fills the cell on 'Terreno'")
+	_expect(suelo == null or suelo.get_cell_source_id(Vector2i(0, 0)) == -1, "  and nothing on 'Suelo'")
+	for y in [-1, 0, 1]:
+		zone._place_marker("floor_terreno_arena", Vector2(32, y * 32))
+	_expect(layer.get_cell_atlas_coords(Vector2i(1, 0)) == BiomeTileset.atlas_coords(5),
+		"  sand next to it picks the water/sand border (%s)" % layer.get_cell_atlas_coords(Vector2i(1, 0)))
+	_expect(layer.get_cell_source_id(Vector2i(2, 0)) >= 0,
+		"  and the unpainted cell past the sand gets the sand/grass border")
+	for y in [-1, 0, 1]:
+		zone._remove_nearest_marker(Vector2(32, y * 32))
+	_expect(layer.get_cell_source_id(Vector2i(1, 0)) == -1 and layer.get_cell_source_id(Vector2i(2, 0)) == -1,
+		"removing the sand clears it and the border it made")
+	_expect(layer.get_used_cells().size() == 3, "  leaving just the water (%d cells)" % layer.get_used_cells().size())
 	zone.free()
 
 

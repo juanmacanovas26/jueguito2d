@@ -77,6 +77,29 @@ cantidad y el tamaño se ajustan desde `world_zone.gd` con `dirt_coverage` y
 Si querés otro par de terrenos (arena/agua, piedra/pasto), generá otra hoja con
 **exactamente esa disposición** y registrala igual.
 
+### Hojas de biomas (procedurales)
+
+`water_sand_wang.png`, `sand_grass_wang.png`, `stone_grass_wang.png` y
+`mud_grass_wang.png` las genera `art_pipeline/tiles/gen_biome_wang.py` (mismo
+formato, índice 0 = el primer terreno del nombre). El pasto se copia del tile #15
+de `grass_dirt_wang.png` y la arena es la misma en las dos hojas que la usan, así
+que los tiles puros de distintas hojas son idénticos. El script verifica que los
+bordes empalmen antes de escribir; `--preview out.png` arma un mapa al azar de
+cada par para mirarlo.
+
+Se pintan con la categoría **TERRENO (auto)** del mapeador: el pincel elige el
+terreno (agua, arena, piedra, barro, pasto) y `BiomeTileset` resuelve los bordes
+por vértice, sobre la capa "Terreno" (entre el Floor y el pincel libre). Reglas:
+
+- Lo pintado le gana al pasto, así que un trazo crece medio tile hacia afuera.
+- Lo no pintado cuenta como pasto y solo recibe tile si un borde pasa por ahí.
+- Pares sin hoja (agua-pasto, arena-piedra, arena-barro, piedra-barro) dan borde
+  duro: poné arena entre el agua y el pasto.
+- La celda de terreno ocupa el mismo lugar que una pieza de SUELO o de CAMINO:
+  pintar una reemplaza a la otra.
+
+Para mirarlo renderizado: `res://tools/terrain_screenshot.tscn -- salida.png`.
+
 ### Tiles planos sueltos (legacy, siguen funcionando)
 
 `grass_01.png` (base), `grass_02.png` / `grass_03.png` (variantes),
