@@ -17,7 +17,7 @@ OUT = Path(sys.argv[2])
 OUT.mkdir(parents=True, exist_ok=True)
 A = REPO / "game/assets"
 T = 32
-W_T, H_T = 104, 80
+W_T, H_T = 250, 188
 W, H = W_T * T, H_T * T
 
 FONT_B = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
@@ -152,10 +152,13 @@ def wang_tile(sheet, i):
 
 
 # --------------------------------------------------------------------------
-# Diseño de la zona (en tiles)
+# Diseño de la zona (en tiles). Praderas del Alba mide 8000x6000 px
+# (world_size en praderas_del_alba.tscn) = 250x188 tiles: es el cuadrante
+# (0,0) del supermapa.
 # --------------------------------------------------------------------------
 rng = random.Random(7)
 painted = {}
+warnings = []
 
 
 def paint(c, t):
@@ -166,18 +169,12 @@ def paint(c, t):
 def blob(cx, cy, rx, ry, t, wobble=0.18, seed=1):
     r = random.Random(seed)
     ph = [r.uniform(0, 6.28) for _ in range(3)]
-    for y in range(int(cy - ry - 3), int(cy + ry + 4)):
-        for x in range(int(cx - rx - 3), int(cx + rx + 4)):
+    for y in range(int(cy - ry * 1.4), int(cy + ry * 1.4) + 1):
+        for x in range(int(cx - rx * 1.4), int(cx + rx * 1.4) + 1):
             ang = math.atan2(y - cy, x - cx)
             k = 1 + wobble * (math.sin(3 * ang + ph[0]) * 0.5 + math.sin(5 * ang + ph[1]) * 0.3 + math.sin(2 * ang + ph[2]) * 0.4)
             if ((x - cx) / (rx * k)) ** 2 + ((y - cy) / (ry * k)) ** 2 <= 1:
                 paint((x, y), t)
-
-
-def rect(x0, y0, x1, y1, t):
-    for y in range(y0, y1 + 1):
-        for x in range(x0, x1 + 1):
-            paint((x, y), t)
 
 
 def path(pts, w, t):
@@ -192,103 +189,215 @@ def path(pts, w, t):
                         paint((x, y), t)
 
 
-# Town box (fence) in tiles
-TX0, TY0, TX1, TY1 = 27, 29, 75, 69
-GATE_N = range(55, 59)
-GATE_S = range(49, 53)
-GATE_W = range(50, 54)
-GATE_E = range(50, 54)
+def coast(x):
+    """Primera fila de mar para la columna x: costa sur con una bahía honda frente al pueblo."""
+    return (160 - 46 * math.exp(-((x - 62) / 24) ** 2) + 4 * math.sin(x / 17) + 2.5 * math.sin(x / 7.3)
+            + max(0, x - 150) * 0.45)
 
-# Biomas grandes
-blob(13, 27, 12, 14, "piedra", seed=3)                  # Cantera Vieja
-blob(91, 15, 12, 12, "barro", seed=5)                   # Hondonada
-blob(96, 58, 11, 15, "arena", wobble=0.12, seed=9)      # orilla del lago
-blob(97, 58, 8, 12, "agua", wobble=0.12, seed=9)        # lago
-blob(14, 63, 5, 4, "arena", seed=11)                    # estanque de los campos
-blob(14, 63, 3, 2.5, "agua", seed=11)
 
-# Plaza y caminos
-rect(42, 48, 63, 59, "piedra")
-path([(56, 48), (56, 29), (56, 22), (52, 14), (50, 6)], 1.5, "barro")      # norte -> bosque
-path([(51, 59), (51, 69), (51, 79)], 1.5, "barro")                           # sur -> campos
-path([(42, 52), (27, 52), (21, 45), (15, 36)], 1.5, "barro")                 # oeste -> cantera
-path([(63, 52), (75, 52), (80, 45), (85, 33), (88, 24)], 1.5, "barro")      # este -> hondonada
-path([(80, 45), (84, 54), (86, 57)], 1.2, "barro")                           # -> muelle
+# --- Mar y costa -------------------------------------------------------------
+for x in range(W_T):
+    c = coast(x)
+    for y in range(H_T):
+        if y >= c:
+            paint((x, y), "agua")
+        elif y >= c - 4 - 1.5 * math.sin(x / 5):
+            paint((x, y), "arena")
 
-# Overlays para las etiquetas (en tiles): nombre, caja, color
-REGIONS = [
-    ("1", "Pueblo del Alba", "zona segura", (TX0 - 0.5, TY0 - 0.5, TX1 + 1.5, TY1 + 1.5), (255, 236, 160)),
-    ("2", "Campos del Alba", "anillo 1 · 0–15 pts", (2, 56, 26, 79), (170, 235, 120)),
-    ("2", "Campos del Alba", "anillo 1 · 0–15 pts", (28, 71, 80, 79), (170, 235, 120)),
-    ("3", "Bosque Susurrante", "anillo 2 · 15–40 pts", (29, 1, 77, 27), (110, 210, 200)),
-    ("4", "Cantera Vieja", "anillo 2 · 15–40 pts", (1, 12, 26, 44), (190, 200, 215)),
-    ("5", "Hondonada del Rey Slime", "anillo 3 · 40+ pts", (78, 2, 103, 29), (235, 140, 220)),
-    ("6", "Lago y muelle", "futuro: pesca", (82, 42, 103, 76), (130, 190, 255)),
-]
+# --- Biomas ------------------------------------------------------------------
+blob(178, 120, 20, 16, "piedra", seed=3)          # Cantera Vieja
+blob(222, 32, 22, 24, "barro", seed=5)            # Hondonada
+
+# --- Caminos ------------------------------------------------------------------
+PLAZA = (62, 97)
+blob(PLAZA[0], PLAZA[1], 11, 7, "piedra", wobble=0.22, seed=21)
+ROADS = {
+    "norte": [(70, 91), (72, 80), (69, 66), (66, 48), (60, 26), (58, 0)],
+    "oeste": [(51, 99), (42, 97), (30, 100), (18, 97), (6, 99), (0, 95)],
+    "puerto": [(62, 104), (62, 111)],
+    "este": [(73, 100), (88, 102), (106, 98), (130, 96), (155, 101), (175, 99), (205, 93), (249, 90)],
+    "noreste": [(106, 98), (128, 78), (160, 56), (200, 38), (214, 32)],
+    "cantera": [(155, 101), (170, 112)],
+    "sureste": [(130, 96), (150, 128), (185, 150), (215, 165), (249, 172)],
+}
+STREETS = {
+    "Bosque": [(70, 72), (60, 70), (48, 73), (36, 69), (22, 71), (6, 67), (0, 66)],
+    "Molino": [(72, 82), (84, 79), (97, 82), (110, 78), (124, 80)],
+    "Gaviotas": [(40, 98), (36, 112), (26, 118), (14, 122), (4, 128)],
+    "Malecón": [(x, coast(x) - 3.6) for x in range(46, 84, 3)],
+}
+for pts in ROADS.values():
+    path(pts, 1.5, "barro")
+for pts in STREETS.values():
+    path(pts, 1.2, "barro")
+
+
+def street_y(pts, x):
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        if min(ax, bx) <= x <= max(ax, bx) and ax != bx:
+            return ay + (by - ay) * (x - ax) / (bx - ax)
+    # fuera del tramo: la calle termina ahí, vale la altura de su punta más cercana
+    return min(pts, key=lambda p: abs(p[0] - x))[1]
+
 
 # --------------------------------------------------------------------------
-# Objetos (todos anclados abajo-al-centro, en píxeles)
+# Objetos (anclados abajo-al-centro, en píxeles)
 # --------------------------------------------------------------------------
-objs = []  # (y_sort, x, y, image, tag)
+objs = []
+solid = []  # (nombre, rect en tiles) que no se deben pisar: valida el layout y evita plantar árboles encima
 
 
-def put(rel_or_im, tx, ty, s=1.0, tag=None, shadow=False, jitter=0):
+def put(rel_or_im, tx, ty, s=1.0, shadow=False):
     im = rel_or_im if isinstance(rel_or_im, Image.Image) else img(rel_or_im)
     im = scaled(im, s)
-    x = tx * T + (rng.uniform(-jitter, jitter) if jitter else 0)
-    y = ty * T + (rng.uniform(-jitter, jitter) if jitter else 0)
-    objs.append((y, x, y, im, tag, shadow))
+    objs.append((ty * T, tx * T, ty * T, im, None, shadow))
+    return im
+
+
+def overlaps(r):
+    return [o[0] for o in solid if r[0] < o[1][2] and o[1][0] < r[2] and r[1] < o[1][3] and o[1][1] < r[3]]
+
+
+def building(name, tx, ty, label=None):
+    im = put(B + name + ".png", tx, ty)
+    r = (tx - im.width / T / 2, ty - im.height / T, tx + im.width / T / 2, ty)
+    for o in overlaps(r):
+        warnings.append(f"{label or name} se pisa con {o}")
+    solid.append((label or name, r))
+    return r
+
+
+def free(tx, ty, pad=0.5):
+    return not any(o[1][0] - pad <= tx <= o[1][2] + pad and o[1][1] - pad <= ty <= o[1][3] + pad for o in solid)
+
+
+def on_road(tx, ty):
+    return painted.get((int(tx), int(ty))) == "barro" and not (192 < tx and ty < 60)
 
 
 B = "world/buildings/"
 D = "world/decor/plains/"
 M = "world/decor/megapack/"
 
-# --- Pueblo -----------------------------------------------------------------
-put(B + "inn.png", 36.5, 47, tag="Posada · respawn y guardado")
-put(B + "general_goods.png", 68.5, 46, tag="Tienda · vendedor")
-put(B + "blacksmith_n.png", 32, 60, tag="Herrería · estación de craft (provisoria)")
-put(M + "anvil_horn_block.png", 36.3, 60.2)
-put(M + "quench_barrel_steam.png", 28.6, 60.5)
-put(M + "firewood_pile_stacked.png", 35.8, 57.2)
-put(B + "house_small_a.png", 37, 68, tag="Tu casa · se puede entrar")
-put(B + "house_small_c.png", 43, 68)
-put(B + "house_small_d.png", 61, 68)
-put(B + "house_small_e.png", 67, 68)
-put(B + "house_small_f.png", 72.3, 63.5)
-put(B + "market_produce.png", 46, 58.6, tag="Puestos (provisorios)")
-put(B + "market_spices.png", 59, 58.6)
-put(D + "well.png", 52.5, 54)
-put(M + "quest_board_parchment_blank.png", 47.5, 51.6, tag="Tablón de encargos")
-put(M + "notice_board_standing.png", 60.3, 51)
-for lx, ly in [(42.2, 48.6), (63.6, 48.6), (42.2, 59.8), (63.6, 59.8), (54.2, 30.5), (58.0, 30.5), (49.5, 68.4), (53.4, 68.4)]:
-    put(M + "lantern_post_iron.png", lx, ly)
-put(D + "bench.png", 50, 50.3)
-put(D + "bench.png", 55, 50.3)
-for x, y in [(66, 47), (66.9, 47.3), (71.4, 47.1)]:
-    put(D + "barrel.png", x, y)
-put(D + "crate.png", 72.3, 47.4)
-put(M + "garden_plot_vegetables.png", 40, 69.6)
-put(M + "garden_plot_vegetables.png", 64, 69.6)
-put(M + "flower_patch_wild.png", 46.2, 64.8)
-put(M + "flower_patch_wild.png", 57, 64.8)
-put(M + "clothesline_posts.png", 64.5, 64.5)
-put(M + "chicken_coop_wooden.png", 45.5, 63.2)
-put(M + "wheelbarrow_wooden.png", 41.5, 57.5)
-put(D + "wagon.png", 69, 56.5)
-put(M + "signpost_wooden_blank.png", 25.3, 50.6)
-put(M + "signpost_wooden_blank.png", 77, 50.6)
-put(M + "signpost_wooden_blank.png", 54.5, 27.6)
+# --- Lotes ---------------------------------------------------------------------
+# Tamaño del lote (tiles, ancho x alto) -> tier máximo de casa. Cada tamaño entra
+# justo el sprite de su tier máximo, más 3 tiles de patio adelante.
+LOT_SIZES = {
+    "chico": (10, 12, 2),
+    "mediano": (13, 16, 3),
+    "grande": (17, 21, 4),
+    "finca": (29, 25, 5),
+}
+ALL_STREETS = {**ROADS, **STREETS}
+LOTS = [
+    # nombre, x izquierda, tamaño, calle a la que da el portón, casa actual (None = en venta)
+    ("FINCA", 5, "finca", "Bosque", "house_large_cozy"),
+    ("N8", 38, "mediano", "Bosque", None),
+    ("N7", 54, "chico", "Bosque", "house_small_a"),
+    ("W3", 4, "chico", "oeste", "house_small_f"),
+    ("W2", 17, "grande", "oeste", "house_medium_common_b"),
+    ("W1", 38, "chico", "oeste", "house_small_c"),
+    ("W4", 8, "chico", "Gaviotas", None),
+    ("W5", 20, "chico", "Gaviotas", "house_small_d"),
+    ("N1", 75, "chico", "Molino", "house_small_e"),
+    ("N2", 88, "mediano", "Molino", "house_medium_cozy"),
+    ("N3", 105, "grande", "Molino", "house_medium_noble"),
+    ("N5", 86, "chico", "este", "house_small_b"),
+]
+fence = set()
+lot_rects = []
+for name, lx, size, street, house in LOTS:
+    w, h, tmax = LOT_SIZES[size]
+    # el lote se apoya en su calle: la valla de adelante queda 2 tiles arriba del centro del camino
+    # la calle puede venir en pendiente: el lote se apoya en su punto más alto bajo el lote
+    top_of_street = min(street_y(ALL_STREETS[street], lx + k * w / 8) for k in range(9))
+    ly = math.floor(top_of_street - 2.6 - h)
+    lot = (lx, ly, lx + w, ly + h)
+    for o in overlaps(lot):
+        warnings.append(f"lote {name} se pisa con {o}")
+    for y in range(ly, ly + h + 1):
+        for x in range(lx, lx + w + 1):
+            if painted.get((x, y)) == "barro":
+                warnings.append(f"lote {name} pisa un camino en {(x, y)}")
+                break
+    lot_rects.append((name, lx, ly, w, h, size, tmax, house))
+    gate = range(lx + w // 2 - 1, lx + w // 2 + 1)
+    for x in range(lx, lx + w + 1):
+        fence.add((x, ly))
+        if x not in gate:
+            fence.add((x, ly + h))
+    for y in range(ly, ly + h + 1):
+        fence.add((lx, y))
+        fence.add((lx + w, y))
+    cx, by = lx + w / 2 + 0.5, ly + h - 3
+    if house:
+        put(B + house + ".png", cx, by)
+    else:
+        put(D + "sign_wood.png", cx, ly + h - 1.2)
+    r = random.Random(sum(map(ord, name)))
+    for _ in range(2 if size in ("chico", "mediano") else 5):
+        px = lx + r.uniform(1.2, w - 1.2)
+        py = ly + h - r.uniform(0.6, 2.2)
+        if abs(px - cx) < 1.6:
+            continue
+        put(r.choice([M + "garden_plot_vegetables.png", M + "flower_patch_wild.png", D + "barrel.png",
+                      D + "bench.png", M + "rain_barrel_wooden.png", D + "bush_berry.png"]), px, py)
+    solid.append((f"lote {name}", lot))
 
-# Patio de entrenamiento
-for x, y in [(60.5, 34.5), (63.5, 34.5), (66.5, 34.5)]:
-    put(M + "armor_stand_breastplate.png", x, y)
-put(M + "weapon_rack_swords.png", 60, 31.6)
-put(M + "weapon_rack_polearms.png", 64.5, 31.6)
-put(M + "shield_stack_leaning.png", 67.6, 31.8)
-put(M + "scarecrow_cross_frame.png", 69.5, 34.5)
+# --- Edificios del pueblo --------------------------------------------------------
+building("inn", 59, 90.5, "posada")
+building("general_goods", 79, 100, "tienda")
+building("blacksmith_n", 86, 108.8, "herrería")
+put(M + "anvil_horn_block.png", 90.2, 109)
+put(M + "quench_barrel_steam.png", 82.2, 109.2)
+put(B + "market_produce.png", 56, 103.5)
+put(B + "market_spices.png", 68.5, 103.5)
+put(D + "well.png", 62.5, 98.5)
+put(M + "quest_board_parchment_blank.png", 54.5, 95.8)
+put(D + "bench.png", 59, 94.8)
+put(D + "bench.png", 66, 94.8)
+# patio de entrenamiento, junto al camino norte
+for x in (74.5, 77.5, 80.5):
+    put(M + "armor_stand_breastplate.png", x, 50.5)
+put(M + "weapon_rack_swords.png", 74, 47.6)
+put(M + "weapon_rack_polearms.png", 78.5, 47.6)
+put(M + "scarecrow_cross_frame.png", 83, 50.5)
+solid.append(("patio de entrenamiento", (73, 46, 85, 51)))
 
-# --- Mobs -------------------------------------------------------------------
+# --- Puerto ------------------------------------------------------------------------
+for dx in (55, 63.5, 72):
+    building("dock", dx, coast(dx) + 2.4, f"muelle {dx}")
+put(M + "stall_fish_table_ice.png", 50, coast(50) - 4.6)
+put(M + "crate_produce_stack.png", 76, coast(76) - 4.4)
+put(D + "barrel_water.png", 77.6, coast(77.6) - 4.4)
+put(D + "crate.png", 47.5, coast(47.5) - 4.2)
+put(D + "sack_grain.png", 48.8, coast(48.8) - 4.1)
+put(M + "handcart_single_axle.png", 67.5, coast(67.5) - 5.4)
+put(M + "chain_bundle_hook.png", 59.5, coast(59.5) - 5)
+solid.append(("puerto", (44, coast(62) - 8, 82, coast(62) + 6)))
+for x in (20, 32):
+    put(D + "tent.png", x, coast(x) - 5)
+put(M + "clothesline_posts.png", 26, coast(26) - 5)
+
+# faroles cada ~8 tiles a lo largo de las calles del pueblo
+for pts in [ROADS["norte"][:3], ROADS["oeste"], ROADS["este"][:3], ROADS["puerto"], STREETS["Bosque"], STREETS["Molino"],
+            STREETS["Gaviotas"], STREETS["Malecón"]]:
+    acc = 0.0
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        seg = math.hypot(bx - ax, by - ay)
+        t = 0.0
+        while t < seg:
+            if acc <= 0:
+                px, py = ax + (bx - ax) * t / seg, ay + (by - ay) * t / seg + 2.2
+                if free(px, py, 0.3):
+                    put(M + "lantern_post_iron.png", px, py)
+                    solid.append(("farol", (px - 0.4, py - 0.4, px + 0.4, py + 0.1)))
+                acc = 8.0
+            step = 1.0
+            t += step
+            acc -= step
+
+# --- Mobs ---------------------------------------------------------------------------
 SLIME = img("mobs/slime/idle.png")
 MOB = {
     "debil": SLIME,
@@ -299,149 +408,152 @@ MOB = {
 BOSS = scaled(hue_shift(SLIME, 160, 1.25, 0.8), 2.6)
 
 
-def mob(kind, tx, ty, s=1.4):
-    put(MOB[kind], tx, ty, s=s, shadow=True)
-
-
 def pack(kind, cx, cy, n, spread=2.2, s=1.4):
     for _ in range(n):
-        mob(kind, cx + rng.uniform(-spread, spread), cy + rng.uniform(-spread * 0.7, spread * 0.7), s)
+        put(MOB[kind], cx + rng.uniform(-spread, spread), cy + rng.uniform(-spread * 0.7, spread * 0.7), s, shadow=True)
 
 
-# anillo 1
-for c in [(10, 74, 2), (20, 76, 2), (36, 75, 3), (62, 75, 3), (74, 75, 2), (6, 52, 2)]:
-    pack("debil", *c)
-# anillo 2: bosque y cantera
-for c in [(40, 20, 3), (64, 18, 3), (46, 9, 2), (68, 7, 2)]:
-    pack("medio", *c)
-for c in [(58, 12, 2), (34, 10, 1)]:
-    pack("rango", *c)
-for c in [(9, 22, 2), (18, 31, 2)]:
-    pack("medio", *c)
-for c in [(7, 36, 2), (20, 18, 1)]:
-    pack("rango", *c)
-# anillo 3
-for c in [(84, 21, 3), (97, 22, 2), (83, 8, 2)]:
-    pack("fuerte", *c, s=1.5)
-put(BOSS, 92, 12.5, shadow=True, tag="Rey Slime · mini-jefe")
+GREEN = [(112, 108), (124, 132), (142, 114), (104, 142), (138, 142), (150, 86), (118, 66), (96, 118), (130, 122), (14, 140), (36, 141),
+         (160, 122), (146, 96), (118, 152), (152, 150), (170, 148), (96, 128)]
+for c in GREEN:
+    pack("debil", *c, 2)
+FOREST_BLUE = [(22, 20), (56, 14), (96, 24), (128, 16), (150, 36), (36, 34), (112, 40)]
+FOREST_RED = [(78, 30), (115, 10), (142, 26)]
+for c in FOREST_BLUE:
+    pack("medio", *c, 3)
+for c in FOREST_RED:
+    pack("rango", *c, 2)
+for c in [(172, 72), (188, 58), (150, 66)]:
+    pack("medio", *c, 2)
+for c in [(168, 114), (188, 128)]:
+    pack("medio", *c, 2)
+for c in [(165, 126), (193, 112), (181, 134)]:
+    pack("rango", *c, 1)
+for c in [(210, 20), (236, 46), (205, 50), (239, 14), (224, 52)]:
+    pack("fuerte", *c, 3, s=1.5)
+put(BOSS, 222, 28, shadow=True)
 
-# --- Recursos ---------------------------------------------------------------
-def res(kind, tx, ty, s=None):
-    sizes = {"tree": 0.62, "rock": 0.55, "vein": 0.6}
-    put(f"world/{kind}.png", tx, ty, s=s or sizes[kind], shadow=True)
+# --- Recursos -------------------------------------------------------------------------
+def res(kind, tx, ty):
+    put(f"world/{kind}.png", tx, ty, s={"tree": 0.62, "rock": 0.55, "vein": 0.6}[kind], shadow=True)
 
 
-for tx, ty in [(4, 66), (8, 69), (22, 69), (25, 74), (31, 77), (44, 76), (57, 77), (69, 77), (79, 70), (3, 58)]:
-    res("tree" if rng.random() < 0.6 else "rock", tx, ty)
-for tx, ty in [(37, 16), (44, 23), (61, 23), (70, 14), (39, 5), (63, 4), (50, 19), (72, 22)]:
+for _ in range(26):
+    tx, ty = rng.uniform(92, 162), rng.uniform(58, 150)
+    if free(tx, ty, 1) and painted.get((int(tx), int(ty))) is None:
+        res("tree" if rng.random() < 0.6 else "rock", tx, ty)
+for tx, ty in [(2, 104), (4, 140), (36, 135), (2, 76), (94, 112), (98, 120)]:
     res("tree", tx, ty)
-for tx, ty in [(5, 18), (12, 15), (21, 24), (6, 30), (16, 38), (22, 33), (11, 41)]:
-    res("rock", tx, ty)
-VEINS = [(9, 26), (14, 21), (17, 28), (5, 34), (13, 33)]
-for tx, ty in VEINS:
-    res("vein", tx, ty)
+for _ in range(16):
+    tx, ty = rng.uniform(4, 160), rng.uniform(4, 42)
+    res("tree", tx, ty)
+for _ in range(12):
+    tx, ty = rng.uniform(162, 195), rng.uniform(108, 134)
+    if painted.get((int(tx), int(ty))) == "piedra":
+        res("rock", tx, ty)
+VEINS = [(170, 118), (176, 108), (184, 116), (190, 124), (174, 128), (182, 132), (166, 122), (192, 116)]
+for v in VEINS:
+    res("vein", *v)
 
-# --- Decor de exterior ------------------------------------------------------
-# Bosque: borde denso de árboles decorativos (no talables) dejando claros.
-clear_spots = [(40, 20, 4), (64, 18, 4), (46, 9, 3), (68, 7, 3), (58, 12, 3), (34, 10, 3), (52, 15, 3)]
-for _ in range(330):
-    tx, ty = rng.uniform(29, 78), rng.uniform(0.5, 27)
-    if any((tx - cx) ** 2 + (ty - cy) ** 2 < r * r for cx, cy, r in clear_spots):
+# --- Decorado exterior ---------------------------------------------------------------------
+clearings = [(c[0], c[1], 4.5) for c in FOREST_BLUE + FOREST_RED]
+for _ in range(1700):
+    tx, ty = rng.uniform(0, 168), rng.uniform(0.5, 46)
+    if any((tx - cx) ** 2 + (ty - cy) ** 2 < r * r for cx, cy, r in clearings):
         continue
-    if painted.get((int(tx), int(ty))) == "barro" or painted.get((int(tx), int(ty) + 1)) == "barro":
+    if painted.get((int(tx), int(ty))) or painted.get((int(tx), int(ty) + 1)):
         continue
-    if tx > 77 and ty < 28:
+    if not free(tx, ty, 1.5):
         continue
     k = rng.random()
-    if k < 0.45:
-        put(D + "tree_pine.png", tx, ty, shadow=True)
-    elif k < 0.8:
-        put(D + "tree_oak.png", tx, ty, shadow=True)
-    else:
-        put(D + "tree_round.png", tx, ty, shadow=True)
-for _ in range(60):
-    tx, ty = rng.uniform(30, 77), rng.uniform(1, 27)
-    put(rng.choice([D + "mushrooms_red.png", D + "mushrooms_brown.png", D + "bush_fern.png", D + "grass_tall.png", D + "log_fallen.png", D + "stump.png"]), tx, ty)
-
-# Cantera
+    put(D + ("tree_pine.png" if k < 0.45 else "tree_oak.png" if k < 0.8 else "tree_round.png"), tx, ty, shadow=True)
+for _ in range(260):
+    tx, ty = rng.uniform(0, 168), rng.uniform(1, 46)
+    if free(tx, ty, 1):
+        put(rng.choice([D + "mushrooms_red.png", D + "mushrooms_brown.png", D + "bush_fern.png", D + "grass_tall.png",
+                        D + "log_fallen.png", D + "stump.png"]), tx, ty)
+# borde verde del pueblo: árboles y arbustos sueltos, sin muralla
+for _ in range(90):
+    tx, ty = rng.uniform(0, 125), rng.uniform(46, 150)
+    if painted.get((int(tx), int(ty))) is None and free(tx, ty, 2.5) and not (46 < tx < 92 and 86 < ty < 116):
+        put(rng.choice([D + "tree_oak.png", D + "tree_round.png", D + "bush.png", D + "bush.png"]), tx, ty, shadow=True)
+# Lomas del este: transición entre el campo y la hondonada
+for _ in range(220):
+    tx, ty = rng.uniform(118, 205), rng.uniform(36, 96)
+    if painted.get((int(tx), int(ty))) is None and free(tx, ty, 1):
+        put(rng.choice([D + "tree_oak.png", D + "tree_round.png", D + "tree_pine.png", D + "bush.png", D + "rock_mossy.png",
+                        M + "boulder_moss_large.png", M + "flower_patch_wild.png", D + "grass_tall.png", D + "stump.png"]), tx, ty, shadow=True)
 for _ in range(14):
-    tx, ty = rng.uniform(3, 23), rng.uniform(15, 42)
+    tx, ty = rng.uniform(120, 200), rng.uniform(40, 95)
+    if painted.get((int(tx), int(ty))) is None and free(tx, ty, 1):
+        res("tree" if rng.random() < 0.5 else "rock", tx, ty)
+put(M + "shrine_roadside_stone.png", 147, 62)
+put(M + "beehive_skep_straw.png", 101, 114)
+put(D + "beehive.png", 102.4, 114.3)
+put(M + "chicken_coop_wooden.png", 148, 84)
+# Cantera
+for _ in range(30):
+    tx, ty = rng.uniform(158, 198), rng.uniform(104, 136)
     if painted.get((int(tx), int(ty))) == "piedra":
         put(rng.choice([D + "rock_mossy.png", M + "boulder_moss_large.png", M + "rock_group_small.png", M + "stone_pile_field.png"]), tx, ty, shadow=True)
-put(M + "coal_pile_shovel.png", 19, 20)
-put(M + "handcart_single_axle.png", 22.5, 28.5)
-put(D + "tent.png", 4.5, 42)
-
+put(M + "coal_pile_shovel.png", 186, 110)
+put(M + "handcart_single_axle.png", 172, 115)
+put(D + "tent.png", 162, 108)
 # Hondonada
-put(D + "tent.png", 85.5, 13, tag=None)
-put(D + "tent.png", 98, 10)
-put(D + "campfire.png", 90, 18)
-put(D + "cauldron.png", 92, 18.4)
-put(D + "sign_skull.png", 86.6, 27)
-put(D + "sign_skull.png", 79.5, 17)
-put(M + "treasure_chest_closed.png", 95.5, 13.5, tag="Cofre del jefe")
-put(M + "cage_iron_hanging.png", 81.5, 11)
-put(M + "weapon_rack_swords.png", 88, 7)
-put(M + "banner_pole_pennant.png", 89.5, 9.5)
-put(M + "crate_weapons_open.png", 99, 17)
-put(D + "barrel.png", 97.6, 17.2)
-put(M + "stew_pot_hanging.png", 93.8, 18.6)
-put(M + "firewood_pile_stacked.png", 87.6, 18.6)
-for _ in range(16):
-    tx, ty = rng.uniform(79, 103), rng.uniform(1, 28)
+for x, y in [(212, 26), (232, 22), (228, 40)]:
+    put(D + "tent.png", x, y)
+put(D + "campfire.png", 220, 36)
+put(D + "cauldron.png", 222.3, 36.4)
+put(M + "treasure_chest_closed.png", 226, 29.5)
+for x, y in [(214.5, 33.5), (206, 38), (204, 30)]:
+    put(D + "sign_skull.png", x, y)
+put(M + "cage_iron_hanging.png", 216, 18)
+put(M + "weapon_rack_swords.png", 230, 30)
+put(M + "banner_pole_pennant.png", 219, 22)
+for _ in range(60):
+    tx, ty = rng.uniform(196, 250), rng.uniform(0, 70)
     if painted.get((int(tx), int(ty))) != "barro":
-        put(rng.choice([D + "tree_pine.png", D + "stump.png", D + "log_fallen.png"]), tx, ty, shadow=True)
-
-# Campos: trigo vallado, fardos, espantapájaros, estanque
-for gx in range(5, 21):
-    for gy in range(70, 78):
-        if (gx + gy) % 1 == 0 and rng.random() < 0.85:
-            put(D + "wheat.png", gx + 0.5 + rng.uniform(-0.2, 0.2), gy + 0.9)
-put(M + "scarecrow_cross_frame.png", 13, 74)
-for tx, ty in [(23, 61), (24, 62.5), (78, 66)]:
+        put(rng.choice([D + "tree_pine.png", D + "stump.png", D + "log_fallen.png", D + "tree_pine.png"]), tx, ty, shadow=True)
+# Campos: dos trigales vallados
+for fx0, fy0, fx1, fy1 in [(104, 116, 124, 126), (134, 80, 150, 90), (100, 136, 116, 145)]:
+    for gx in range(fx0 + 1, fx1):
+        for gy in range(fy0 + 1, fy1):
+            if rng.random() < 0.85:
+                put(D + "wheat.png", gx + 0.5 + rng.uniform(-0.2, 0.2), gy + 0.9)
+    gate = range((fx0 + fx1) // 2 - 1, (fx0 + fx1) // 2 + 1)
+    for x in range(fx0, fx1 + 1):
+        fence.add((x, fy0))
+        if x not in gate:
+            fence.add((x, fy1))
+    for y in range(fy0, fy1 + 1):
+        fence.add((fx0, y))
+        fence.add((fx1, y))
+    put(M + "scarecrow_cross_frame.png", (fx0 + fx1) / 2 + 3, (fy0 + fy1) / 2 + 1)
+for tx, ty in [(126, 114), (127.2, 115.6), (152, 88), (118, 141)]:
     put(D + "hay_bale.png", tx, ty)
-put(M + "hay_cart_two_wheel.png", 25, 66)
-put(D + "lilypad.png", 14, 63.2)
-for _ in range(70):
-    tx, ty = rng.uniform(1, 103), rng.uniform(28, 79)
-    if TX0 - 1 < tx < TX1 + 1 and TY0 - 1 < ty < TY1 + 1:
-        continue
-    if painted.get((int(tx), int(ty))) in ("agua", "arena", "barro", "piedra"):
-        continue
-    put(rng.choice([D + "bush.png", D + "bush_berry.png", D + "grass_tuft.png", D + "grass_tall.png", D + "grass_tuft_b.png", D + "mushrooms_yellow.png"]), tx, ty)
+put(M + "hay_cart_two_wheel.png", 101, 128)
+# pasto suelto en todo lo abierto
+for _ in range(500):
+    tx, ty = rng.uniform(0, 250), rng.uniform(46, 188)
+    if painted.get((int(tx), int(ty))) is None and free(tx, ty, 0.8):
+        put(rng.choice([D + "grass_tuft.png", D + "grass_tuft_b.png", D + "grass_tall.png", D + "bush.png",
+                        D + "mushrooms_yellow.png", D + "bush_berry.png"]), tx, ty)
+# Costa sureste: playa y rocas, reservada
+for _ in range(40):
+    tx = rng.uniform(150, 250)
+    ty = coast(tx) - rng.uniform(1, 3.5)
+    if ty < H_T - 1:
+        put(rng.choice([D + "rock.png", D + "rock_mossy.png", D + "log_fallen.png", D + "stump.png"]), tx, ty)
 
-# Lago
-put(B + "dock.png", 87.5, 58.3, tag="Muelle (provisorio)")
-put(D + "lilypad.png", 98, 50)
-put(D + "lilypad.png", 95, 66)
-
-# --------------------------------------------------------------------------
-# Vallas (FenceAutotiler: N=1, E=2, W=4; el atlas es el bitmask)
-# --------------------------------------------------------------------------
-fence = set()
-for x in range(TX0, TX1 + 1):
-    if x not in GATE_N:
-        fence.add((x, TY0))
-    if x not in GATE_S:
-        fence.add((x, TY1))
-for y in range(TY0, TY1 + 1):
-    if y not in GATE_W:
-        fence.add((TX0, y))
-    if y not in GATE_E:
-        fence.add((TX1, y))
-# corral del trigo
-for x in range(4, 22):
-    fence.add((x, 69))
-    if x not in (12, 13):
-        fence.add((x, 78))
-for y in range(69, 79):
-    fence.add((4, y))
-    fence.add((21, y))
+# --- Vallas ---------------------------------------------------------------------
 FENCE = img("world/fences/wood.png")
 for (x, y) in fence:
     m = (1 if (x, y - 1) in fence else 0) | (2 if (x + 1, y) in fence else 0) | (4 if (x - 1, y) in fence else 0)
-    tile = FENCE.crop((m * 32, 0, m * 32 + 32, 32))
-    objs.append(((y + 1) * T - 1, x * T + 16, (y + 1) * T, tile, None, False))
+    objs.append(((y + 1) * T - 1, x * T + 16, (y + 1) * T, FENCE.crop((m * 32, 0, m * 32 + 32, 32)), None, False))
+
+for w in warnings:
+    print("AVISO:", w)
+
 
 # --------------------------------------------------------------------------
 # Render
@@ -461,74 +573,80 @@ def render_ground():
 
 
 def render_objects(base):
-    shadow_layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    shadow_layer = Image.new("LA", base.size, (0, 0))
     sd = ImageDraw.Draw(shadow_layer)
     for _, x, y, im, _, shadow in objs:
         if shadow:
             w = im.width * 0.42
-            sd.ellipse((x - w, y - w * 0.28, x + w, y + w * 0.22), fill=(10, 30, 10, 85))
-    base.alpha_composite(shadow_layer.filter(ImageFilter.GaussianBlur(2)))
+            sd.ellipse((x - w, y - w * 0.28, x + w, y + w * 0.22), fill=(0, 85))
+    sl = shadow_layer.filter(ImageFilter.GaussianBlur(2))
+    dark = Image.new("RGBA", base.size, (10, 30, 10, 0))
+    dark.putalpha(sl.split()[1])
+    base.alpha_composite(dark)
+    del dark, sl, shadow_layer
     for _, x, y, im, _, _ in sorted(objs, key=lambda o: (o[0], o[1])):
         base.alpha_composite(im, (int(x - im.width / 2), int(y - im.height)))
     return base
 
 
 MAP = render_objects(render_ground())
-MAP.convert("RGB").save(OUT / "00_mapa_completo.png", optimize=True)
+MAP.convert("RGB").resize((W // 2, H // 2), Image.LANCZOS).save(OUT / "00_mapa_completo_mitad.png", optimize=True)
 print("map rendered")
 
 
-# --------------------------------------------------------------------------
-# Lámina 1: vista general anotada
-# --------------------------------------------------------------------------
 def pill(d, xy, text, fnt, fg=(255, 255, 255), bg=(20, 22, 30, 215), pad=(10, 5), anchor="mm"):
     bbox = d.textbbox(xy, text, font=fnt, anchor=anchor)
     d.rounded_rectangle((bbox[0] - pad[0], bbox[1] - pad[1], bbox[2] + pad[0], bbox[3] + pad[1]), radius=8, fill=bg)
     d.text(xy, text, font=fnt, fill=fg, anchor=anchor)
 
 
+def arrow(d, a, b, col=(255, 255, 255, 235), wdt=6, L=20):
+    d.line([a, b], fill=col, width=wdt)
+    ang = math.atan2(b[1] - a[1], b[0] - a[0])
+    d.polygon([b, (b[0] - L * math.cos(ang - 0.45), b[1] - L * math.sin(ang - 0.45)),
+               (b[0] - L * math.cos(ang + 0.45), b[1] - L * math.sin(ang + 0.45))], fill=col)
+
+
+REGIONS = [
+    ("1", "Pueblo del Alba", "zona segura · lotes", (86, 58), (255, 236, 160)),
+    ("2", "Campos del Alba", "anillo 1 · 0–15 pts", (130, 140), (170, 235, 120)),
+    ("3", "Bosque Susurrante", "anillo 2 · 15–40 pts", (88, 6), (110, 210, 200)),
+    ("4", "Cantera Vieja", "anillo 2 · 15–40 pts", (180, 140), (190, 200, 215)),
+    ("·", "Lomas del Este", "transición 1→3", (165, 44), (220, 220, 180)),
+    ("5", "Hondonada del Rey Slime", "anillo 3 · 40+ pts", (222, 5), (235, 140, 220)),
+    ("6", "Puerto y mar", "futuro: barco y pesca", (62, 160), (130, 190, 255)),
+    ("7", "Costa de las Gaviotas", "reservada", (205, 158), (200, 200, 200)),
+]
+EXITS = [
+    ("salida norte", (58, 4), (58, -6)),
+    ("salida oeste", (6, 90), (-4, 90)),
+    ("salida este", (243, 90), (253, 90)),
+    ("salida sureste", (240, 170), (252, 174)),
+    ("ruta por mar", (63, 128), (63, 186)),
+]
+
+
 def overview():
-    S = 0.5
+    S = 0.25
     ov = MAP.resize((int(W * S), int(H * S)), Image.LANCZOS).convert("RGBA")
     lay = Image.new("RGBA", ov.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(lay)
-    for num, name, sub, (x0, y0, x1, y1), col in REGIONS:
-        box = (x0 * T * S, y0 * T * S, x1 * T * S, y1 * T * S)
-        d.rounded_rectangle(box, radius=18, fill=col + (30,))
-    o2 = Image.new("RGBA", ov.size, (0, 0, 0, 0))
-    d2 = ImageDraw.Draw(o2)
-    for num, name, sub, (x0, y0, x1, y1), col in REGIONS:
-        box = (x0 * T * S, y0 * T * S, x1 * T * S, y1 * T * S)
-        d2.rounded_rectangle(box, radius=18, outline=col + (220,), width=4)
-    lay.alpha_composite(o2)
-    d = ImageDraw.Draw(lay)
-    arrows = [((51, 70), (51, 75)), ((56, 29), (54, 21)), ((27, 52), (19, 41)), ((75, 52), (84, 31))]
-    for (ax, ay), (bx, by) in arrows:
-        a = (ax * T * S, ay * T * S)
-        b = (bx * T * S, by * T * S)
-        d.line([a, b], fill=(255, 255, 255, 230), width=6)
-        ang = math.atan2(b[1] - a[1], b[0] - a[0])
-        L = 20
-        d.polygon([b, (b[0] - L * math.cos(ang - 0.45), b[1] - L * math.sin(ang - 0.45)), (b[0] - L * math.cos(ang + 0.45), b[1] - L * math.sin(ang + 0.45))], fill=(255, 255, 255, 240))
-    seen = set()
-    for num, name, sub, (x0, y0, x1, y1), col in REGIONS:
-        if name in seen:
-            continue
-        seen.add(name)
-        box = (x0 * T * S, y0 * T * S, x1 * T * S, y1 * T * S)
-        cx, cy = (box[0] + box[2]) / 2, box[1] + 30
-        if num == "1":
-            cx, cy = 46 * T * S, 32 * T * S
-        if num == "2":
-            cx, cy = box[0] + 170, box[1] + 30
-        pill(d, (cx, cy), f"{num}  {name}", font(FONT_B, 24), bg=(18, 20, 28, 225))
-        pill(d, (cx, cy + 32), sub, font(FONT_S, 17), fg=col, bg=(18, 20, 28, 200), pad=(8, 3))
+    p = lambda tx, ty: (tx * T * S, ty * T * S)
+    for name, a, b in EXITS:
+        arrow(d, p(*a), p(*b), col=(255, 214, 90, 245), wdt=7, L=22)
+        lx, ly = p(*a)
+        pill(d, (min(max(lx, 70), ov.width - 80), min(max(ly + (24 if a[1] < 10 else -26), 18), ov.height - 18)),
+             name, font(FONT_S, 15), fg=(255, 214, 90), bg=(18, 20, 28, 220), pad=(7, 3))
+    for num, name, sub, (tx, ty), col in REGIONS:
+        cx, cy = p(tx, ty)
+        pill(d, (cx, cy), f"{num}  {name}", font(FONT_B, 22), bg=(18, 20, 28, 225))
+        pill(d, (cx, cy + 30), sub, font(FONT_S, 15), fg=col, bg=(18, 20, 28, 200), pad=(7, 3))
     ov.alpha_composite(lay)
-    # título
     hd = Image.new("RGBA", (ov.width, 96), (18, 20, 28, 255))
     hdd = ImageDraw.Draw(hd)
-    hdd.text((28, 20), "Praderas del Alba — zona inicial", font=font(FONT_B, 34), fill=(255, 244, 214))
-    hdd.text((28, 62), "104 × 80 tiles (3328 × 2560 px) · norte arriba · las flechas marcan el recorrido esperado", font=font(FONT_R, 18), fill=(190, 196, 210))
+    hdd.text((28, 20), "Praderas del Alba — cuadrante (0,0)", font=font(FONT_B, 34), fill=(255, 244, 214))
+    hdd.text((28, 62), "250 × 188 tiles (8000 × 6000 px, el world_size actual) · norte arriba · en amarillo, las salidas a los cuadrantes vecinos",
+             font=font(FONT_R, 17), fill=(190, 196, 210))
     full = Image.new("RGBA", (ov.width, ov.height + 96))
     full.paste(hd, (0, 0))
     full.paste(ov, (0, 96))
@@ -538,13 +656,11 @@ def overview():
 overview()
 
 
-# --------------------------------------------------------------------------
-# Láminas de detalle (recortes a 2x, con callouts)
-# --------------------------------------------------------------------------
-def detail(name, title, sub, box_t, callouts, scale=2):
+def detail(name, title, sub, box_t, callouts, scale=1.0):
     x0, y0, x1, y1 = [v * T for v in box_t]
     crop = MAP.crop((x0, y0, x1, y1)).convert("RGBA")
-    crop = crop.resize((crop.width * scale, crop.height * scale), Image.NEAREST)
+    nw, nh = int(crop.width * scale), int(crop.height * scale)
+    crop = crop.resize((nw, nh), Image.NEAREST if scale >= 1 else Image.LANCZOS)
     u = crop.width / 1700
     lay = Image.new("RGBA", crop.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(lay)
@@ -577,67 +693,203 @@ def detail(name, title, sub, box_t, callouts, scale=2):
     full.convert("RGB").save(OUT / name, optimize=True)
 
 
+LOT = {n: (lx + w / 2 + 0.5, ly + h - 3.2) for (n, lx, ly, w, h, *_rest) in lot_rects}
+LOT_SIGN = {n: (lx + w / 2 + 0.5, ly + h - 1.4) for (n, lx, ly, w, h, *_rest) in lot_rects}
 detail(
-    "02_pueblo.png", "1 · Pueblo del Alba (zona segura)",
-    "Todo lo que el jugador necesita entre salida y salida, a menos de 15 segundos caminando de la plaza",
-    (25, 28, 78, 72),
+    "02_pueblo.png", "1 · Pueblo del Alba", "Un pueblo de puerto: plaza, calles que siguen el terreno y lotes vallados de distintos tamaños",
+    (0, 38, 126, 140),
     [
-        (36.5, 46.5, "Posada: respawn y punto de guardado"),
-        (68.5, 45.5, "Tienda: comprar pociones / vender loot"),
-        (32, 59.5, "Herrería: craftear y mejorar (arte provisorio)"),
-        (37, 67.5, "Tu casa: única con puerta e interior"),
-        (47.5, 51, "Tablón de encargos (primer NPC de quests)"),
-        (52.5, 53.5, "Pozo: centro de la plaza, punto de reunión"),
-        (52.5, 58, "Puestos de mercado (arte provisorio)"),
-        (63.5, 34, "Patio de entrenamiento: muñecos (no dan skill)"),
-        (57, 29, "Portón norte → Bosque Susurrante"),
-        (27, 52, "Portón oeste → Cantera Vieja"),
-        (75, 52, "Portón este → Hondonada y lago"),
+        (59, 90, "Posada: respawn y guardado"),
+        (79, 99.5, "Tienda"),
+        (86, 108.3, "Herrería (provisoria)"),
+        (62.5, 98, "Plaza con pozo y tablón de encargos"),
+        (62, 103, "Puestos de mercado (provisorios)"),
+        (*LOT["FINCA"], "Finca: el único lote de tier 5 (hoy T3)"),
+        (*LOT["N3"], "Lote grande con casa T2: puede crecer hasta T4"),
+        (*LOT_SIGN["W4"], "Lote libre, en venta"),
+        (78.5, 50, "Patio de entrenamiento (muñecos no dan skill)"),
+        (63.5, coast(63.5) + 0.5, "Puerto: tres muelles en la bahía"),
     ],
+    scale=0.5,
 )
 detail(
-    "03_campos.png", "2 · Campos del Alba (anillo 1)",
-    "Slimes verdes sueltos, árboles y rocas: el primer arma, la primera poción y el primer descubrimiento",
-    (0, 55, 54, 80),
+    "04_puerto.png", "6 · Puerto del Alba", "La conexión al mar: hoy es decorado; mañana, el barco a otros cuadrantes y la pesca",
+    (40, 100, 86, 130),
     [
-        (13, 73.5, "Trigal vallado con espantapájaros (decorado)"),
-        (14, 63, "Estanque: referencia visual, sin uso todavía"),
-        (10, 74, "Slimes verdes en pares: pegan poco, mueren rápido"),
-        (8, 69, "Árboles y rocas talables junto al pueblo"),
-        (25, 66, "Fardos y carro: marcan el borde del pueblo"),
-        (51, 76, "Camino sur, sale del portón sur"),
+        (63.5, coast(63.5) + 1.5, "Tres muelles sobre la bahía (arte provisorio)"),
+        (50, coast(50) - 5, "Puesto de pescado"),
+        (70, coast(70) - 3.6, "Malecón: la calle que bordea la bahía"),
+        (62, 106, "Calle del Puerto, sale de la plaza"),
     ],
+    scale=1.0,
 )
 detail(
-    "04_bosque_cantera.png", "3 + 4 · Bosque Susurrante y Cantera Vieja (anillo 2)",
-    "Dos zonas al mismo nivel que entrenan cosas distintas: el bosque, combate en claros; la cantera, minería con presión",
-    (0, 0, 79, 46),
+    "05_campos.png", "2 · Campos del Alba (anillo 1)", "Al este del pueblo: trigales, árboles y rocas talables, slimes verdes de a dos",
+    (90, 56, 165, 152),
     [
-        (40, 20, "Claro con slimes azules (melee, más vida)"),
-        (58, 12, "Slimes rojos a distancia: obligan a esquivar"),
-        (50, 19, "Árboles talables dentro del bosque"),
-        (9, 26, "Venas de hierro inmortales (auto-farm con G)"),
-        (7, 36, "Slime rojo cuidando las venas"),
-        (4.5, 41.5, "Campamento minero (decorado)"),
-        (54.5, 27, "Cartel: el camino norte entra al bosque"),
-        (19, 41, "El camino oeste llega a la cantera"),
+        (114, 121, "Trigal vallado (decorado)"),
+        (112, 108, "Slimes verdes en pares"),
+        (130, 96, "Cruce: camino este y camino a la costa"),
+        (142, 85, "Segundo trigal"),
     ],
-    scale=1,
+    scale=0.5,
 )
 detail(
-    "05_hondonada.png", "5 · Hondonada del Rey Slime (anillo 3)",
-    "Barro, campamento abandonado y packs de slimes violetas; el jefe custodia un cofre",
-    (76, 0, 104, 30),
+    "06_bosque.png", "3 · Bosque Susurrante (anillo 2)", "Una franja de bosque denso al norte con claros donde están los packs",
+    (0, 0, 170, 52),
     [
-        (92, 12, "Rey Slime: mini-jefe con 2–3 patrones"),
-        (95.5, 13, "Cofre: loot garantizado la primera vez"),
-        (84, 21, "Pack de 3 slimes violetas (pegan fuerte)"),
-        (86.6, 26.5, "Carteles de calavera: aviso de peligro"),
-        (90, 17.5, "Fogata: punto de descanso antes del jefe"),
+        (22, 20, "Claro con slimes azules (melee)"),
+        (78, 30, "Slimes rojos a distancia: hay que esquivar"),
+        (59.5, 12, "Camino norte → salida al cuadrante (0,-1)"),
+        (128, 16, "Cada pack en su claro, rodeado de árboles"),
     ],
+    scale=0.5,
+)
+detail(
+    "07_cantera.png", "4 · Cantera Vieja (anillo 2)", "Piedra, rocas y ocho venas de hierro inmortales, cada una con algo cerca que interrumpe",
+    (152, 96, 206, 142),
+    [
+        (176, 108, "Venas de hierro (auto-farm con G)"),
+        (165, 126, "Slime rojo cuidando las venas"),
+        (162, 108, "Campamento minero"),
+        (160, 104, "Ramal desde el camino este"),
+    ],
+    scale=1.0,
+)
+detail(
+    "08_hondonada.png", "5 · Hondonada del Rey Slime (anillo 3)", "Esquina noreste: barro, campamento abandonado, packs violetas y el jefe",
+    (192, 0, 250, 66),
+    [
+        (222, 27.5, "Rey Slime: mini-jefe"),
+        (226, 29, "Cofre: loot garantizado la primera vez"),
+        (236, 46, "Pack de 3 slimes violetas"),
+        (206, 37.5, "Carteles de calavera"),
+        (220, 35.5, "Fogata: último lugar seguro"),
+    ],
+    scale=1.0,
 )
 
 
+# --------------------------------------------------------------------------
+# Lámina de lotes y tiers
+# --------------------------------------------------------------------------
+def lots_plate():
+    order = [("chico", "house_small_a", "house_medium_cozy"),
+             ("mediano", "house_medium_common_b", "house_large_cozy"),
+             ("grande", "house_large_common", "house_grand_cozy"),
+             ("finca", "house_grand_common", "house_palace_cozy")]
+    gap = 4
+    wt = sum(LOT_SIZES[o[0]][0] for o in order) + gap * (len(order) + 1)
+    ht = max(LOT_SIZES[o[0]][1] for o in order) + 6
+    g = Image.new("RGBA", (wt * T, ht * T))
+    grass = [img("tiles/grass_01.png"), img("tiles/grass_02.png"), img("tiles/grass_03.png")]
+    r = random.Random(3)
+    for y in range(ht):
+        for x in range(wt):
+            k = r.random()
+            g.paste(grass[2] if k < 0.08 else grass[1] if k < 0.22 else grass[0], (x * T, y * T))
+    items, notes = [], []
+    lot_fence = set()
+    x = gap
+    base_y = ht - 3
+    for size, now, maxh in order:
+        w, h, tmax = LOT_SIZES[size]
+        ly = base_y - h
+        gate = range(x + w // 2 - 1, x + w // 2 + 1)
+        for fx in range(x, x + w + 1):
+            lot_fence.add((fx, ly))
+            if fx not in gate:
+                lot_fence.add((fx, ly + h))
+        for fy in range(ly, ly + h + 1):
+            lot_fence.add((x, fy))
+            lot_fence.add((x + w, fy))
+        cx = (x + w / 2 + 0.5) * T
+        by = (ly + h - 3) * T
+        ghost = img(B + maxh + ".png").copy()
+        ghost.putalpha(ghost.split()[3].point(lambda a: int(a * 0.28)))
+        items.append((by - 0.5, cx, by, ghost))
+        items.append((by, cx, by, img(B + now + ".png")))
+        notes.append((x, ly, w, h, size, tmax, now))
+        x += w + gap
+    for (fx, fy) in lot_fence:
+        m = (1 if (fx, fy - 1) in lot_fence else 0) | (2 if (fx + 1, fy) in lot_fence else 0) | (4 if (fx - 1, fy) in lot_fence else 0)
+        items.append(((fy + 1) * T - 1, fx * T + 16, (fy + 1) * T, FENCE.crop((m * 32, 0, m * 32 + 32, 32))))
+    for _, xx, yy, im in sorted(items, key=lambda i: i[0]):
+        g.alpha_composite(im, (int(xx - im.width / 2), int(yy - im.height)))
+    lay = Image.new("RGBA", g.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(lay)
+    cur_tier = {"house_small_a": 1, "house_medium_common_b": 2, "house_large_common": 3, "house_grand_common": 4}
+    for (lx, ly, w, h, size, tmax, now) in notes:
+        cx = (lx + w / 2 + 0.5) * T
+        pill(d, (cx, (ly + h) * T + 44), f"Lote {size} · {w}×{h} tiles", font(FONT_B, 24), bg=(18, 20, 28, 230))
+        pill(d, (cx, (ly + h) * T + 82), f"casa actual T{cur_tier[now]} · máximo T{tmax}", font(FONT_S, 18), fg=(255, 214, 90), bg=(18, 20, 28, 210), pad=(8, 4))
+    g.alpha_composite(lay)
+    hd_h = 110
+    full = Image.new("RGBA", (g.width, g.height + hd_h), (18, 20, 28, 255))
+    full.paste(g, (0, hd_h))
+    d = ImageDraw.Draw(full)
+    d.text((28, 18), "Lotes y tiers: el tamaño del lote pone el techo", font=font(FONT_B, 38), fill=(255, 244, 214))
+    d.text((28, 68), "La valla es el límite del lote. Sólida: la casa de hoy. Transparente: la casa más grande que entra en ese lote. Adelante quedan 3 tiles de patio.",
+           font=font(FONT_R, 21), fill=(190, 196, 210))
+    full.convert("RGB").save(OUT / "03_lotes.png", optimize=True)
+
+
+lots_plate()
+
+
+# --------------------------------------------------------------------------
+# Supermapa: cómo crece por cuadrantes
+# --------------------------------------------------------------------------
+def supermap_plate():
+    cw, ch, gap = 440, 330, 14
+    cols, rows = 3, 3
+    Wd = cols * cw + (cols + 1) * gap
+    Hd = rows * ch + (rows + 1) * gap + 120
+    im = Image.new("RGBA", (Wd, Hd), (18, 20, 28, 255))
+    d = ImageDraw.Draw(im)
+    d.text((gap + 10, 20), "El supermapa, cuadrante por cuadrante", font=font(FONT_B, 36), fill=(255, 244, 214))
+    d.text((gap + 10, 70), "Cada cuadrante es su propia escena de 8000 × 6000 px. Sus bordes coinciden con los del vecino: caminos, costa y terreno siguen del otro lado.",
+           font=font(FONT_R, 19), fill=(190, 196, 210))
+    thumb = MAP.resize((cw, ch), Image.LANCZOS)
+    cells = {
+        (-1, -1): ("(-1,-1)", "por diseñar", "land"), (0, -1): ("(0,-1)", "más allá del bosque", "land"),
+        (1, -1): ("(1,-1)", "por diseñar", "land"),
+        (-1, 0): ("(-1,0)", "camino del oeste", "land"), (0, 0): ("(0,0)", "Praderas del Alba", "here"),
+        (1, 0): ("(1,0)", "más allá de la cantera", "land"),
+        (-1, 1): ("(-1,1)", "mar abierto", "sea"), (0, 1): ("(0,1)", "mar: ruta en barco", "sea"),
+        (1, 1): ("(1,1)", "costa sureste", "coast"),
+    }
+    pos = {}
+    for (qx, qy), (lab, sub, kind) in cells.items():
+        x = gap + (qx + 1) * (cw + gap)
+        y = 120 + gap + (qy + 1) * (ch + gap)
+        pos[(qx, qy)] = (x, y)
+        if kind == "here":
+            im.paste(thumb, (x, y))
+            d.rectangle((x, y, x + cw, y + ch), outline=(255, 214, 90), width=5)
+        else:
+            fill = {"land": (44, 58, 40), "sea": (34, 64, 96), "coast": (58, 70, 60)}[kind]
+            cell = Image.new("RGBA", (cw, ch), fill + (255,))
+            cd = ImageDraw.Draw(cell)
+            for k in range(0, cw + ch, 26):
+                cd.line([(k, 0), (k - ch, ch)], fill=tuple(min(255, c + 10) for c in fill), width=2)
+            cd.rectangle((0, 0, cw - 1, ch - 1), outline=(90, 100, 110), width=2)
+            im.paste(cell, (x, y))
+        pill(d, (x + cw / 2, y + ch / 2 - 16), lab, font(FONT_B, 26), bg=(18, 20, 28, 220))
+        pill(d, (x + cw / 2, y + ch / 2 + 20), sub, font(FONT_S, 17), fg=(255, 214, 90) if kind == "here" else (200, 205, 215), bg=(18, 20, 28, 200), pad=(8, 3))
+    lay = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    dl = ImageDraw.Draw(lay)
+    x0, y0 = pos[(0, 0)]
+    sx, sy = cw / W_T, ch / H_T
+    for name, a, b in EXITS:
+        pa = (x0 + a[0] * sx, y0 + a[1] * sy)
+        pb = (x0 + (a[0] + (b[0] - a[0]) * 3.2) * sx, y0 + (a[1] + (b[1] - a[1]) * 3.2) * sy)
+        arrow(dl, pa, pb, col=(255, 214, 90, 250), wdt=6, L=18)
+    im.alpha_composite(lay)
+    im.convert("RGB").save(OUT / "12_supermapa.png", optimize=True)
+
+
+supermap_plate()
 # --------------------------------------------------------------------------
 # Leyenda de enemigos
 # --------------------------------------------------------------------------
@@ -662,7 +914,7 @@ def legend():
         d.text((200, y + 30), name, font=font(FONT_B, 26), fill=(240, 240, 245))
         d.text((200, y + 70), ring, font=font(FONT_S, 19), fill=(160, 200, 255))
         d.text((640, y + rowh / 2), stats, font=font(FONT_R, 24), fill=(205, 210, 222), anchor="lm")
-    im.convert("RGB").save(OUT / "06_enemigos.png", optimize=True)
+    im.convert("RGB").save(OUT / "09_enemigos.png", optimize=True)
 
 
 legend()
@@ -775,7 +1027,7 @@ def ysort_scene(mode):
 
 u = 1.0
 panels(
-    "07_ysort.png", "Y-sort: quién se dibuja adelante",
+    "10_ysort.png", "Y-sort: quién se dibuja adelante",
     "Mismo lugar, mismas posiciones. Izquierda: cómo ordena hoy el juego (z_index fijo + orden del árbol). Derecha: ordenado por la Y de los pies.",
     [
         ("Hoy (sin Y-sort)", ysort_scene("hoy"), [
@@ -838,7 +1090,7 @@ def rect_note(box, col, label, hatch=False, label_at="top"):
 
 RED, YEL, GRN = (240, 90, 90), (255, 214, 90), (110, 220, 140)
 panels(
-    "08_hitbox_casa.png", "Por qué se puede “atravesar” la casa",
+    "11_hitbox_casa.png", "Por qué se puede “atravesar” la casa",
     "house_small_a: el collider cubre solo la pared (126×56). Todo el techo es piso caminable, y como la casa se dibuja encima, el personaje “entra” en ella.",
     [
         ("Hoy", hitbox_scene("hoy"), [

@@ -1,33 +1,45 @@
 # Zona inicial — Praderas del Alba
 
-> Diseño de la zona donde se prueba la progresión. Es un plan para armar en el
-> editor, no algo ya implementado. Las ilustraciones están hechas con el arte
-> real del mapeador (`game/assets/`), con el mismo autotile de terreno
-> (`BiomeTileset`) y de vallas (`FenceAutotiler`) que usa el juego. Ver
+> Diseño de la zona donde se prueba la progresión y primer cuadrante del
+> supermapa. Es un plan para armar en el editor sobre `praderas_del_alba.tscn`,
+> no algo ya implementado. Las ilustraciones están hechas con el arte real del
+> mapeador (`game/assets/`), con el mismo autotile de terreno (`BiomeTileset`)
+> y de vallas (`FenceAutotiler`) que usa el juego. Ver
 > [Cómo regenerar las ilustraciones](#cómo-regenerar-las-ilustraciones).
 >
 > Algunas piezas son **provisorias** y se van a reemplazar: la herrería, los
-> puestos de mercado y el muelle. Están puestas para ocupar su lugar en el mapa.
+> puestos de mercado y los muelles. Están puestas para ocupar su lugar en el mapa.
 >
 > Esta zona es la milestone M1 del [roadmap](ROADMAP.md).
 
 ![Vista general de la zona](img/zona_inicial/01_vista_general.png)
 
-Mapa completo a escala 1:1 (3328×2560, para mapear mirándolo al lado):
-[`00_mapa_completo.png`](img/zona_inicial/00_mapa_completo.png).
+Mapa completo a mitad de escala (4000×3000), para mapear mirándolo al lado:
+[`00_mapa_completo_mitad.png`](img/zona_inicial/00_mapa_completo_mitad.png).
 
 ---
 
+## Punto de partida
+
+`praderas_del_alba.tscn` es la escena que abre "Nuevo Juego"
+(`main_menu.gd` → `ZONE_SCENE`), y es la que se va a ir llenando. Mide
+**8000 × 6000 px (250 × 188 tiles)**, el `world_size` que ya tiene la escena,
+y este diseño ocupa ese espacio entero.
+
+En la versión subida al repo, esa escena tiene 6 casas (`BuildingMarker`) y las
+capas de pintura, pero ningún `MobSpawnMarker` ni `ResourceNodeMarker`. Los
+markers de mobs y recursos que hay en el repo están en `pradera.tscn`, la zona
+de prueba. Si en tu máquina ya hay slimes en Praderas del Alba, son cambios que
+todavía no se subieron.
+
 ## Para qué existe esta zona
 
-Hoy "Nuevo Juego" abre `praderas_del_alba.tscn`, que tiene 6 casas y ningún mob
-ni recurso. El loop jugable vive en `pradera.tscn`, que es una zona de prueba.
-Esta zona tiene que reemplazar a las dos y contestar, jugándola, estas preguntas:
+Tiene que contestar, jugándola, estas preguntas:
 
 1. **¿Se siente el avance?** Volver al anillo 1 después de una hora tiene que
    sentirse fácil.
 2. **¿El primer descubrimiento "1 de 3" llega a tiempo?** Tiene que pasar antes
-   de que el jugador se aburra del anillo 1.
+   de que el anillo 1 aburra.
 3. **¿Cada anillo pide algo distinto?** No "lo mismo con más vida": cada zona
    entrena una habilidad del jugador (pegar, esquivar, gestionar recursos).
 4. **¿Vale la pena volver al pueblo?** Vender, craftear, curarse y guardar
@@ -35,17 +47,15 @@ Esta zona tiene que reemplazar a las dos y contestar, jugándola, estas pregunta
 5. **¿El farm activo le gana al AFK?** Las venas con G contra el golpe a mano
    (+20%).
 
-## Tamaño y estructura
+## Estructura
 
-- **104 × 80 tiles (3328 × 2560 px)**. La zona actual mide 2400 × 1800
-  (`world_size` en `world_zone.gd`), así que hay que agrandarla. Es más chica
-  de lo que parece: cruzarla de punta a punta a 200 px/s lleva unos 17 s.
-- **Anillos de dificultad alrededor del pueblo**: el pueblo en el centro, el
-  anillo 1 pegado a él, el anillo 2 a la salida de los portones y el anillo 3
-  en una esquina. Así el pueblo siempre queda cerca y "más lejos" es
-  "más peligroso" sin tener que explicarlo.
-- **Cuatro portones, cuatro caminos de tierra** (pincel TERRENO → barro). El
-  camino es el tutorial: seguirlo te lleva de una zona a la siguiente.
+- **Un pueblo de puerto** al oeste, sobre una bahía que abre al mar del sur.
+- **Anillos de dificultad que se alejan del pueblo:** los campos pegados al
+  este, el bosque al norte y la cantera al este (anillo 2), y la hondonada en
+  la esquina noreste (anillo 3). "Más lejos" es "más peligroso" sin tener que
+  explicarlo.
+- **Caminos de tierra** (pincel TERRENO → barro) que conectan todo y siguen
+  hasta los bordes: cada uno es una **salida a un cuadrante vecino**.
 
 | # | Zona | Anillo | Skill objetivo (puntos) | Qué entrena |
 |---|---|---|---|---|
@@ -53,28 +63,28 @@ Esta zona tiene que reemplazar a las dos y contestar, jugándola, estas pregunta
 | 2 | Campos del Alba | 1 | 0 → 15 | Los controles: pegar, recolectar, primer craft |
 | 3 | Bosque Susurrante | 2 | 15 → 40 | Combate contra varios, esquivar proyectiles |
 | 4 | Cantera Vieja | 2 | 15 → 40 | Minería (venas inmortales) bajo presión |
-| 5 | Hondonada del Rey Slime | 3 | 40+ | Grupos fuertes + mini-jefe |
-| 6 | Lago y muelle | — | — | Reservado para pesca (no entra ahora) |
+| · | Lomas del Este | 1 → 3 | 25 → 40 | Transición: azules sueltos camino a la hondonada |
+| 5 | Hondonada del Rey Slime | 3 | 40+ | Grupos fuertes y mini-jefe |
+| 6 | Puerto y mar | — | — | Hoy decorado; después barco y pesca |
+| 7 | Costa de las Gaviotas | — | — | Reservada para un anillo futuro |
 
 ## El ritmo esperado
 
 Estos tiempos son **un objetivo para calibrar**, no un cálculo. Cuánto se tarda
-de verdad depende de `skill_gain`, de la curva de rendimientos decrecientes de
+de verdad depende de `skill_gain`, de los rendimientos decrecientes de
 `Skills` y de cuánto tarda en morir cada mob. La idea es medirlo (ver
 [Medir la progresión](#medir-la-progresión)) y mover los números hasta que
-se parezca a esta tabla.
+se parezca a esta tabla. Los umbrales 25/50/75 son los de
+`DISCOVERY_THRESHOLDS` en `player.gd`.
 
 | Minuto | Dónde | Qué debería pasar |
 |---|---|---|
 | 0–5 | Pueblo → Campos | Primeros slimes verdes, primer árbol talado, primera vuelta a vender |
-| 5–15 | Campos | Crafteo del primer arma en la herrería. ~15 pts en la skill de combate |
-| 15–25 | Bosque o Cantera | **Primer descubrimiento (25 pts)**. Primeros slimes rojos: aprender a esquivar |
-| 25–45 | Bosque y Cantera | Gear de hierro con las venas. **Segundo descubrimiento (50 pts)** |
+| 5–15 | Campos | Primer arma crafteada en la herrería. ~15 pts en la skill de combate |
+| 15–25 | Bosque o Cantera | **Primer descubrimiento (25 pts).** Primeros slimes rojos: aprender a esquivar |
+| 25–45 | Bosque, Cantera, Lomas | Gear de hierro con las venas. **Segundo descubrimiento (50 pts)** |
 | 45–60 | Hondonada | Packs violetas, primer intento al Rey Slime. Volver al anillo 1 se siente trivial |
 | 60+ | Hondonada | Matar al jefe. **Tercer descubrimiento (75 pts)** |
-
-Los umbrales 25/50/75 son los que ya usa `player.gd`
-(`DISCOVERY_THRESHOLDS`) para Espadas Pesadas, Hechicería y Puntería.
 
 ---
 
@@ -82,87 +92,136 @@ Los umbrales 25/50/75 son los que ya usa `player.gd`
 
 ![Pueblo del Alba](img/zona_inicial/02_pueblo.png)
 
-Todo lo que se necesita entre salida y salida, a menos de 15 segundos de la
-plaza. Es zona segura: no spawnea nada adentro del vallado.
+Sin muralla. El pueblo se arma alrededor de una plaza de piedra y de calles que
+siguen el terreno; el borde lo marcan el bosque, los árboles sueltos y el mar.
+Lo único vallado son **los lotes**.
 
-| Pieza | Arte | En el blockout | Qué hace después (milestone) |
+| Pieza | Arte (id) | En el blockout | Después (milestone) |
 |---|---|---|---|
-| Posada | `inn` | Punto de spawn | Respawn al morir + guardado (M1) |
-| Tienda | `general_goods` | `POIMarker` tipo VENDOR, solo visual | Vender loot, comprar pociones (M4) |
-| Herrería | `blacksmith_n` *(provisoria)* | `POIMarker` tipo REPAIR | El crafteo pasa a requerir estar acá, en vez de la tecla C en cualquier lado (M4) |
-| Tu casa | `house_small_a` | Ya tiene puerta e interior (`interior_small`) | Cofre y muebles (M6) |
-| Tablón de encargos | `mega_quest_board_parchment_blank` | Decorado | Primer NPC de quests: "matá X / traeme Y" (M4) |
-| Patio de entrenamiento | `mega_armor_stand_breastplate`, racks | `training_dummy` para probar kits | Igual. **No dan skill**: solo suben al matar, recolectar o craftear |
-| Puestos de mercado | `market_produce`, `market_spices` *(provisorios)* | Decorado | Vendedores especializados |
-| Casas restantes | `house_small_c/d/e/f` | Decorado | Lotes de housing (M6) |
+| Posada | `inn` | Punto de spawn | Respawn al morir y guardado (M1) |
+| Tienda | `general_goods` | `POIMarker` VENDOR, solo visual | Vender loot, comprar pociones (M4) |
+| Herrería *(provisoria)* | `blacksmith_n` | `POIMarker` REPAIR | Craftear exige estar acá, en vez de la tecla C en cualquier lado (M4) |
+| Plaza | pozo, `mega_quest_board_parchment_blank` | Decorado | El tablón es el primer NPC de quests: "matá X / traeme Y" (M4) |
+| Puestos de mercado *(provisorios)* | `market_produce`, `market_spices` | Decorado | Vendedores especializados |
+| Patio de entrenamiento | `mega_armor_stand_breastplate`, racks | `training_dummy` para probar kits | Igual. **No dan skill**: solo se sube al matar, recolectar o craftear |
+| Lotes | ver abajo | Valla + casa actual, o cartel de "en venta" | Compra de lote y casa (M6) |
 
-**Lo mínimo para la primera versión jugable:** posada, herrería, tu casa,
-vallado con colisión y portones. Lo demás puede ser decorado.
+Las calles tienen nombre para poder hablar de ellas: **Calle del Bosque**
+(norte), **Calle del Molino** (noreste), **Calle de las Gaviotas** (suroeste,
+bajando hacia la costa) y el **Malecón**, que bordea la bahía.
 
-Todas las casas que se usen necesitan su escena con collider
-(`tools/collider_editor.tscn`). Son 11 (8 edificios, 2 puestos y el muelle), no los 45 del catálogo.
+### Lotes y tiers
+
+![Lotes y tiers](img/zona_inicial/03_lotes.png)
+
+Cada casa vive en un lote, y **la valla es el límite del lote**. El tamaño del
+lote pone el techo: una casa solo puede subir de tier mientras el sprite de ese
+tier entre en el lote, con 3 tiles de patio adelante. Los tamaños salen de medir
+los sprites del catálogo:
+
+| Lote | Tamaño (tiles) | Tier máximo | Sprite del tier máximo |
+|---|---|---|---|
+| Chico | 10 × 12 | T2 | `house_medium_*` (224 × 288) |
+| Mediano | 13 × 16 | T3 | `house_large_*` (320 × 416) |
+| Grande | 17 × 21 | T4 | `house_grand_*` (448 × 576) |
+| Finca | 29 × 25 | T5 | `house_palace_*` (864 × 704) |
+
+`house_small_*` es T1. Así, el lote es la decisión de largo plazo (cuánto puede
+crecer esa casa) y el tier es el progreso dentro de ese lote. Con el GDD
+encaja así: subir de tier ya cuesta oro y materiales, el impuesto escala con el
+tier, y ahora además el tier máximo depende de qué lote conseguiste.
+
+En el pueblo hay **12 lotes**: 7 chicos, 2 medianos, 2 grandes y 1 finca. Dos
+están **en venta** (un chico y un mediano). Las casas actuales mezclan tiers a
+propósito, para que se vea que hay lugar para crecer: la finca tiene una casa
+T3, y uno de los lotes grandes, una T2.
+
+Esto responde una de las preguntas abiertas del GDD ("si los lotes son
+parcelas prefabricadas iguales o polígonos hechos a mano"): **rectángulos de
+cuatro tamaños fijos, ubicados a mano a lo largo de las calles.** Rectángulos
+porque el vallado (`FenceAutotiler`) no hace diagonales, y tamaños fijos porque
+son los que definen el tier máximo.
+
+---
+
+## 6 · Puerto y mar
+
+![Puerto del Alba](img/zona_inicial/04_puerto.png)
+
+La bahía llega casi hasta la plaza: desde el pozo, el agua está a unos 15
+tiles. La Calle del Puerto baja de la plaza al **Malecón**, que bordea la bahía,
+y sobre el agua hay **tres muelles** con un puesto de pescado, cajas y un carro.
+
+Por ahora es decorado. Lo que habilita después:
+
+- **Ruta por mar** a otros cuadrantes (islas, otras costas): una salida más,
+  además de las de tierra.
+- **Pesca**, una de las skills de gathering del GDD.
 
 ---
 
 ## 2 · Campos del Alba (anillo 1)
 
-![Campos del Alba](img/zona_inicial/03_campos.png)
+![Campos del Alba](img/zona_inicial/05_campos.png)
 
-El primer contacto. Slimes de a dos, lejos del camino para que el jugador
-elija cuándo pelear. Árboles y rocas pegados al vallado para que el primer
-crafteo salga sin alejarse.
+El primer contacto, al este del pueblo. Slimes verdes de a dos, lejos del camino
+para que el jugador elija cuándo pelear. Árboles y rocas talables, tres
+trigales vallados y colmenas como decorado.
 
-- **Mobs:** 12–14 slimes verdes en pares.
-- **Recursos:** 6 árboles y 4 rocas (no inmortales, respawn de ~6 s).
-- **Decorado:** trigal vallado con espantapájaros, estanque, fardos.
-
----
-
-## 3 + 4 · Bosque Susurrante y Cantera Vieja (anillo 2)
-
-![Bosque y cantera](img/zona_inicial/04_bosque_cantera.png)
-
-Dos zonas del mismo nivel que piden cosas distintas, para que haya una
-elección real:
-
-**Bosque Susurrante (norte).** Árboles decorativos densos que funcionan como
-pared y dejan **claros** donde están los packs. Los claros de 3–4 tiles
-hacen que el combate sea en espacios chicos. Slimes azules (melee, más vida)
-en grupos de 3, y slimes rojos a distancia cubriéndolos desde el borde del
-claro: el primer lugar donde esquivar importa. Árboles talables adentro, para
-que la Tala tenga su zona.
-
-**Cantera Vieja (oeste).** Terreno de piedra (TERRENO → piedra) con rocas y las
-**5 venas de hierro inmortales**. Cada vena tiene cerca un slime rojo o un par
-de azules: el auto-farm con G es cómodo, pero te interrumpen. Así el
-"manual rinde +20%" se combina con "manual te deja reaccionar".
-
-- **Mobs bosque:** 10 azules en 4 packs + 3 rojos.
-- **Mobs cantera:** 4 azules + 3 rojos.
-- **Recursos:** 8 árboles en el bosque, 7 rocas y 5 venas inmortales en la cantera.
+- **Mobs:** ~34 slimes verdes en 17 pares.
+- **Recursos:** ~25 árboles y rocas (no inmortales, respawn de ~6 s).
 
 ---
+
+## 3 · Bosque Susurrante (anillo 2)
+
+![Bosque Susurrante](img/zona_inicial/06_bosque.png)
+
+Una franja de bosque denso a lo ancho del norte. Los árboles decorativos
+funcionan como pared y dejan **claros** donde están los packs, así que el
+combate es en espacios chicos. Slimes azules en grupos de 3 y slimes rojos a
+distancia: el primer lugar donde esquivar importa. El camino norte lo cruza y
+sale al cuadrante (0,-1).
+
+- **Mobs:** 21 azules en 7 packs y 6 rojos.
+- **Recursos:** 16 árboles talables adentro.
+
+## 4 · Cantera Vieja (anillo 2)
+
+![Cantera Vieja](img/zona_inicial/07_cantera.png)
+
+Terreno de piedra con rocas y **8 venas de hierro inmortales**. Cada vena tiene
+cerca un slime rojo o un par de azules: el auto-farm con G es cómodo, pero te
+interrumpen. Así, el golpe a mano además de rendir +20% te deja reaccionar.
+
+- **Mobs:** 4 azules y 3 rojos.
+- **Recursos:** ~10 rocas y 8 venas.
+
+## Lomas del Este (transición)
+
+Entre los campos y la hondonada: árboles sueltos, rocas, un santuario al
+costado del camino y **tres parejas de slimes azules** sobre el camino noreste.
+Es la rampa entre el anillo 1 y el 3, para que la hondonada no sea un salto.
 
 ## 5 · Hondonada del Rey Slime (anillo 3)
 
-![Hondonada del Rey Slime](img/zona_inicial/05_hondonada.png)
+![Hondonada del Rey Slime](img/zona_inicial/08_hondonada.png)
 
 Barro, un campamento abandonado y carteles de calavera en la entrada. Los
-slimes violetas van **en packs de 2–3**: es donde se prueba si la build
-que armaste aguanta. El jefe custodia un cofre.
+slimes violetas van **en packs de 3**: acá se prueba si la build aguanta. El
+jefe custodia un cofre.
 
-- **Mobs:** 7 violetas en 3 packs.
+- **Mobs:** 15 violetas en 5 packs.
 - **Rey Slime:** hoy puede ser un `POIMarker` MINI_BOSS más un `MobSpawnMarker`
   con mucha vida. Que tenga patrones de verdad (embestida con telegraph,
-  invocar slimes chicos) es trabajo de la milestone de enemigos (M2): esta
-  zona es la que va a pedir esa IA.
-- **Fogata:** el último lugar seguro antes del jefe. Por ahora es decorado.
+  invocar slimes chicos) es trabajo de la milestone de enemigos (M2): esta zona
+  es la que va a pedir esa IA.
 
 ---
 
 ## Enemigos (valores iniciales)
 
-![Enemigos](img/zona_inicial/06_enemigos.png)
+![Enemigos](img/zona_inicial/09_enemigos.png)
 
 Todo esto se puede hacer **hoy, sin código nuevo**, con los `@export` de
 `MobSpawnMarker` (`max_hp`, `speed`, `damage`, `skill_gain`, `gold_max`,
@@ -187,11 +246,47 @@ prendido, nada de esto se puede evaluar.
 
 ---
 
+## El supermapa: crecer por cuadrantes
+
+![Supermapa](img/zona_inicial/12_supermapa.png)
+
+La idea es llenar Praderas del Alba como zona inicial y después ir sumando
+cuadrantes alrededor hasta armar un supermapa. Para que eso funcione, conviene
+decidir ahora cómo se arma, mientras hay un solo cuadrante:
+
+1. **Cada cuadrante es su propia escena**, no una escena gigante que crece. La
+   razón está en el propio código: cada capa de pintura (`PaintLayer`) guarda
+   una máscara RGBA a media resolución del mundo (`MASK_SCALE = 0.5`). En
+   8000 × 6000 son 4000 × 3000 px, unos 48 MB por capa, y Praderas del Alba
+   tiene 8 capas: **~384 MB solo de máscaras**. Una escena de 3 × 3 cuadrantes
+   multiplicaría eso por 9. Por cuadrante, el costo queda acotado.
+2. **Tamaño fijo: 8000 × 6000 (250 × 188 tiles)**, el que ya tiene esta zona.
+   Con un tamaño fijo, cualquier posición del supermapa es "cuadrante (x, y) +
+   posición local", y el servidor puede repartir cuadrantes después sin
+   recalcular nada.
+3. **Los bordes coinciden:** un camino que sale por el borde este de (0,0)
+   entra por el borde oeste de (1,0) a la misma altura. Lo mismo la costa y los
+   terrenos. Conviene anotar en cada borde dónde cruzan los caminos antes de
+   diseñar el vecino.
+4. **Pasar de un cuadrante a otro, en dos pasos:**
+   - **Primero, como Argentum/Imperium:** al llegar al borde se carga el
+     cuadrante vecino y el jugador aparece del otro lado. Es lo más simple y es
+     lo que ya hace `InteriorTravel` con las casas (fundido + cambio de lugar).
+   - **Después, si hace falta, sin cortes:** precargar los vecinos cuando el
+     jugador se acerca al borde. Con los bordes que coinciden, es una mejora
+     sobre lo mismo, no una reescritura.
+
+Las salidas de Praderas del Alba (en amarillo en la vista general) son norte
+(bosque), oeste (camino del oeste), este (más allá de la cantera), sureste (la
+costa) y el mar, desde el puerto.
+
+---
+
 ## Antes de armarla: dos arreglos técnicos
 
 ### Y-sort: quién se dibuja adelante
 
-![Y-sort](img/zona_inicial/07_ysort.png)
+![Y-sort](img/zona_inicial/10_ysort.png)
 
 En una vista desde arriba en 3/4 como la del juego, **lo que está más abajo en
 la pantalla está más cerca de la cámara** y se tiene que dibujar encima. El
@@ -224,11 +319,12 @@ Lo que hay que hacer para activarlo:
    pared (pies en -10) quedaría "detrás" de la casa. Se arregla corriendo el
    sprite 16 px para abajo (`offset.y`) y el collider con él.
 4. **Las vallas** son una `TileMapLayer`: necesitan `y_sort_enabled` en la capa
-   y que la capa sea parte del mismo ordenamiento.
+   y que la capa sea parte del mismo ordenamiento. Con los lotes vallados, esto
+   pasa a importar mucho más.
 
 ### La hitbox de la casa
 
-![Hitbox de la casa](img/zona_inicial/08_hitbox_casa.png)
+![Hitbox de la casa](img/zona_inicial/11_hitbox_casa.png)
 
 El collider de `house_small_a.tscn` mide 126×56 y cubre **solo la pared**
 (y de -72 a -16). El techo, que va de -208 a -72, es piso caminable. Como la
@@ -245,20 +341,23 @@ entero, porque si no la casa bloquea pasto por detrás. Pero el techo dibujado
   y asome la cabeza.
 
 El `collider_editor` ya soporta varios rectángulos por edificio. La medida
-exacta se ajusta a ojo con cada casa.
+exacta se ajusta a ojo con cada casa; con los lotes, alcanza con hacerlo una
+vez por modelo de casa, no por lote.
 
 ---
 
 ## Cómo armarla sin volver a caer en el editor
 
-1. **Y-sort + colliders de los 11 edificios que se usan.** Nada más de tooling.
-2. **Blockout:** agrandar `world_size`, pintar los cuatro terrenos y los
-   caminos, y poner markers de mobs, recursos, POIs y casas. **Sin
-   decoración.** Jugarla 30 minutos.
+1. **Y-sort + colliders de los edificios que se usan** (los modelos de casa de
+   los lotes, posada, tienda, herrería, muelles). Nada más de tooling.
+2. **Blockout:** pintar terrenos, costa y caminos, y poner markers de mobs,
+   recursos, POIs y lotes. **Sin decoración.** Jugarla 30 minutos.
 3. **Calibrar** con los números de arriba y el log de progresión.
-4. **Recién ahí, vestirla:** bosque denso, props del pueblo, trigal, campamento.
+4. **Recién ahí, vestirla:** bosque denso, props del pueblo, trigales, puerto,
+   campamento.
 5. **Regla para el editor:** solo se toca si bloquea *este* mapa, y como
-   máximo durante una hora. Todo lo demás va a una lista.
+   máximo durante una hora. Todo lo demás va a una lista. La única excepción
+   razonable es un marker de lote (tamaño + casa actual) cuando llegue M6.
 
 ## Medir la progresión
 
@@ -270,10 +369,11 @@ dicen si la tabla de [El ritmo esperado](#el-ritmo-esperado) se cumple.
 
 ## Qué no entra en esta zona
 
-- Pesca (el lago y el muelle quedan reservados).
-- Mazmorra (va en la segunda zona, M7).
+- Barco y pesca (el puerto queda como decorado).
+- Comprar lotes, impuesto y subir de tier (M6): los lotes se dibujan, pero
+  todavía no se compran.
+- Mazmorra (va en el segundo cuadrante, M7).
 - Diálogos de NPCs (M4): por ahora los POIs son marcadores.
-- Interior decorable de la casa (M6).
 
 ---
 
@@ -286,5 +386,6 @@ python3 art_pipeline/zona_inicial/render_zona.py . docs/img/zona_inicial
 
 El script lee el arte de `game/assets/`, arma el terreno con el mismo algoritmo
 que `BiomeTileset.resolve()`, coloca todo ordenado por Y y genera las láminas.
-El layout (dónde va cada cosa) está escrito en el script, en tiles. Si se cambia
-el diseño, se cambia ahí y se regenera.
+El layout (calles, lotes, mobs) está escrito en el script, en tiles; los lotes
+se apoyan solos sobre su calle y el script avisa si algo se pisa. Si cambia el
+diseño, se cambia ahí y se regenera.
