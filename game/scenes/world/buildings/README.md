@@ -55,6 +55,30 @@ más. Gracias a eso, arreglarle el collider a una casa arregla **todas** las ya
 colocadas en el mundo; si se guardara la instancia, cada casa quedaría
 congelada con la versión que había el día que se puso.
 
+## La puerta
+
+Para que a un edificio se pueda entrar, su escena lleva un hijo `Door`: un
+`Area2D` con `scripts/world/building_door.gd` y un `CollisionShape2D`
+rectangular, puesto sobre la puerta del dibujo y **montado sobre el borde de
+abajo del collider**. Así lo toca quien camina hacia la puerta y no quien pasa
+por al lado. `house_small_a` es la referencia: puerta de 36x14 en `(0, -15)`,
+con la base terminando en -16.
+
+- `interior_scene`: la sala que carga (`scenes/world/interiors/`).
+- `exit_offset`: dónde aparecés al salir, relativo a la puerta. Tiene que
+  quedar fuera del área, o salir te vuelve a meter.
+
+Entrar no descarga el mundo: `InteriorTravel` instancia la sala lejos del mapa,
+te lleva ahí con un fundido y la libera al salir. Guardar adentro graba la
+posición de afuera de la puerta.
+
+`collider_editor` conserva la puerta (y todo lo que no sea el sprite o un
+collider) cuando reescribe la escena. Todavía no la sabe dibujar: se pone a
+mano en Godot.
+
+Para verlo andando: `res://tools/housing_screenshot.tscn -- carpeta/de/salida`
+recorre una casa en Praderas del Alba con el input real y saca tres capturas.
+
 ## Direccionales
 
 Un edificio con cuatro vistas (`blacksmith_n/_e/_s/_w`) lleva una escena por

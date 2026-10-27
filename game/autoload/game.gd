@@ -84,6 +84,10 @@ var gm_mode: bool = false
 var world: Node = null
 ## The local player entity. In netcode this becomes "my entity by network id".
 var local_player: Node = null
+## While the local player is inside a building (InteriorTravel), the world
+## position in front of its door; null outside. What a save records as the
+## player's position, since the room itself is gone after a reload.
+var interior_return_position: Variant = null
 
 var _rng := RandomNumberGenerator.new()
 

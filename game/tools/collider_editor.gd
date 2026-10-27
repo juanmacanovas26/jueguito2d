@@ -284,12 +284,43 @@ func _suggest() -> void:
 
 # ---------------------------------------------------------------- guardado
 
+## Los hijos de la escena ya guardada que no son el sprite ni un collider,
+## sueltos de su raíz vieja y listos para colgarlos de la nueva.
+static func _extra_children(path: String) -> Array[Node]:
+	var out: Array[Node] = []
+	if not ResourceLoader.exists(path):
+		return out
+	var packed: Resource = load(path)
+	if not (packed is PackedScene):
+		return out
+	var old_root: Node = (packed as PackedScene).instantiate()
+	for child in old_root.get_children():
+		if child is CollisionShape2D or (child is Sprite2D and child.name == "Sprite"):
+			continue
+		old_root.remove_child(child)
+		out.append(child)
+	old_root.free()
+	return out
+
+
+static func _set_owner_recursive(node: Node, owner_: Node) -> void:
+	node.owner = owner_
+	for child in node.get_children():
+		_set_owner_recursive(child, owner_)
+
+
 func _save() -> void:
 	if _id == "" or _tex == null:
 		return
 	if _rects.is_empty():
 		_say("Sin rectángulos: un edificio sin collider es el sprite vacío de antes.")
 		return
+
+	var path := SCENE_DIR + _id + ".tscn"
+	# Lo que esta herramienta no edita (la puerta, y lo que se sume después)
+	# viaja tal cual a la escena nueva: armarla de cero borraba la puerta cada
+	# vez que se retocaba la planta.
+	var kept := _extra_children(path)
 
 	var root := StaticBody2D.new()
 	root.name = _node_name(_id)
@@ -317,6 +348,10 @@ func _save() -> void:
 		root.add_child(shape_node)
 		shape_node.owner = root
 
+	for extra in kept:
+		root.add_child(extra)
+		_set_owner_recursive(extra, root)
+
 	var packed := PackedScene.new()
 	if packed.pack(root) != OK:
 		root.free()
@@ -325,7 +360,6 @@ func _save() -> void:
 
 	if not DirAccess.dir_exists_absolute(SCENE_DIR):
 		DirAccess.make_dir_recursive_absolute(SCENE_DIR)
-	var path := SCENE_DIR + _id + ".tscn"
 	var err := ResourceSaver.save(packed, path)
 	root.free()
 	if err != OK:

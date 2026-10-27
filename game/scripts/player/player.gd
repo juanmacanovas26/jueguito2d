@@ -1967,8 +1967,12 @@ func get_save_data() -> Dictionary:
 	var equipped := {}
 	for slot in _SLOT_FIELDS.keys():
 		equipped[slot] = get_equipped(slot)
+	# Inside a building the saved spot is its door: the room is not saved.
+	var pos: Vector2 = global_position
+	if Game.interior_return_position is Vector2:
+		pos = Game.interior_return_position
 	return {
-		"position": {"x": global_position.x, "y": global_position.y},
+		"position": {"x": pos.x, "y": pos.y},
 		"kit": int(kit),
 		"known_abilities": known_abilities.duplicate(),
 		"skills": progression.get_snapshot() if progression else {},

@@ -174,6 +174,10 @@ func _ready() -> void:
 	ghost.name = "BuildGhost"
 	ghost.set_script(BuildGhostScript)
 	add_child(ghost)
+	# Building doors (BuildingDoor) find this by name to take the player in.
+	var travel := InteriorTravel.new()
+	travel.name = "InteriorTravel"
+	add_child(travel)
 
 
 func _draw() -> void:
@@ -1075,6 +1079,10 @@ func _on_player_died() -> void:
 			Game.toast("Moriste — perdiste %d de oro" % penalty)
 	await get_tree().create_timer(2.0).timeout
 	if _player and is_instance_valid(_player):
+		# Respawning happens out in the world, so a room you died in closes.
+		var travel := InteriorTravel.of(self)
+		if travel != null:
+			travel.abandon()
 		_player.call("respawn", player_spawn)
 
 
