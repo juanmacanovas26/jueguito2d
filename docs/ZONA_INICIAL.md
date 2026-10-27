@@ -8,6 +8,8 @@
 >
 > Algunas piezas son **provisorias** y se van a reemplazar: la herrería, los
 > puestos de mercado y el muelle. Están puestas para ocupar su lugar en el mapa.
+>
+> Esta zona es la milestone M1 del [roadmap](ROADMAP.md).
 
 ![Vista general de la zona](img/zona_inicial/01_vista_general.png)
 
