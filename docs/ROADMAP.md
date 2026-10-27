@@ -73,9 +73,10 @@ cumplir un encargo.
 - Subir de tier e impuesto, después.
 
 ### M7 — Segundo cuadrante
-- El cuadrante vecino de Praderas del Alba, con una mazmorra corta, como escena
-  propia de 8000 × 6000 con los bordes coincidiendo.
-- Pasar de un cuadrante a otro al cruzar el borde.
+- Antes de agrandar el mundo: que la pintura no se corra al cambiar
+  `world_size` y que las máscaras sean por cuadrante (ver `ZONA_INICIAL.md`).
+- Pegar el cuadrante vecino a Praderas del Alba en la misma escena, con una
+  mazmorra corta.
 - Si un cuadrante sale en días y no en semanas, el editor rindió.
 
 ## Por qué este orden

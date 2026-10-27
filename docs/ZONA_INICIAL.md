@@ -246,39 +246,49 @@ prendido, nada de esto se puede evaluar.
 
 ---
 
-## El supermapa: crecer por cuadrantes
+## El supermapa: una escena que crece por cuadrantes
 
 ![Supermapa](img/zona_inicial/12_supermapa.png)
 
-La idea es llenar Praderas del Alba como zona inicial y después ir sumando
-cuadrantes alrededor hasta armar un supermapa. Para que eso funcione, conviene
-decidir ahora cómo se arma, mientras hay un solo cuadrante:
+El mundo es **una sola escena** que se va agrandando. El cuadrante es la unidad
+de trabajo: se diseña y se llena un bloque de 8000 × 6000 a la vez, y el
+siguiente se pega al lado dentro de la misma escena, con caminos, costa y
+terreno que siguen de corrido. Praderas del Alba es el cuadrante (0,0).
 
-1. **Cada cuadrante es su propia escena**, no una escena gigante que crece. La
-   razón está en el propio código: cada capa de pintura (`PaintLayer`) guarda
-   una máscara RGBA a media resolución del mundo (`MASK_SCALE = 0.5`). En
-   8000 × 6000 son 4000 × 3000 px, unos 48 MB por capa, y Praderas del Alba
-   tiene 8 capas: **~384 MB solo de máscaras**. Una escena de 3 × 3 cuadrantes
-   multiplicaría eso por 9. Por cuadrante, el costo queda acotado.
-2. **Tamaño fijo: 8000 × 6000 (250 × 188 tiles)**, el que ya tiene esta zona.
-   Con un tamaño fijo, cualquier posición del supermapa es "cuadrante (x, y) +
-   posición local", y el servidor puede repartir cuadrantes después sin
-   recalcular nada.
-3. **Los bordes coinciden:** un camino que sale por el borde este de (0,0)
-   entra por el borde oeste de (1,0) a la misma altura. Lo mismo la costa y los
-   terrenos. Conviene anotar en cada borde dónde cruzan los caminos antes de
-   diseñar el vecino.
-4. **Pasar de un cuadrante a otro, en dos pasos:**
-   - **Primero, como Argentum/Imperium:** al llegar al borde se carga el
-     cuadrante vecino y el jugador aparece del otro lado. Es lo más simple y es
-     lo que ya hace `InteriorTravel` con las casas (fundido + cambio de lugar).
-   - **Después, si hace falta, sin cortes:** precargar los vecinos cuando el
-     jugador se acerca al borde. Con los bordes que coinciden, es una mejora
-     sobre lo mismo, no una reescritura.
+Para que crecer no rompa lo que ya está armado, hay cuatro cosas del código
+actual a tener en cuenta:
 
-Las salidas de Praderas del Alba (en amarillo en la vista general) son norte
-(bosque), oeste (camino del oeste), este (más allá de la cantera), sureste (la
-costa) y el mar, desde el puerto.
+1. **Agrandar `world_size` hoy corre la pintura.** El mundo está centrado en el
+   origen (`PaintLayer.position = -world_size / 2`), pero al cambiar de tamaño
+   `PaintLayer._rebuild()` copia la máscara vieja en la esquina superior
+   izquierda de la nueva. Si el mundo pasa de 8000 a 16000 de ancho, todo lo
+   pintado aparece 4000 px más al oeste, desfasado de las casas y los
+   caminos. Hay que arreglarlo antes de sumar el primer cuadrante.
+2. **El centro del mundo se mueve con el tamaño.** Como `world_size` crece
+   para los dos lados del origen, sumar un cuadrante al este también agranda
+   el oeste. Conviene fijar el origen en una esquina del cuadrante (0,0) y
+   describir el mundo como "qué cuadrantes existen", no como un tamaño
+   centrado.
+3. **La pintura no escala con un mundo grande.** Cada capa que se pinta
+   reserva una máscara del tamaño de medio mundo (`MASK_SCALE = 0.5`): 48 MB
+   en 8000 × 6000, 432 MB en un mundo de 3 × 3 cuadrantes, por capa. Además,
+   la textura no puede pasar de 16384 px de lado en la mayoría de las placas
+   de video, o sea unos 4 cuadrantes de ancho. La solución, sin dejar de ser
+   una escena: **una máscara por cuadrante** (un sprite por capa y cuadrante),
+   creada solo donde se pinta. Hoy ninguna capa de Praderas del Alba tiene
+   nada pintado guardado, así que es el momento barato para cambiarlo.
+4. **El piso base no se extiende solo.** `_build_floor()` no toca un `Floor`
+   que ya tiene celdas, así que el pasto del cuadrante nuevo hay que hornearlo
+   de nuevo (`tools/bake_floor.gd`).
+
+En juego, una escena grande no es problema en sí: los mobs ya se duermen
+cuando el jugador está lejos (`chase_mob.gd`) y `TileMapLayer` dibuja por
+bloques. Lo que más adelante va a necesitar el servidor es saber qué hay cerca
+de cada jugador, y el cuadrante sirve también para eso.
+
+Las salidas de Praderas del Alba (en amarillo en la vista general) marcan dónde
+se pegan los cuadrantes vecinos: norte (bosque), oeste, este (más allá de la
+cantera), sureste (la costa) y el mar, desde el puerto.
 
 ---
 
@@ -372,7 +382,7 @@ dicen si la tabla de [El ritmo esperado](#el-ritmo-esperado) se cumple.
 - Barco y pesca (el puerto queda como decorado).
 - Comprar lotes, impuesto y subir de tier (M6): los lotes se dibujan, pero
   todavía no se compran.
-- Mazmorra (va en el segundo cuadrante, M7).
+- Mazmorra (va en el próximo cuadrante, M7).
 - Diálogos de NPCs (M4): por ahora los POIs son marcadores.
 
 ---

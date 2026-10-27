@@ -848,7 +848,7 @@ def supermap_plate():
     im = Image.new("RGBA", (Wd, Hd), (18, 20, 28, 255))
     d = ImageDraw.Draw(im)
     d.text((gap + 10, 20), "El supermapa, cuadrante por cuadrante", font=font(FONT_B, 36), fill=(255, 244, 214))
-    d.text((gap + 10, 70), "Cada cuadrante es su propia escena de 8000 × 6000 px. Sus bordes coinciden con los del vecino: caminos, costa y terreno siguen del otro lado.",
+    d.text((gap + 10, 70), "Una sola escena que crece: cada cuadrante es un bloque de 8000 × 6000 px del mismo mundo, y caminos, costa y terreno siguen de corrido.",
            font=font(FONT_R, 19), fill=(190, 196, 210))
     thumb = MAP.resize((cw, ch), Image.LANCZOS)
     cells = {
