@@ -249,6 +249,8 @@ func _forward_canvas_gui_input(event: InputEvent) -> bool:
 			_fence_cursor = BuildGrid.to_cell(BuildGrid.snap(drag_pos))
 			update_overlays()
 			return true
+		if _drag_button == MOUSE_BUTTON_LEFT:
+			_grow_to(_dock.selected_kind, drag_pos)
 		if PaintLayer.is_paint_id(_dock.selected_kind):
 			_paint(_dock.selected_kind, drag_pos, _drag_button == MOUSE_BUTTON_RIGHT)
 		elif _drag_button == MOUSE_BUTTON_LEFT:
@@ -287,6 +289,8 @@ func _forward_canvas_gui_input(event: InputEvent) -> bool:
 	_ensure_zone_layers()
 
 	var world_pos := _viewport_world_pos(mb.position)
+	if mb.button_index == MOUSE_BUTTON_LEFT:
+		_grow_to(_dock.selected_kind, world_pos)
 
 	if PaintLayer.is_paint_id(_dock.selected_kind):
 		_begin_paint_stroke(_dock.selected_kind)
@@ -318,6 +322,34 @@ func _commit_fence_run(kind: String) -> void:
 		_place(kind, BuildGrid.cell_to_world(cell))
 	if _edited_zone.has_method("_rebuild_fences"):
 		_edited_zone.call("_rebuild_fences")
+	update_overlays()
+
+
+## ------------------------------------------------------ agrandar el mapa
+
+## Solo el terreno agranda el mapa: piso, TERRENO, caminos y el pincel libre.
+## Un árbol, un mob o una casa soltados afuera del borde son casi siempre un
+## click errado, no la intención de sumar un cuadrante.
+func _grows_map(kind: String) -> bool:
+	return kind.begins_with("floor_") or PaintLayer.is_paint_id(kind)
+
+
+## Si `world_pos` cae afuera del mapa y se está pintando terreno, agranda el
+## mapa un cuadrante hacia ese lado (WorldZone.grown_rect_for()). Es un paso
+## propio en el Ctrl+Z del editor: deshacerlo achica el mapa y saca el pasto que
+## había agregado.
+func _grow_to(kind: String, world_pos: Vector2) -> void:
+	if not _grows_map(kind) or not _edited_zone.has_method("grown_rect_for"):
+		return
+	var old_rect: Rect2 = _edited_zone.call("world_rect")
+	var new_rect: Rect2 = _edited_zone.call("grown_rect_for", world_pos)
+	if new_rect == old_rect:
+		return
+	var undo_redo := get_undo_redo()
+	undo_redo.create_action("Agrandar el mapa")
+	undo_redo.add_do_method(_edited_zone, "set_world_rect", new_rect)
+	undo_redo.add_undo_method(_edited_zone, "set_world_rect", old_rect)
+	undo_redo.commit_action()
 	update_overlays()
 
 
@@ -557,6 +589,27 @@ func _make_marker(kind: String, wall_material: String, roof_material: String) ->
 
 
 ## ------------------------------------------------------------------ ghost
+## El borde del mapa siempre a la vista mientras la herramienta está activa, y
+## con el cursor afuera pintando terreno, el cuadrante que se agregaría.
+func _draw_world_edge(overlay: Control, xform: Transform2D, kind: String) -> void:
+	var zone := _current_zone()
+	if zone == null or not zone.has_method("world_rect"):
+		return
+	var rect: Rect2 = zone.call("world_rect")
+	var scale := xform.get_scale()
+	overlay.draw_rect(Rect2(xform * rect.position, rect.size * scale), Color(1, 1, 1, 0.55), false, 2.0)
+	if not _grows_map(kind):
+		return
+	var grown: Rect2 = zone.call("grown_rect_for", _ghost_pos)
+	if grown == rect:
+		return
+	var gold := Color(0.95, 0.85, 0.45)
+	overlay.draw_rect(Rect2(xform * grown.position, grown.size * scale), Color(gold, 0.07))
+	overlay.draw_rect(Rect2(xform * grown.position, grown.size * scale), Color(gold, 0.85), false, 2.0)
+	overlay.draw_string(ThemeDB.fallback_font, xform * _ghost_pos + Vector2(16, -16),
+		"Pintar acá agrega un cuadrante", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, gold)
+
+
 ## The same cursor preview the in-game tool draws (scripts/world/
 ## build_ghost.gd), reproduced with the EditorPlugin overlay API. It has to
 ## be redrawn here rather than reused directly: build_ghost.gd is a Node2D
@@ -582,6 +635,7 @@ func _forward_canvas_draw_over_viewport(overlay: Control) -> void:
 		return
 
 	var xform_now := get_editor_interface().get_editor_viewport_2d().global_canvas_transform
+	_draw_world_edge(overlay, xform_now, kind)
 	# The free brush previews the circle it will actually paint. The editor
 	# draws its OWN overlay (build_ghost.gd is a runtime node and never runs
 	# here), so the round preview has to exist in both places or the editor

@@ -93,7 +93,13 @@ func _close() -> void:
 
 
 func _origin() -> Vector2:
-	var size: Vector2 = get_parent().get("world_size") if get_parent() != null else Vector2.ZERO
+	var zone := get_parent()
+	if zone != null and zone.has_method("world_rect"):
+		# Arriba del mapa, a una altura de mapa del borde: lejos de todo lo que
+		# hay en el mundo aunque el mapa haya crecido para un costado.
+		var rect: Rect2 = zone.call("world_rect")
+		return Vector2(rect.get_center().x, rect.position.y - rect.size.y * 0.5 - ORIGIN_MARGIN)
+	var size: Vector2 = zone.get("world_size") if zone != null else Vector2.ZERO
 	return Vector2(0, -(size.y + ORIGIN_MARGIN))
 
 

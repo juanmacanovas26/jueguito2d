@@ -51,6 +51,14 @@ const Z_DECOR := 1        # decor goes over buildings AND over painted floor
 
 @export var zone_name: String = "Praderas del Alba"
 @export var world_size: Vector2 = Vector2(2400, 1800)
+## Centro del mundo. Toda zona arrancaba centrada en el origen; agrandarla para
+## un solo lado (pintar terreno al este del borde) corre el centro. El mundo es
+## world_rect(): world_size alrededor de este punto.
+@export var world_center: Vector2 = Vector2.ZERO
+## Cuánto crece el mapa cuando se pinta terreno afuera del borde: un cuadrante
+## entero por eje, hacia ese lado (ver grown_rect_for()). Praderas del Alba mide
+## justo un cuadrante, así que el mundo crece alineado a esa grilla.
+@export var quadrant_size: Vector2 = Vector2(8000, 6000)
 @export var player_spawn: Vector2 = Vector2.ZERO
 @export var show_debug_grid: bool = false
 ## How much of the floor is dirt rather than grass, 0.0-1.0. Only used when the
@@ -184,15 +192,14 @@ func _draw() -> void:
 	if not show_debug_grid:
 		return
 	var step := 80.0
-	var hw := world_size.x * 0.5
-	var hh := world_size.y * 0.5
-	var x := -hw
-	while x <= hw:
-		draw_line(Vector2(x, -hh), Vector2(x, hh), _grid_color, 1.0)
+	var r := world_rect()
+	var x := r.position.x
+	while x <= r.end.x:
+		draw_line(Vector2(x, r.position.y), Vector2(x, r.end.y), _grid_color, 1.0)
 		x += step
-	var y := -hh
-	while y <= hh:
-		draw_line(Vector2(-hw, y), Vector2(hw, y), _grid_color, 1.0)
+	var y := r.position.y
+	while y <= r.end.y:
+		draw_line(Vector2(r.position.x, y), Vector2(r.end.x, y), _grid_color, 1.0)
 		y += step
 
 
@@ -223,7 +230,7 @@ func _build_floor() -> void:
 	# Center the painted grid on the origin, same as world_size; ceil() may
 	# overshoot by a few px per axis when world_size isn't a multiple of the
 	# tile size — that sliver ends up hidden under the boundary walls.
-	floor_layer.position = Vector2(-tiles_x * TILE_PX * 0.5, -tiles_y * TILE_PX * 0.5)
+	floor_layer.position = world_center - Vector2(tiles_x * TILE_PX * 0.5, tiles_y * TILE_PX * 0.5)
 
 	if FloorTileset.wang_source_id() >= 0:
 		_paint_terrain_floor(floor_layer, tiles_x, tiles_y)
@@ -235,6 +242,17 @@ func _build_floor() -> void:
 ## border tiles are chosen by Godot from the corner data, so nothing here has to
 ## know which sprite goes where.
 func _paint_terrain_floor(floor_layer: TileMapLayer, tiles_x: int, tiles_y: int) -> void:
+	var cells: Array[Vector2i] = []
+	for ty in range(tiles_y):
+		for tx in range(tiles_x):
+			cells.append(Vector2i(tx, ty))
+	_paint_terrain_cells(floor_layer, cells)
+
+
+## The grass/dirt pass over just `cells`. The noise is read at the cell's own
+## coordinates, so a strip added later (_fit_floor()) continues the same
+## pattern instead of starting a new one at its edge.
+func _paint_terrain_cells(floor_layer: TileMapLayer, cells: Array[Vector2i]) -> void:
 	var noise := FastNoiseLite.new()
 	noise.seed = 1337 # fixed: the floor pattern is decoration, not state.
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
@@ -242,22 +260,19 @@ func _paint_terrain_floor(floor_layer: TileMapLayer, tiles_x: int, tiles_y: int)
 
 	# Turn the coverage fraction into a noise threshold by sampling the field.
 	var samples: Array[float] = []
-	for ty in range(tiles_y):
-		for tx in range(tiles_x):
-			samples.append(noise.get_noise_2d(float(tx), float(ty)))
+	for cell in cells:
+		samples.append(noise.get_noise_2d(float(cell.x), float(cell.y)))
 	samples.sort()
 	var cut := clampi(int(samples.size() * (1.0 - dirt_coverage)), 0, samples.size() - 1)
 	var threshold: float = samples[cut]
 
 	var grass_cells: Array[Vector2i] = []
 	var dirt_cells: Array[Vector2i] = []
-	for ty in range(tiles_y):
-		for tx in range(tiles_x):
-			var cell := Vector2i(tx, ty)
-			if noise.get_noise_2d(float(tx), float(ty)) > threshold:
-				dirt_cells.append(cell)
-			else:
-				grass_cells.append(cell)
+	for cell in cells:
+		if noise.get_noise_2d(float(cell.x), float(cell.y)) > threshold:
+			dirt_cells.append(cell)
+		else:
+			grass_cells.append(cell)
 
 	# Grass first as the base, then the dirt patches carve into it — the second
 	# pass is what produces the blended borders.
@@ -445,7 +460,7 @@ func _build_paint_layers() -> void:
 			# to save it into and owner stays null harmlessly.
 			if Engine.is_editor_hint() and is_inside_tree():
 				layer.owner = get_tree().edited_scene_root
-		layer.world_size = world_size
+		layer.set_world_rect(world_rect())
 		layer.z_as_relative = false
 		layer.z_index = Z_PINTURA
 
@@ -503,13 +518,14 @@ func _build_world() -> void:
 	walls.collision_mask = 0
 	add_child(walls)
 
+	var c := world_center
 	var hw := world_size.x * 0.5
 	var hh := world_size.y * 0.5
 	var thickness := 60.0
-	_add_wall(walls, Vector2(0, -hh - thickness * 0.5), Vector2(world_size.x + thickness * 2, thickness))
-	_add_wall(walls, Vector2(0, hh + thickness * 0.5), Vector2(world_size.x + thickness * 2, thickness))
-	_add_wall(walls, Vector2(-hw - thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
-	_add_wall(walls, Vector2(hw + thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
+	_add_wall(walls, c + Vector2(0, -hh - thickness * 0.5), Vector2(world_size.x + thickness * 2, thickness))
+	_add_wall(walls, c + Vector2(0, hh + thickness * 0.5), Vector2(world_size.x + thickness * 2, thickness))
+	_add_wall(walls, c + Vector2(-hw - thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
+	_add_wall(walls, c + Vector2(hw + thickness * 0.5, 0), Vector2(thickness, world_size.y + thickness * 2))
 
 	# _load_markers_override() (a per-client local "Guardar zona" save file,
 	# pradera_markers.tscn) is deliberately NOT called here any more: this is
@@ -1522,9 +1538,101 @@ func _clearance_for_kind(kind: String) -> float:
 ## room just because a tree happens to sit within 20px of one of its grid
 ## points — see world_zone.gd's build-mode section / docs/GDD.md.
 func is_within_bounds(world_pos: Vector2) -> bool:
-	var hw := world_size.x * 0.5
-	var hh := world_size.y * 0.5
-	return absf(world_pos.x) <= hw and absf(world_pos.y) <= hh
+	var r := world_rect()
+	return (world_pos.x >= r.position.x and world_pos.x <= r.end.x
+		and world_pos.y >= r.position.y and world_pos.y <= r.end.y)
+
+
+## ----------------------------------------------------------- agrandar el mapa
+## El mundo es una sola escena que crece por cuadrantes. Pintar terreno afuera
+## del borde en el editor (addons/build_mode_editor) lo agranda un cuadrante
+## hacia ese lado; lo que ya estaba armado no se mueve.
+
+## El rectángulo del mundo: world_size alrededor de world_center.
+func world_rect() -> Rect2:
+	return Rect2(world_center - world_size * 0.5, world_size)
+
+
+## El rectángulo que haría falta para que `world_pos` quede adentro, agrandando
+## de a cuadrantes enteros y solo hacia los lados donde está afuera. Si ya está
+## adentro, el de ahora.
+func grown_rect_for(world_pos: Vector2) -> Rect2:
+	var r := world_rect()
+	if quadrant_size.x <= 0.0 or quadrant_size.y <= 0.0:
+		return r
+	var left := r.position.x
+	var top := r.position.y
+	var right := r.end.x
+	var bottom := r.end.y
+	if world_pos.x < left:
+		left -= ceilf((left - world_pos.x) / quadrant_size.x) * quadrant_size.x
+	elif world_pos.x > right:
+		right += ceilf((world_pos.x - right) / quadrant_size.x) * quadrant_size.x
+	if world_pos.y < top:
+		top -= ceilf((top - world_pos.y) / quadrant_size.y) * quadrant_size.y
+	elif world_pos.y > bottom:
+		bottom += ceilf((world_pos.y - bottom) / quadrant_size.y) * quadrant_size.y
+	return Rect2(left, top, right - left, bottom - top)
+
+
+## Pasa el mundo a `rect`: tamaño, centro, las capas de pintura y el pasto base.
+## Sirve para agrandar y también para deshacer (achicar). Pensado para el
+## editor: en Play los límites (WorldBounds) ya se armaron con el tamaño de
+## arranque.
+func set_world_rect(rect: Rect2) -> void:
+	var old := world_rect()
+	world_size = rect.size
+	world_center = rect.get_center()
+	for texture_id in PaintLayer.TEXTURES:
+		var layer := get_node_or_null("Pintura_" + str(texture_id)) as PaintLayer
+		if layer != null:
+			layer.set_world_rect(rect)
+	_fit_floor(old, rect)
+	queue_redraw()
+
+
+## Ajusta el pasto base (Floor) al rectángulo nuevo: agrega lo que falta con el
+## mismo patrón y, al achicar, saca lo que quedó afuera del todo.
+##
+## Solo si Floor ya está horneado. Un Floor vacío lo arma entero _build_floor()
+## al darle Play, y ese ya usa el tamaño nuevo; en cambio uno horneado se salta
+## esa pasada, así que sin esto el cuadrante nuevo quedaba sin pasto.
+func _fit_floor(old_rect: Rect2, new_rect: Rect2) -> void:
+	var floor_layer := get_node_or_null("Floor") as TileMapLayer
+	if floor_layer == null or floor_layer.get_used_cells().is_empty():
+		return
+	if floor_layer.tile_set == null:
+		floor_layer.tile_set = FloorTileset.build()
+	var t := float(TILE_PX)
+	var origin := floor_layer.position
+	var first := Vector2i(floori((new_rect.position.x - origin.x) / t), floori((new_rect.position.y - origin.y) / t))
+	var last := Vector2i(ceili((new_rect.end.x - origin.x) / t), ceili((new_rect.end.y - origin.y) / t))
+	if new_rect.size.x < old_rect.size.x or new_rect.size.y < old_rect.size.y:
+		for cell in floor_layer.get_used_cells():
+			if cell.x < first.x or cell.y < first.y or cell.x >= last.x or cell.y >= last.y:
+				floor_layer.erase_cell(cell)
+	var missing: Array[Vector2i] = []
+	for ty in range(first.y, last.y):
+		for tx in range(first.x, last.x):
+			var cell := Vector2i(tx, ty)
+			if floor_layer.get_cell_source_id(cell) == -1:
+				missing.append(cell)
+	if missing.is_empty():
+		return
+	if FloorTileset.wang_source_id() >= 0:
+		_paint_terrain_cells(floor_layer, missing)
+	else:
+		var grass_ids := FloorTileset.grass_source_ids()
+		for cell in missing:
+			# Misma mezcla que _paint_scattered_floor(), pero por celda: un
+			# random en secuencia cambiaría según por dónde arranca el tramo.
+			var roll := float(absi(hash(cell)) % 1000) / 1000.0
+			var source_id: int = grass_ids[0]
+			if roll < 0.08:
+				source_id = grass_ids[2]
+			elif roll < 0.22:
+				source_id = grass_ids[1]
+			floor_layer.set_cell(cell, source_id, Vector2i.ZERO)
 
 
 func _instantiate_marker(kind: String) -> Node2D:

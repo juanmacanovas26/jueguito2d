@@ -14,6 +14,10 @@ shader_type canvas_item;
 uniform sampler2D ground : repeat_enable, filter_nearest;
 // Zone size in world pixels; the mask sprite covers exactly this.
 uniform vec2 world_size = vec2(2400.0, 1800.0);
+// World position of the mask's top-left corner. The texture and the jitter are
+// laid out in WORLD pixels from here, so growing the zone (which moves this
+// corner) does not slide the ground texture under what is already painted.
+uniform vec2 world_origin = vec2(-1200.0, -900.0);
 uniform float ground_tile_px = 32.0;
 // Coverage needed for a pixel to be painted. Higher = the brush bites less.
 uniform float threshold : hint_range(0.0, 1.0) = 0.5;
@@ -32,10 +36,10 @@ float hash12(vec2 p) {
 
 void fragment() {
 	float coverage = texture(TEXTURE, UV).a;
-	vec2 world_px = floor(UV * world_size / jitter_px);
-	float cut = threshold + (hash12(world_px) - 0.5) * jitter;
+	vec2 world_pos = world_origin + UV * world_size;
+	float cut = threshold + (hash12(floor(world_pos / jitter_px)) - 0.5) * jitter;
 	if (coverage <= cut) {
 		discard;
 	}
-	COLOR = texture(ground, UV * world_size / ground_tile_px);
+	COLOR = texture(ground, world_pos / ground_tile_px);
 }

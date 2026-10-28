@@ -27,6 +27,7 @@ func _ready() -> void:
 	_test_brush()
 	_test_stroke_undo()
 	_test_persistence()
+	_test_grow()
 	_test_zone()
 
 	_expect(_checks >= MIN_CHECKS,
@@ -238,6 +239,73 @@ func _test_persistence() -> void:
 			"  and reloads with the same coverage at %s" % probe)
 	layer.free()
 	reloaded.free()
+
+
+## Agrandar el mapa (pintar terreno afuera del borde en el editor) no puede
+## mover lo ya pintado. Antes, cambiar world_size copiaba la máscara vieja en la
+## esquina de arriba a la izquierda de la nueva mientras la capa seguía
+## centrada, y todo lo pintado se corría medio mapa.
+func _test_grow() -> void:
+	print("\n[grow]")
+	var layer := _layer()
+	var spot := Vector2(-200, 150)
+	layer.paint(spot, 30.0, false)
+	var before := layer.coverage_at(spot)
+	_expect(before > 0.9, "painted before growing")
+
+	# Un cuadrante más al este y otro al norte: el centro se corre.
+	var start := layer.world_rect()
+	var grown := Rect2(start.position - Vector2(0, ZONE.y), start.size + ZONE)
+	layer.set_world_rect(grown)
+	_expect(layer.world_rect() == grown, "the layer takes the grown rect")
+	_expect(absf(layer.coverage_at(spot) - before) < 0.01,
+		"  and the paint stays at the same world spot (%.2f)" % layer.coverage_at(spot))
+	var fresh := Vector2(start.end.x + 100, start.position.y - 100)
+	layer.paint(fresh, 30.0, false)
+	_expect(layer.coverage_at(fresh) > 0.9, "  and the new quadrant takes paint")
+
+	# Deshacer el agrandado: lo de antes sigue, lo del cuadrante nuevo se va.
+	layer.set_world_rect(start)
+	_expect(absf(layer.coverage_at(spot) - before) < 0.01, "shrinking back keeps the old paint in place")
+	_expect(layer.coverage_at(fresh) == 0.0, "  and drops what was outside")
+	layer.free()
+
+	# Un trazo que cruza el borde agranda el mapa a la mitad: el paso de
+	# deshacer tiene que seguir cubriendo las dos partes.
+	var stroke := _layer()
+	stroke.begin_stroke()
+	stroke.paint(Vector2.ZERO, 20.0, false)
+	var r := stroke.world_rect()
+	stroke.set_world_rect(Rect2(r.position - Vector2(ZONE.x, 0), r.size + Vector2(ZONE.x, 0)))
+	var west := Vector2(r.position.x - 50, 0)
+	stroke.paint(west, 20.0, false)
+	var step := stroke.end_stroke()
+	_expect(not step.is_empty(), "a stroke that crosses a growth still yields one undo step")
+	if not step.is_empty():
+		stroke.restore(step["rect"], step["before"])
+		_expect(stroke.coverage_at(Vector2.ZERO) == 0.0 and stroke.coverage_at(west) == 0.0,
+			"  and undoing it clears both halves")
+	stroke.free()
+
+	# La zona agranda de a cuadrantes enteros, solo hacia donde hace falta.
+	var zone := Node2D.new()
+	zone.set_script(WORLD_ZONE_SCRIPT)
+	zone.set("world_size", ZONE)
+	zone.set("quadrant_size", ZONE)
+	var rect: Rect2 = zone.call("world_rect")
+	_expect(zone.call("grown_rect_for", Vector2.ZERO) == rect, "a point inside does not grow the map")
+	var east: Rect2 = zone.call("grown_rect_for", Vector2(rect.end.x + 10, 0))
+	_expect(east == Rect2(rect.position, rect.size + Vector2(ZONE.x, 0)),
+		"a point past the east edge adds exactly one quadrant to the east")
+	var corner: Rect2 = zone.call("grown_rect_for", rect.position - Vector2(10, ZONE.y + 10))
+	_expect(corner.size == rect.size + Vector2(ZONE.x, ZONE.y * 2),
+		"  and past the north-west corner, as many as it takes on each axis")
+	zone.call("_build_paint_layers")
+	var zone_layer: PaintLayer = zone.call("paint_layer_for", PaintLayer.palette_id("tierra"))
+	zone.call("set_world_rect", east)
+	_expect(zone_layer != null and zone_layer.world_rect() == east, "growing the zone moves its paint layers with it")
+	_expect(zone.call("is_within_bounds", Vector2(rect.end.x + 10, 0)), "  and the new quadrant is inside the bounds")
+	zone.free()
 
 
 func _test_zone() -> void:

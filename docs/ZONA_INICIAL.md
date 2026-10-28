@@ -255,31 +255,37 @@ de trabajo: se diseña y se llena un bloque de 8000 × 6000 a la vez, y el
 siguiente se pega al lado dentro de la misma escena, con caminos, costa y
 terreno que siguen de corrido. Praderas del Alba es el cuadrante (0,0).
 
-Para que crecer no rompa lo que ya está armado, hay cuatro cosas del código
-actual a tener en cuenta:
+### Agrandar el mapa desde el mapper
 
-1. **Agrandar `world_size` hoy corre la pintura.** El mundo está centrado en el
-   origen (`PaintLayer.position = -world_size / 2`), pero al cambiar de tamaño
-   `PaintLayer._rebuild()` copia la máscara vieja en la esquina superior
-   izquierda de la nueva. Si el mundo pasa de 8000 a 16000 de ancho, todo lo
-   pintado aparece 4000 px más al oeste, desfasado de las casas y los
-   caminos. Hay que arreglarlo antes de sumar el primer cuadrante.
-2. **El centro del mundo se mueve con el tamaño.** Como `world_size` crece
-   para los dos lados del origen, sumar un cuadrante al este también agranda
-   el oeste. Conviene fijar el origen en una esquina del cuadrante (0,0) y
-   describir el mundo como "qué cuadrantes existen", no como un tamaño
-   centrado.
-3. **La pintura no escala con un mundo grande.** Cada capa que se pinta
-   reserva una máscara del tamaño de medio mundo (`MASK_SCALE = 0.5`): 48 MB
-   en 8000 × 6000, 432 MB en un mundo de 3 × 3 cuadrantes, por capa. Además,
-   la textura no puede pasar de 16384 px de lado en la mayoría de las placas
-   de video, o sea unos 4 cuadrantes de ancho. La solución, sin dejar de ser
-   una escena: **una máscara por cuadrante** (un sprite por capa y cuadrante),
-   creada solo donde se pinta. Hoy ninguna capa de Praderas del Alba tiene
-   nada pintado guardado, así que es el momento barato para cambiarlo.
-4. **El piso base no se extiende solo.** `_build_floor()` no toca un `Floor`
-   que ya tiene celdas, así que el pasto del cuadrante nuevo hay que hornearlo
-   de nuevo (`tools/bake_floor.gd`).
+**Pintar terreno afuera del borde agranda el mapa un cuadrante hacia ese
+lado.** Vale para el TERRENO, el piso, los caminos y el pincel libre; un árbol,
+un mob o una casa soltados afuera no agrandan nada (casi siempre es un click
+errado). Con la herramienta activa, el editor dibuja el borde del mapa en
+blanco, y con el cursor afuera muestra en amarillo el cuadrante que se
+agregaría. Es un paso propio del Ctrl+Z: deshacerlo achica el mapa de nuevo.
+
+Al agrandar:
+
+- **Lo ya pintado no se mueve.** Antes, cambiar `world_size` copiaba la
+  máscara de pintura en la esquina de arriba a la izquierda mientras la capa
+  seguía centrada, y todo lo pintado se corría medio mapa. Ahora cada capa
+  sabe qué rectángulo del mundo cubre y se reubica sin mover nada.
+- **El mundo ya no está atado al origen.** La zona tiene `world_center` además
+  de `world_size`, así que crecer al este no agranda también el oeste.
+- **El pasto base se extiende solo,** con el mismo patrón, en el cuadrante
+  nuevo. Puede tardar unos segundos: son ~47.000 celdas.
+- Los límites del jugador en Play (`WorldBounds`) y la ubicación de los
+  interiores siguen al mapa nuevo.
+
+`quadrant_size` (8000 × 6000 por defecto) define cuánto crece por paso.
+
+**Lo que queda pendiente es el tamaño de las máscaras de pintura.** Cada capa
+del pincel libre que se usa reserva una máscara del tamaño de medio mundo:
+48 MB por cuadrante. Con 3 × 3 cuadrantes serían 432 MB por capa, y una textura
+no puede pasar de 16384 px de lado en la mayoría de las placas de video, o sea
+unos 4 cuadrantes de ancho (el editor avisa si se pasa). Para crecer más que
+eso, cada capa tiene que guardar una máscara por cuadrante, sin dejar de ser
+una sola escena. El TERRENO y los caminos no tienen este límite: son celdas.
 
 En juego, una escena grande no es problema en sí: los mobs ya se duermen
 cuando el jugador está lejos (`chase_mob.gd`) y `TileMapLayer` dibuja por

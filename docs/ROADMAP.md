@@ -73,8 +73,9 @@ cumplir un encargo.
 - Subir de tier e impuesto, después.
 
 ### M7 — Segundo cuadrante
-- Antes de agrandar el mundo: que la pintura no se corra al cambiar
-  `world_size` y que las máscaras sean por cuadrante (ver `ZONA_INICIAL.md`).
+- Ya resuelto: pintar terreno afuera del borde agranda el mapa un cuadrante
+  sin mover lo pintado. Pendiente antes de pasar de ~4 cuadrantes de ancho:
+  máscaras del pincel libre por cuadrante (ver `ZONA_INICIAL.md`).
 - Pegar el cuadrante vecino a Praderas del Alba en la misma escena, con una
   mazmorra corta.
 - Si un cuadrante sale en días y no en semanas, el editor rindió.

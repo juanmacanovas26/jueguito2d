@@ -27,6 +27,11 @@ extends Sprite2D
 ## NOT cost edge sharpness.
 const MASK_SCALE := 0.5
 
+## Lado máximo de textura que soporta la mayoría de las placas de video. Una
+## máscara más grande se avisa (ver _reframe()): con MASK_SCALE 0.5 son unos
+## 32768 px de mundo, cuatro cuadrantes de 8000 de ancho.
+const MAX_MASK_SIDE := 16384
+
 const SHADER_PATH := "res://assets/shaders/painted_ground.gdshader"
 const TILES_DIR := "res://assets/world/decor/plains/tiles/"
 
@@ -59,7 +64,18 @@ const ID_PREFIX := "paint_"
 @export var world_size: Vector2 = Vector2(2400, 1800):
 	set(value):
 		world_size = value
-		_rebuild()
+		if not _applying_rect:
+			_rebuild()
+
+## Centro de la zona. Antes toda zona estaba centrada en el origen; agrandar el
+## mapa para un solo lado (un cuadrante al este) corre el centro. Va declarado
+## antes que mask_png a propósito: al cargar la escena, la máscara se lee con el
+## rectángulo ya puesto (ver _load_mask_png()).
+@export var world_center: Vector2 = Vector2.ZERO:
+	set(value):
+		world_center = value
+		if not _applying_rect:
+			_rebuild()
 
 ## Which of TEXTURES this layer draws. One layer per texture — two dirt
 ## patches share a mask, dirt and grass do not.
@@ -81,6 +97,13 @@ const ID_PREFIX := "paint_"
 var _writing_back := false
 var _mask: Image = null
 var _mask_texture: ImageTexture = null
+## El rectángulo del mundo que cubre _mask. Cuando la zona cambia de tamaño o
+## de centro, la máscara se reubica según la diferencia entre este y el nuevo,
+## así lo pintado se queda donde estaba en el mundo.
+var _mask_rect := Rect2()
+## True mientras set_world_rect() cambia tamaño y centro juntos, para reubicar
+## la máscara una sola vez y no dos.
+var _applying_rect := false
 ## Whole-mask copy taken when a stroke starts, cropped to the stroke's dirty
 ## rect when it ends — see begin_stroke(). Only ever one alive at a time.
 var _stroke_backup: Image = null
@@ -140,20 +163,66 @@ func _mask_size() -> Vector2i:
 		maxi(1, int(world_size.y * MASK_SCALE)))
 
 
+## El rectángulo del mundo que cubre la capa: world_size alrededor de
+## world_center.
+func world_rect() -> Rect2:
+	return Rect2(world_center - world_size * 0.5, world_size)
+
+
+## Cambia tamaño y centro de una vez. Es lo que usa la zona al agrandarse
+## (WorldZone.set_world_rect()).
+func set_world_rect(rect: Rect2) -> void:
+	_applying_rect = true
+	world_size = rect.size
+	world_center = rect.get_center()
+	_applying_rect = false
+	_rebuild()
+
+
 func _rebuild() -> void:
-	if _mask != null and _mask.get_size() != _mask_size():
-		# Keep whatever is already painted when the zone is resized.
-		var wanted := _mask_size()
-		var fresh := Image.create(wanted.x, wanted.y, false, Image.FORMAT_RGBA8)
-		fresh.fill(Color(1, 1, 1, 0))
-		fresh.blit_rect(_mask, Rect2i(Vector2i.ZERO, _mask.get_size().min(wanted)), Vector2i.ZERO)
-		_mask = fresh
-		_mask_texture = ImageTexture.create_from_image(_mask)
+	var rect := world_rect()
+	if _mask != null and _mask_rect != rect:
+		_reframe(rect)
 	texture = _mask_texture
 	# One mask pixel covers 1/MASK_SCALE world pixels.
 	scale = Vector2.ONE / MASK_SCALE
-	position = -world_size * 0.5
+	position = rect.position
 	_apply_material()
+
+
+## Lleva la máscara (y el trazo abierto, si hay uno) al rectángulo nuevo sin
+## mover lo pintado en el mundo: cada píxel termina en la misma posición de
+## mundo que antes. Lo que quede afuera del rectángulo nuevo se pierde, que es
+## lo que significa achicar (deshacer un agrandado).
+##
+## Antes de esto, agrandar la zona copiaba la máscara vieja en la esquina de
+## arriba a la izquierda de la nueva mientras la capa seguía centrada: pasar de
+## 8000 a 16000 de ancho corría todo lo pintado 4000 px al oeste.
+func _reframe(rect: Rect2) -> void:
+	var wanted := _mask_size()
+	if wanted.x > MAX_MASK_SIDE or wanted.y > MAX_MASK_SIDE:
+		push_warning("[PaintLayer] la máscara de '%s' pasa a %dx%d px: más de %d de lado no entra en una textura en la mayoría de las placas de video."
+			% [texture_id, wanted.x, wanted.y, MAX_MASK_SIDE])
+	var offset := Vector2i(((_mask_rect.position - rect.position) * MASK_SCALE).round())
+	_mask = _moved(_mask, offset, wanted)
+	_mask_texture = ImageTexture.create_from_image(_mask)
+	if _stroke_backup != null:
+		_stroke_backup = _moved(_stroke_backup, offset, wanted)
+		_stroke_rect = Rect2i(_stroke_rect.position + offset, _stroke_rect.size).intersection(
+			Rect2i(Vector2i.ZERO, wanted))
+	_mask_rect = rect
+
+
+## Una imagen de `size` con `src` copiada `offset` píxeles corrida. El recorte
+## se hace a mano para no depender de cómo trata blit_rect() un destino negativo.
+static func _moved(src: Image, offset: Vector2i, size: Vector2i) -> Image:
+	var out := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
+	out.fill(Color(1, 1, 1, 0))
+	var from := Rect2i(Vector2i.ZERO, src.get_size())
+	var to := Rect2i(offset, src.get_size()).intersection(Rect2i(Vector2i.ZERO, size))
+	if to.size.x > 0 and to.size.y > 0:
+		out.blit_rect(src, Rect2i(to.position - offset, to.size).intersection(from), to.position)
+	return out
 
 
 ## The mask is only allocated once something is actually painted into it.
@@ -169,6 +238,7 @@ func _ensure_mask() -> void:
 	var size := _mask_size()
 	_mask = Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
 	_mask.fill(Color(1, 1, 1, 0))
+	_mask_rect = world_rect()
 	_mask_texture = ImageTexture.create_from_image(_mask)
 	texture = _mask_texture
 
@@ -189,6 +259,7 @@ func _apply_material() -> void:
 	else:
 		push_warning("[PaintLayer] unknown paint texture '%s'." % texture_id)
 	mat.set_shader_parameter("world_size", world_size)
+	mat.set_shader_parameter("world_origin", world_rect().position)
 	mat.set_shader_parameter("ground_tile_px", float(BuildGrid.TILE_SIZE))
 
 
@@ -332,5 +403,9 @@ func _load_mask_png() -> void:
 	if img.get_format() != Image.FORMAT_RGBA8:
 		img.convert(Image.FORMAT_RGBA8)
 	_mask = img
+	# La máscara guardada cubre el rectángulo de la zona tal como se guardó,
+	# arrancando en su esquina. Si el tamaño no coincide (la zona cambió y no se
+	# volvió a guardar), el próximo _rebuild() la reubica desde esa esquina.
+	_mask_rect = Rect2(world_rect().position, Vector2(img.get_size()) / MASK_SCALE)
 	_mask_texture = ImageTexture.create_from_image(_mask)
 	texture = _mask_texture
